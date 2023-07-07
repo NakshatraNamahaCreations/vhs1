@@ -4,6 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { da } from "date-fns/locale";
+import numberToWords from 'number-to-words';
 
 function Quotationterm() {
   const [tcdata, settcdata] = useState([]);
@@ -69,50 +70,6 @@ function Quotationterm() {
   };
 
  
-  // const numberToWords = () => {
-  //   const num=data[0]?.quotedata[0]?.netTotal;
-  //   const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-  //   const teens = [
-  //     'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
-  //   ];
-  //   const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-
-  //   if (num === 0) {
-  //     return 'zero';
-  //   }
-
-  //   if (num < 10) {
-  //     return units[num];
-  //   }
-
-  //   if (num < 20) {
-  //     return teens[num - 10];
-  //   }
-
-  //   if (num < 100) {
-  //     const tenDigit = Math.floor(num / 10);
-  //     const unitDigit = num % 10;
-  //     return tens[tenDigit] + ' ' + units[unitDigit];
-  //   }
-
-  //   if (num < 1000) {
-  //     const hundredDigit = Math.floor(num / 100);
-  //     const remainingDigits = num % 100;
-  //     return units[hundredDigit] + ' hundred ' + numberToWords(remainingDigits);
-  //   }
-
-  //   if (num < 1000000) {
-  //     const thousandDigit = Math.floor(num / 1000);
-  //     const remainingDigits = num % 1000;
-  //     return numberToWords(thousandDigit) + ' thousand ' + numberToWords(remainingDigits);
-  //   }
-
-  //   // Handle larger numbers if needed
-
-  //   return 'Number out of range';
-  // };
-  // console.log(numberToWords(90))
-
   return (
     <div className="row">
       <Header />
@@ -236,8 +193,7 @@ function Quotationterm() {
                 >
                   In Words :{" "}
                   <span style={{ fontWeight: 400 }}>
-                    Rupee, One Million, Five Hundred And Twenty-Five Thousand,
-                    Five Hundred And Seventy-Five Only
+                 {numberToWords.toWords(data[0]?.quotedata[0]?.netTotal)} 
                   </span>
                 </div>
 
@@ -403,35 +359,7 @@ function Quotationterm() {
               ))}
             </div>
 
-            {/* <div className="q-row0 text-center">
-              WE PROMISE YOU TO GIVE
-              <br />
-              TOP QUALITY SERVICE
-            </div>
-
-            <div className="q-row1">
-              <span>
-                <i
-                  className="fa-solid fa-square-phone mx-1"
-                  style={{ color: "#050570b3", fontSize: "23px" }}
-                ></i>
-              </span>
-              <span style={{ fontSize: "18px", marginTop: "-10px" }}>
-                +91 85768483
-              </span>
-            </div>
-
-            <img
-              src="/images/vijayhomelogo.png"
-              alt="loading..."
-              className="vhslogo-Q1"
-            />
-
-            <div
-              className="mt-3"
-              style={{ borderBottom: "5px solid red" }}
-            ></div> */}
-
+        
             <div className="row m-auto">
               <div className="mt-3 text-center" style={{ color: "#a9042e" }}>
                 website : www.vijayhomeservices | mail :

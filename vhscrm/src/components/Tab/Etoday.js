@@ -352,7 +352,7 @@ function Etoday() {
               </tr>
             </thead>
             <tbody>
-            {filteredData.map((item) => (
+            {searchResults.map((item) => (
                 <a onClick={() => enquirydetail(item)} className="tbl">
                   <tr key={i} className="trnew">
                     <td>{i++}</td>

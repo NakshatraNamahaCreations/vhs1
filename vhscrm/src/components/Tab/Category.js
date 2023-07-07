@@ -50,9 +50,9 @@ function Category() {
   }, []);
 
   const getcategory = async () => {
-    let res = await axios.get(apiURL+"/getcatagory");
+    let res = await axios.get(apiURL+"/getcategory");
     if ((res.status = 200)) {
-      setcategorydata(res.data?.catagory);
+      setcategorydata(res.data?.category);
       setfilterdata(res.data?.category);
     }
   };

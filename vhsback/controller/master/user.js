@@ -200,6 +200,8 @@ class masteruser {
     try {
       const userData = req.params.userId;
       const {
+        cityId,
+        categoryId,
         master,
         enquiry,
         enquiryFollowup,
@@ -213,6 +215,7 @@ class masteruser {
         b2b,
         community,
         reports,
+
       } = req.body;
       let obj = {};
       // Check if the user exists
@@ -260,6 +263,12 @@ class masteruser {
         obj["reports"] = reports;
       }
 
+      if (typeof cityId !== "undefined") {
+        obj["cityId"] = cityId;
+      }
+      if (typeof categoryId !== "undefined") {
+        obj["categoryId"] = categoryId;
+      }
       let isData = await usermodel.findOneAndUpdate(
         { _id: userData },
         { $set: obj },

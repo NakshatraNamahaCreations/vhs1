@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import DSRnav from "../components/DSRnav";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
@@ -33,7 +33,7 @@ function Dsrdetails() {
   const [daytoComplete, setdaytoComplete] = useState("");
 
   const [dsrdata, setdsrdata] = useState([]);
-
+console.log("new",data)
 
   useEffect(() => {
     getservices();
@@ -575,7 +575,10 @@ function Dsrdetails() {
           <button className="vhs-button">Cancel</button>
         </div>
         <div className="col-md-1">
-          <button className="vhs-button">Invoice</button>
+          <Link to="/dsrquote" state={{data:dsrdata}}>
+          <button className="vhs-button">Quotation</button>
+
+          </Link>
         </div>
       </div>
     </div>

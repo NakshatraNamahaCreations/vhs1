@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const serviceSchema = new mongoose.Schema({
+  customerData: {
+    type: Array,
+  },
   cardNo: {
     type: Number,
   },
@@ -18,7 +21,7 @@ const serviceSchema = new mongoose.Schema({
   },
   dateofService: {
     type: String,
-    default:"00-00-0000"
+    default: "00-00-0000",
   },
   desc: {
     type: String,
@@ -28,87 +31,28 @@ const serviceSchema = new mongoose.Schema({
   },
   startDate: {
     type: String,
-    default:"00-00-0000"
+    default: "00-00-0000",
   },
   expiryDate: {
     type: String,
-    default:"00-00-0000"
+    default: "00-00-0000",
   },
-  firstserviceDate:{
-    type:String,
-    default:"00-00-0000"
+  firstserviceDate: {
+    type: String,
+    default: "00-00-0000",
   },
-  customerName: {
+  dividedDates: {
+    type: Array,
+  },
+  dividedCharges: {
+    type: Array,
+  },
+  date: {
     type: String,
   },
-  contactPerson: {
-    type: String,
-    
-  },
-  mainContact: {
-    type: Number,
-   
-  },
-  alternateContact: {
-    type: Number,
-   
-  },
-  email: {
-    type: String,
-  
-  },
-  gstinid: {
-    type: String,
-   
-  },
-  rbhf: {
-    type: String,
-  
-  },
-  cnap: {
-    type: String,
-  
-  },
-  lnf: {
-    type: String,
- 
-  },
-  mainArea: {
+  time: {
     type: String,
   },
-  city: {
-    type: String,
-  },
-  pinCode: {
-    type: Number,
-  },
-  customerType: {
-    type: String,
-   
-  },
-  size: {
-    type: String,
-   
-  },
-  color: {
-    type: String,
-  },
-  instructions: {
-    type: String,
-  },
-  approach: {
-    type: String,
-
-  },
-  serviceExecute: {
-    type: String,
-  },
-  date:{
-    type:String
-  },
-  time:{
-    type:String
-  }
 });
 
 const servicedetailsmodel = mongoose.model("servicedetails", serviceSchema);

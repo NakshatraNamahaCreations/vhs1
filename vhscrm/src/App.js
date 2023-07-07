@@ -130,11 +130,17 @@ import Quotesearch from "./components/Quotesearch";
 import Customersearchdetails from "./components/Customersearchdetails";
 import Termsgroup2 from "./components/Tab/Termsgroup2";
 import Contextdata from "./components/Contextdata";
-import Customersearchlist from "./components/Customersearchlist";
 import Dsrdetails from "./components/Dsrdetails";
 import Dsrcallist from "./components/Dsrcallist";
 import Addcall from "./components/Addcall";
-
+import Servicebill from "./components/Servicebill";
+import Painting from "./components/Painting";
+import Payment from "./components/Payment";
+import Work from "./components/Work";
+// import Services from "./components/Services";
+import Customersernav from "./components/Customersernav";
+import Cservices from "./components/Cservices";
+import Dsrquote from "./components/Dsrquote";
 function App() {
   return (
     <BrowserRouter>
@@ -144,7 +150,7 @@ function App() {
           <Route path="/vendor" element={<Vendor />} />
           <Route path="/master" element={<Master />} />
           <Route path="/servicetype" element={<Servicetype />} />
-          <Route path="/product" element={<Services />} />
+          <Route path="/services" element={<Services />} />
           <Route path="/jobcategory" element={<Jobcategory />} />
           <Route path="/City" element={<City />} />
           <Route path="/expensetype" element={<Expensetype />} />
@@ -261,6 +267,13 @@ function App() {
           <Route path="/qfooter" element={<Qfooter />} />
           <Route path="/dsrdetails" element={<Dsrdetails />} />
           <Route path="/customersearchdetails/:id" element={<Customersearchdetails />} />
+          <Route path="/painting" element={<Painting />} />
+          <Route path="/work" element={<Work />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/customerservnav" element={<Customersernav />} />
+          <Route path="/cservices" element={<Cservices />} />
+
+
           <Route
             path="/enquirydatatable/:date"
             element={<Enquirydatatable />}
@@ -273,6 +286,10 @@ function App() {
         </Route>
         <Route path="/" element={<Login />} />
         <Route path="/quotationterm" element={<Quotationterm />} />
+        <Route path="/servicebill" element={<Servicebill />} />
+        <Route path="/dsrquote" element={<Dsrquote />} />
+
+
 
       </Routes>
     </BrowserRouter>

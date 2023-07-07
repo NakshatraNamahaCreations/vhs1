@@ -117,7 +117,7 @@ function City() {
   const deletecity = async (id) => {
     axios({
       method: "post",
-      url: apiURL + "/master/deletecity/" + id,
+      url: apiURL+"/master/deletecity/" + id,
     })
       .then(function (response) {
         //handle success
@@ -130,6 +130,8 @@ function City() {
         console.log(error.response.data);
       });
   };
+ 
+
   let i = 0;
   return (
     <div>

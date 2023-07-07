@@ -4,6 +4,13 @@ const userSchema = new mongoose.Schema({
   uId: {
     type: String,
   },
+  categoryId: {
+    type: String,
+  },
+  cityId: {
+    type: String,
+  },
+
   displayname: {
     type: String,
   },

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../components/layout/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Customernav from "../components/Customernav";
 import moment from "moment";
-
+import Customersernav from "./Customersernav";
+import { NavLink } from "react-router-dom";
 
 function Customersearchdetails() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
   const [serviceCharge, setserviceCharge] = useState("");
@@ -33,6 +34,7 @@ function Customersearchdetails() {
     gettreatment();
   }, []);
 
+  console.log("customerdata",customerdata)
   const getcustomer = async () => {
     let res = await axios.get(apiURL + "/getcustomer");
     if (res.status === 200) {
@@ -58,6 +60,27 @@ function Customersearchdetails() {
       settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
     }
   };
+  console.log(startDate);
+  const sDate = moment(startDate, "YYYY-MM-DD");
+  const eDate = moment(expiryDate, "YYYY-MM-DD");
+
+  const totalDays = Math.ceil(eDate.diff(sDate, "days"));
+  const interval = Math.ceil(totalDays / serviceFrequency);
+  const dividedServiceCharge = Math.ceil(serviceCharge / serviceFrequency);
+
+  const dividedDates = [];
+  const dividedCharges = [];
+
+  for (let i = 0; i < serviceFrequency; i++) {
+    const date = sDate.clone().add(interval * i, "days");
+    dividedDates.push(date);
+
+    const charge =
+      i === serviceFrequency - 1
+        ? serviceCharge - dividedServiceCharge * (serviceFrequency - 1)
+        : dividedServiceCharge;
+    dividedCharges.push(charge);
+  }
 
   const addtreatmentdetails = async (e) => {
     e.preventDefault();
@@ -73,24 +96,9 @@ function Customersearchdetails() {
           // data: formdata,
           headers: { "content-type": "application/json" },
           data: {
-            customerName: customerdata[0].customerName,
-            contactPerson: customerdata[0].contactPerson,
-            mainContact: customerdata[0].mainContact,
-            alternateContact: customerdata[0].alternateContact,
-            email: customerdata[0].email,
-            gst: customerdata[0].gst,
-            rbhf: customerdata[0].rbhf,
-            cnap: customerdata[0].cnap,
-            lnf: customerdata[0].lnf,
-            mainArea: customerdata[0].mainArea,
-            city: customerdata[0].city,
-            pinCode: customerdata[0].pinCode,
-            customerType: customerdata[0].customerType,
-            size: customerdata[0].size,
-            color: customerdata[0].color,
-            instructions: customerdata[0].instructions,
-            approach: customerdata[0].approach,
-            serviceExecute: customerdata[0].serviceExecute,
+            customerData: customerdata,
+            dividedDates: dividedDates,
+            dividedCharges: dividedCharges,
             cardNo: id,
             category: category,
             contractType: contractType,
@@ -161,26 +169,31 @@ function Customersearchdetails() {
   };
   let i = 1;
 
-  console.log(id)
   const handleRowClick = (id) => {
-    console.log(id)
+    console.log(id);
     navigate(`/addcall/${id}`);
   };
   return (
     <div className="web">
       <Header />
-      {/* <Quotenav /> */}
-      <Customernav />
-
+    <Customersernav customer={customerdata} />
+      <div></div>
       <div className="row m-auto">
         {" "}
         <div style={{ background: "white", color: "black" }}>
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <form>
-                <div style={{display:"flex",justifyContent:"space-between"}}>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
                   <h5>Billing Details</h5>
-                 <h6 style={{color:"red"}} onClick={()=>handleRowClick(id)}>Add call</h6>
+                  <h6
+                    style={{ color: "red" }}
+                    onClick={() => handleRowClick(id)}
+                  >
+                    Add call
+                  </h6>
                 </div>
 
                 <hr />
@@ -702,9 +715,9 @@ function Customersearchdetails() {
                         ></i>{" "}
                         |
                       </a>
-                      <a>
+                      <Link to="/servicebill" state={{ data: item }}>
                         <b style={{ color: "blue" }}>BILL</b>
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -794,6 +807,9 @@ function Customersearchdetails() {
                     Service Date
                   </th>
                   <th className="table-head" scope="col">
+                    Service Charges
+                  </th>
+                  <th className="table-head" scope="col">
                     Service Count
                   </th>
                   <th className="table-head" scope="col">
@@ -802,21 +818,40 @@ function Customersearchdetails() {
                 </tr>
               </thead>
               <tbody>
-                {/* {quoteflowdata.map((item) => (
+                {treatmentdata.map((item, index) => (
                   <div className="tbl">
-                    {item.quotefollup.map((item) => (
-                      <div className="tbl">
-                        <tr className="user-tbale-body tbl1">
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                      </div>
-                    ))}
-                  </div> 
-                ))} */}
+                    <tr className="user-tbale-body tbl1">
+                      <td>{index++}</td>
+                      <td>{item.service}</td>
+                      {item.contractType === "AMC" ? (
+                        <td>
+                          {item.dividedDates.map((a) => (
+                            <div>
+                              <p>{new Date(a).toLocaleDateString()}</p>
+                            </div>
+                          ))}
+                        </td>
+                      ) : (
+                        <td>{item.dateofService}</td>
+                      )}
+
+                      {item.contractType === "AMC" ? (
+                        <td>
+                          {item.dividedCharges.map((a) => (
+                            <div>
+                              <p>{a}</p>
+                            </div>
+                          ))}
+                        </td>
+                      ) : (
+                        <td>{item.serviceCharge}</td>
+                      )}
+
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </div>
+                ))}
               </tbody>
             </table>
           </div>

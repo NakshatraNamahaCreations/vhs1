@@ -128,7 +128,7 @@ function Customersearch() {
   return (
     <div className="web">
       <Header />
-      <Customernav />
+      <Customernav  />
 
       <div className="row m-auto">
         <div className="col-md-12">
