@@ -200,8 +200,8 @@ class masteruser {
     try {
       const userData = req.params.userId;
       const {
-        cityId,
-        categoryId,
+        city,
+        category,
         master,
         enquiry,
         enquiryFollowup,
@@ -215,7 +215,6 @@ class masteruser {
         b2b,
         community,
         reports,
-
       } = req.body;
       let obj = {};
       // Check if the user exists
@@ -263,11 +262,24 @@ class masteruser {
         obj["reports"] = reports;
       }
 
-      if (typeof cityId !== "undefined") {
-        obj["cityId"] = cityId;
+      // if (typeof cityId !== "undefined") {
+      //   obj["cityId"] = cityId;
+      // }
+      // if (typeof category !== "undefined") {
+      //   obj["category"] = category;
+      // }
+      // Update category if provided
+      if (typeof category !== "undefined") {
+        // Save category data
+        // const categoryData = await categorymodel.create(category);
+        obj["category"] = category;
       }
-      if (typeof categoryId !== "undefined") {
-        obj["categoryId"] = categoryId;
+
+      // Update city if provided
+      if (typeof city !== "undefined") {
+        // Save city data
+        // const cityData = await cityymodel.create(city);
+        obj["city"] = city;
       }
       let isData = await usermodel.findOneAndUpdate(
         { _id: userData },
@@ -291,7 +303,6 @@ class masteruser {
       });
     }
   }
-
   //change password
   async changePassword(req, res) {
     try {

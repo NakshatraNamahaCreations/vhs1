@@ -58,8 +58,11 @@ const yesterdayDate = getYesterdayDate();
 // Filter the data based on yesterday's date
 const filteredData = filterdata.filter(item => item.nxtfoll === yesterdayDate);
 
+console.log("data",filteredData);
+
 useEffect(() => {
   const filterResults = () => {
+    console.log(filteredData)
     let results = filteredData;
     if (searchCatagory) {
       results = results.filter(

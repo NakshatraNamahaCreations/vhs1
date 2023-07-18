@@ -80,7 +80,13 @@ const userSchema = new mongoose.Schema({
   },
   status:{
     type:String
-  }
+  },
+  category: {
+    type: Array, // Change to an array of strings
+  },
+  city: {
+    type: Array, // Change to an array of strings
+  },
 });
 
 const usermodel = mongoose.model("masteruser", userSchema);

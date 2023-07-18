@@ -1,11 +1,18 @@
-import React, { useState, PureComponent } from "react";
+import React, { useState, useEffect } from "react";
 import Chart from "react-apexcharts";
 import Sidebar from "./layout/Sidebar";
 import Header from "./layout/Header";
 import Nav from "./Nav1";
+import axios from "axios";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
+import moment from "moment";
 
 function Home() {
+  const apiURL = process.env.REACT_APP_API_URL;
+  const [customer, setCustomer] = useState([]);
+  const [enquiry, setEnquiry] = useState([]);
+  const [service, setService] = useState([]);
+  const [enquiryFollowup, setEnquiryFollowup] = useState([]);
   const data01 = [
     { name: "Group A", value: 400 },
     { name: "Group B", value: 300 },
@@ -61,6 +68,65 @@ function Home() {
       },
     ],
   });
+
+  const getCustomer = async () => {
+    let res = await axios.get(apiURL + "/getcustomer");
+    if (res.status === 200) {
+      setCustomer(res.data?.customers);
+      console.log("customer===>", res.data.customers);
+    }
+  };
+  const getEnquiry = async () => {
+    let res = await axios.get(apiURL + "/getenquiry");
+    if (res.status === 200) {
+      console.log("enquiry", res.data?.enquiryadd);
+      setEnquiry(res.data?.enquiryadd);
+    }
+  };
+
+  const getService = async () => {
+    let res = await axios.get(apiURL + "/getservicedetails");
+    if (res.status === 200) {
+      console.log("service", res.data?.servicedetails);
+      setService(res.data?.servicedetails);
+    }
+  };
+
+  const getEnquiryFollowup = async () => {
+    let res = await axios.get(apiURL + "/getcalllateraggredata");
+    if (res.status === 200) {
+      console.log("enquiryFollowup", res.data?.enquiryfollowup);
+      setEnquiryFollowup(res.data?.enquiryfollowup);
+    }
+  };
+
+  useEffect(() => {
+    getCustomer();
+    getEnquiry();
+    getService();
+    getEnquiryFollowup();
+  }, []);
+
+  const enquiryCurrentDateLength = enquiry.filter((item) =>
+    moment(item.enquirydate, "MM-DD-YYYY").isSame(moment(), "day")
+  );
+  // console.log("enquiryCurrentDateLength", enquiryCurrentDateLength.length);
+
+  const enquiryFollowUpCurrentDateLength = enquiryFollowup.filter((item) =>
+    moment(item.enquirydate, "MM-DD-YYYY").isSame(moment(), "day")
+  );
+  const enquiryFollowUpCallLater = enquiryFollowup.filter(
+    (item) => item.response === "Call Later"
+  );
+
+  const enquiryFollowUpNotInterested = enquiryFollowup.filter(
+    (item) => item.response === "Not Intrested"
+  );
+  // console.log("enquiryFollowUpCallLater", enquiryFollowUpCallLater.length);
+  // console.log(
+  //   "enquiryFollowUpCurrentDateLength",
+  //   enquiryFollowUpCurrentDateLength.length
+  // );
   return (
     <div className="web">
       <Header />
@@ -79,8 +145,10 @@ function Home() {
         <div className="col-md-3">
           <div className="card home-col">
             <div className="card-body">
-              <div className="home-content">Calls Details</div>
-              <div className="home-desc">This Month Calls : 1269</div>
+              <div className="home-content">Services Details</div>
+              <div className="home-desc">
+                This Month Calls : <b>{service.length}</b>
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +167,9 @@ function Home() {
           <div className="card home-col">
             <div className="card-body">
               <div className="home-content">Customer</div>
-              <div className="home-desc">Total Customers : 76917</div>
+              <div className="home-desc">
+                Total Customers :<b>{customer.length}</b>{" "}
+              </div>
               <div className="home-desc">This Month Due Amount : 1,13,129</div>
             </div>
           </div>
@@ -119,7 +189,9 @@ function Home() {
           <div className="card home-col">
             <div className="card-body">
               <div className="home-content">Enquiry</div>
-              <div className="home-desc">Today : 17</div>
+              <div className="home-desc">
+                Today : <b>{enquiryCurrentDateLength.length}</b>{" "}
+              </div>
               <div className="home-desc">This Week : 17</div>
             </div>
           </div>
@@ -139,7 +211,9 @@ function Home() {
           <div className="card home-col">
             <div className="card-body">
               <div className="home-content">Call Later</div>
-              <div className="home-desc">Today : 7</div>
+              <div className="home-desc">
+                Today :<b>{enquiryFollowUpCallLater.length}</b>{" "}
+              </div>
               <div className="home-desc">This Week : 5</div>
             </div>
           </div>
@@ -148,7 +222,9 @@ function Home() {
           <div className="card home-col">
             <div className="card-body">
               <div className="home-content">Not Interested</div>
-              <div className="home-desc">Today : 7</div>
+              <div className="home-desc">
+                Today : <b>{enquiryFollowUpNotInterested.length} </b>{" "}
+              </div>
               <div className="home-desc">This Week : 5</div>
             </div>
           </div>
@@ -159,7 +235,9 @@ function Home() {
           <div className="card home-col">
             <div className="card-body">
               <div className="home-content">Enquiry Followup</div>
-              <div className="home-desc">Today : 18</div>
+              <div className="home-desc">
+                Today :<b> {enquiryFollowUpCurrentDateLength.length}</b>{" "}
+              </div>
               <div className="home-desc">This Week : 18</div>
             </div>
           </div>

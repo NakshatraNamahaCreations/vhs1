@@ -150,9 +150,9 @@ function Community() {
           <Link className="hyperlink" state={{ data: row }}>
             Edit |
           </Link>
-          <a className="hyperlink" href="/userrights">
+          <Link className="hyperlink" to="/communityrights" state={{data:row}}>
             Rights |
-          </a>
+          </Link>
           <a
             onClick={() => deletecommunity(row._id)}
             className="hyperlink mx-1"

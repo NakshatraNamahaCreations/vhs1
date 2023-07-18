@@ -78,6 +78,22 @@ class B2B {
       return res.json({ success: "Updated" });
     }
   }
+  async addB2BViaExcelSheet(req, res) {
+    const data = req.body;
+
+    try {
+      const insertedB2B = await B2Bmodel.insertMany(data);
+
+      if (insertedB2B.length > 0) {
+        return res.json({ success: "B2B added successfully" });
+      } else {
+        return res.status(400).json({ error: "Failed to add B2B" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
 
   //Get all customer
   async getallB2B(req, res) {

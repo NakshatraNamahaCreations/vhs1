@@ -624,3 +624,14 @@ background-color: #a9042e;
   justify-content: center;
   padding: 8px;
 }
+.hover-tabs:hover{
+  background-color: #a9042e;
+  color: white !important;
+}
+.hover-tabs{
+  cursor: pointer;
+}
+.currentTab{
+  background-color: #a9042e;
+  color: white !important;
+}

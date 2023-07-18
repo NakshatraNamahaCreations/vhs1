@@ -42,8 +42,10 @@ function Userrights() {
   const handleClick = (divNum) => () => {
     setSelected(divNum);
   };
-  const [selectedCatagory, setSelectedCatagory] = useState([]);
-  const [selectedCity, setSelectedCity] = useState([]);
+
+  const [selectedCatagory, setSelectedCatagory] = useState(
+    data?.category || []  );
+  const [selectedCity, setSelectedCity] = useState(data.city || []);
 
   const givenRights = async (e) => {
     e.preventDefault();
@@ -69,8 +71,8 @@ function Userrights() {
           b2b: b2b,
           community: community,
           reports: reports,
-          categoryId: selectedCatagory.map((category) => category.id),
-          cityId: selectedCity.map((city) => city.id),
+          category: selectedCatagory,
+          city: selectedCity,
         },
       };
       await axios(config).then(function (response) {
@@ -84,18 +86,17 @@ function Userrights() {
       console.error(error);
       alert("Not Added");
     }
-  };  
-
+  };
 
   const getcategory = async () => {
-    let res = await axios.get(apiURL+"/getcategory");
+    let res = await axios.get(apiURL + "/getcategory");
     if (res.status === 200) {
       setcategorydata(res.data?.category);
       setfilterdata(res.data?.category);
     }
   };
 
-  console.log("categorydata",categorydata)
+  // console.log("categorydata", categorydata);
   useEffect(() => {
     getcategory();
     getcity();
@@ -103,40 +104,41 @@ function Userrights() {
 
   const onSelectCatagory = (selectedList, selectedItem) => {
     // Handle select event
-    setSelectedCatagory(selectedList)
+    setSelectedCatagory(selectedList);
     console.log(selectedList);
     console.log(selectedItem);
   };
 
   const onRemoveCatagory = (selectedList, removedItem) => {
     // Handle remove event
-    setSelectedCatagory(selectedList)
+    setSelectedCatagory(selectedList);
     console.log(selectedList);
     console.log(removedItem);
   };
 
   const getcity = async () => {
-    let res = await axios.get(apiURL+"/master/getcity");
+    let res = await axios.get(apiURL + "/master/getcity");
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
-      console.log("city", res)
+      // console.log("city", res);
       setfilterdata(res.data?.mastercity);
     }
   };
 
-    const onSelectCity = (selectedList, selectedItem) => {
+  const onSelectCity = (selectedList, selectedItem) => {
     // Handle select event
-    setSelectedCity(selectedList)
+    setSelectedCity(selectedList);
     console.log(selectedList);
     console.log(selectedItem);
   };
 
   const onRemoveCity = (selectedList, removedItem) => {
     // Handle remove event
-    setSelectedCity(selectedList)
+    setSelectedCity(selectedList);
     console.log(selectedList);
     console.log(removedItem);
   };
+
   return (
     <div className="row pb-3">
       <Header />
@@ -182,22 +184,37 @@ function Userrights() {
         <div className="col-md-6" style={{ width: "36%" }}>
           <div className="card" style={{ padding: "10px 27px" }}>
             <div className="table-content ">Rights For Left Menu</div>
-            <Multiselect className="mt-3"
-                  options={categorydata.map((category) => ({
-                    name: category.category,
-                    id: category._id,
-                  }))}
-                  placeholder="Select Catagory"
-                  selectedValues={selectedCatagory}
-                  onSelect={onSelectCatagory}
-                  onRemove={onRemoveCatagory}
-                  displayValue="name"
-                  // disablePreSelectedValues={true}
-                  showCheckbox = {true}
-                  />
+            <Multiselect
+              className="mt-3"
+              options={categorydata.map((category) => ({
+                name: category.category,
+                // id: category._id,
+              }))}
+              placeholder="Select Catagory"
+              selectedValues={selectedCatagory}
+              onSelect={onSelectCatagory}
+              onRemove={onRemoveCatagory}
+              displayValue="name"
+              // disablePreSelectedValues={true}
+              showCheckbox={true}
+            />{" "}
+            <Multiselect
+              className="mt-3"
+              options={citydata.map((cityData) => ({
+                name: cityData.city,
+                // id: cityData._id,
+              }))}
+              placeholder="Select City"
+              // selectedValues={citydata}
+              selectedValues={selectedCity}
+              onSelect={onSelectCity}
+              onRemove={onRemoveCity}
+              displayValue="name"
+              // disablePreSelectedValues={false}
+              showCheckbox={true}
+            />
             <table class="table table-bordered mt-3">
               <tbody>
-             
                 {/* <tr>
                   <td style={{ width: "10%" }}>
                     <input
@@ -371,20 +388,7 @@ function Userrights() {
         <div className="col-md-6" style={{ width: "36%", marginLeft: "50px" }}>
           <div className="card" style={{ padding: "10px 27px" }}>
             <div className="table-content">Rights For Mis Reports</div>
-            <Multiselect className="mt-3"
-                  options={citydata.map((cityData) => ({
-                    name: cityData.city,
-                    id: cityData._id,
-                  }))}
-                  placeholder="Select City"
-                  // selectedValues={citydata}
-                  selectedValues={selectedCity}
-                  onSelect={onSelectCity}
-                  onRemove={onRemoveCity}
-                  displayValue="name"
-                  disablePreSelectedValues={true}
-                  showCheckbox = {true}
-                  />
+          
             <table class="table table-bordered mt-3">
               <tbody>
                 <tr>

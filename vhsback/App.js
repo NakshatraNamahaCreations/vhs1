@@ -61,7 +61,8 @@ const servicedetails = require("./route/servicedetails");
 const addcall = require("./route/addcall");
 const enquiryfollow = require("./route/enquiryfollowup");
 const quotefollowup=require("./route/quotefollowup");
-
+const payment=require("./route/payment");
+const work=require("./route/work");
 
 
 app.use("/api", admin);
@@ -100,6 +101,8 @@ app.use("/api", treatment);
 app.use("/api", addcall);
 app.use("/api",enquiryfollow);
 app.use("/api",quotefollowup);
+app.use("/api",payment);
+app.use("/api",work);
 
 
 const PORT = process.env.PORT || 8080;

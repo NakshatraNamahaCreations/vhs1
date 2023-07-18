@@ -22,6 +22,7 @@ class servicedetails {
       // approach,
       // serviceExecute,
       customerData,
+      dCategory,
       cardNo,
       contractType,
       service,
@@ -63,6 +64,7 @@ class servicedetails {
         // serviceExecute:serviceExecute,
         customerData,
         cardNo:cardNo,
+        dCategory,
         category: category,
         contractType: contractType,
         service: service,
@@ -108,6 +110,7 @@ class servicedetails {
       // serviceExecute,
       customerData,
       cardNo,
+      dCategory,
       contractType,
       service,
       serviceCharge,
@@ -145,6 +148,7 @@ class servicedetails {
         // serviceExecute,
         customerData,
         cardNo,
+        dCategory,
         contractType,
         service,
         serviceCharge,
@@ -166,7 +170,110 @@ class servicedetails {
       return res.json({error:"error"})
     }
   }
+  async getallrunningdata(req, res) {
+    try {
+      // const customerId = req.query.customerId; 
+      // const userId = req.query.userId; 
+      let data = await servicedetailsmodel.aggregate([
+        {
+          $lookup: {
+            from: "addcalls",
+            localField: "cardNo",
+            foreignField: "cardNo",
+            as: "dsrdata",
+          },
+        },
+        {
+          $lookup: {
+            from: "customers",
+            localField: "cardNo",
+            foreignField: "cardNo",
+            as: "customer",
+          },
+        },
+        {
+          $lookup: {
+            from: "enquiryadds", 
+            localField: "customer.EnquiryId",
+            foreignField: "EnquiryId", 
+            as: "enquiryData",
+          },
+        },
+        {
+        $lookup: {
+          from: "enquiryfollowups", 
+          localField: "customer.EnquiryId",
+          foreignField: "EnquiryId", 
+          as: "enquiryFollowupData",
+        },
+      },
+      {
+        $lookup: {
+          from: "payments", 
+          localField: "customer.customerData._id",
+          foreignField: "customerId", 
+          as: "paymentData",
+        },
+      },
+      // {
+      //   $match: {
+      //     "paymentData.customer": customerId
+      //   }
+      // },
+      // {
+      //   $lookup: {
+      //     from: "payments",
+      //     let: { customerId: "$customer.customerData._id" },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $expr: {
+      //             $and: [
+      //               { $eq: ["$customerId", "$$customerId"] },
+      //               { $eq: ["$customerId", userId] }
+      //             ]
+      //           }
+      //         }
+      //       }
+      //     ],
+      //     as: "paymentData",
+      //   },
+      // },
+      ]);
+      if (data) {
+        return res.json({ runningdata: data });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
 
+  async postservicecategory(req, res) {
+    let { category } = req.body;
+    let data = await servicedetailsmodel.find({ category }).sort({ _id: -1 });
+
+    if (data) {
+      return res.json({ servicedetails: data });
+    }
+  }
+  async updateclose(req, res) {
+    let id = req.params.id;
+    let { closeProject,closeDate } = req.body;
+    let newData = await servicedetailsmodel.findOneAndUpdate(
+      { _id: id },
+      {
+        closeProject,
+        closeDate
+      },
+      { new: true } // Option to return the updated document
+    );
+    if (newData) {
+      return res.status(200).json({ Success: "updated succesfully" });
+    } else {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+  
   async postcategory(req, res) {
     let { category } = req.body;
     let servicedetails   = await servicedetailsmodel.find({ category });

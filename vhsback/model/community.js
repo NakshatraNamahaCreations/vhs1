@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const communitySchema = new mongoose.Schema({
-    appartmentname: {
+  appartmentname: {
     type: String,
   },
   communityn: {
@@ -30,6 +30,50 @@ const communitySchema = new mongoose.Schema({
   },
   cpassword: {
     type: String,
+  },
+
+  //give rights
+  home: {
+    type: Boolean,
+  },
+  master: {
+    type: Boolean,
+  },
+  enquiry: {
+    type: Boolean,
+  },
+  enquiryFollowup: {
+    type: Boolean,
+  },
+  survey: {
+    type: Boolean,
+  },
+  quote: {
+    type: Boolean,
+  },
+  customer: {
+    type: Boolean,
+  },
+  quoteFollowup: {
+    type: Boolean,
+  },
+  dsr: {
+    type: Boolean,
+  },
+  runningProjects: {
+    type: Boolean,
+  },
+  closeProjects: {
+    type: Boolean,
+  },
+  b2b: {
+    type: Boolean,
+  },
+  community: {
+    type: Boolean,
+  },
+  reports: {
+    type: Boolean,
   },
 });
 

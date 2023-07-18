@@ -38,14 +38,15 @@ function Quotedetails() {
   const [category, setcategory] = useState("");
   const [treatmentdata, settreatmentdata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
-  const [Gst, setGST] = useState(quotedata[0]?.GST || false);
-  const [projecttype, setprojecttype] = useState("");
+  const [Gst, setGST] = useState(false);
+
   const [adjustment, setadjustment] = useState("");
   const [SUM, setSUM] = useState("");
-
   const [quotepagedata, setquotepagedata] = useState([]);
-
-  console.log("data",quotepagedata);
+  const [projecttype, setprojecttype] = useState(
+    quotepagedata[0]?.quotedata[0]?.projectType
+  );
+  // console.log("data", quotepagedata);
 
   const [netTotal, setnetTotal] = useState("");
 
@@ -82,7 +83,7 @@ function Quotedetails() {
         headers: { "content-type": "application/json" },
         data: {
           EnquiryId: EnquiryId,
-          category:quotepagedata[0]?.category,
+          category: quotepagedata[0]?.category,
           staffname: admin.displayname,
           folldate: moment().format("L"),
           folltime: moment().format("LT"),
@@ -142,19 +143,10 @@ function Quotedetails() {
     }
   };
 
-  useEffect(() => {
-    // gettechnician();
-    getmaterial();
-    getregion();
-    getquote();
-    getquotepage();
-    gettreatment();
-  }, []);
-
   const getquotepage = async () => {
     let res = await axios.get(apiURL + "/getenquiryquote");
     if ((res.status = 200)) {
-      console.log("getenquiryquote--",res)
+      // console.log("getenquiryquote--", res);
       setquotepagedata(
         res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
       );
@@ -182,7 +174,6 @@ function Quotedetails() {
     }
   };
 
-  console.log(quotedata);
   const getregion = async () => {
     let res = await axios.get(apiURL + "/master/getaregion");
     if ((res.status = 200)) {
@@ -190,6 +181,20 @@ function Quotedetails() {
       setregiondata(res.data?.aregion);
     }
   };
+  useEffect(() => {
+    // gettechnician();
+    getmaterial();
+    getregion();
+    getquote();
+    getquotepage();
+    gettreatment();
+  }, []);
+
+  useEffect(() => {
+    if (quotedata.length > 0) {
+      setGST(quotedata[0]?.GST || false);
+    }
+  }, [quotedata]);
 
   useEffect(() => {
     postallajob();
@@ -247,10 +252,9 @@ function Quotedetails() {
   const total = calculateTotalPrice(treatmentdata);
   const GSTAmount = total * 0.05;
   const totalWithGST = total + GSTAmount;
-  
-  console.log("total",total);
-  console.log("totalWithGST",totalWithGST);
 
+  console.log("total", total);
+  console.log("totalWithGST", totalWithGST);
 
   const handleChange = (event) => {
     // setGst(event.target.value);
@@ -610,9 +614,7 @@ function Quotedetails() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={
-                       total
-                      }
+                      value={total}
                       onChange={(e) => setSUM(e.target.value)}
                     />
                   </div>
@@ -623,9 +625,9 @@ function Quotedetails() {
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      id="flexCheckDefault"
-                      checked={(quotedata[0]?.GST)?(quotedata[0]?.GST):false}
-                      onChange={(e) => setGST(!Gst)}
+                      checked={Gst}
+                      // checked={(quotedata[0]?.GST)?(quotedata[0]?.GST):false}
+                      onChange={(e) => setGST(e.target.checked)}
                       // onChange={handleChange}
                     />
                     <label class="vhs-sub-heading mx-3" for="flexCheckDefault">
@@ -641,10 +643,7 @@ function Quotedetails() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={
-                        total
-                         
-                      }
+                      value={total}
 
                       // onChange={(e)=>settotal(e.target.value)}
                     />
@@ -693,7 +692,7 @@ function Quotedetails() {
                   )}
                 </div>
                 <div className="col-md-2 ">
-                  <Link to="/quotationterm" state={{data:quotepagedata}}>
+                  <Link to="/quotationterm" state={{ data: quotepagedata }}>
                     <button className="vhs-button " style={{ width: "150px" }}>
                       Print Quote
                     </button>
@@ -729,11 +728,11 @@ function Quotedetails() {
                 </tr>
               </thead>
               <tbody>
-                {quotepagedata[0]?.quotefollowup.map((item,index) => (
+                {quotepagedata[0]?.quotefollowup.map((item, index) => (
                   <div className="tbl">
                     <div className="tbl">
                       <tr className="user-tbale-body tbl1">
-                        <td>{index+1}</td>
+                        <td>{index + 1}</td>
                         <td>{item.folldate}</td>
                         <td>{item.staffname}</td>
                         <td>{item.response}</td>

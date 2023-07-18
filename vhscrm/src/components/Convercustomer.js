@@ -72,6 +72,7 @@ function Convertcustomer() {
           // data: formdata,
           headers: { "content-type": "application/json" },
           data: {
+            EnquiryId:id,
             cardNo: customerdata ? customerdata + 1 : 1,
             category:category ?category:data[0]?.category,
             customerName: customername ? customername : data[0]?.name,

@@ -5,6 +5,7 @@ class addcustomer {
   async addcustomer(req, res) {
     let {
       customerName,
+      EnquiryId,
       contactPerson,
       category,
       mainContact,
@@ -38,6 +39,7 @@ class addcustomer {
       // Create a new customer instance with the generated card number
       const customer = new customerModel({
         cardNo: newCardNo,
+        EnquiryId,
         customerName,
         contactPerson,
         category,
@@ -76,6 +78,7 @@ class addcustomer {
 
     let {
       cardNo,
+      EnquiryId,
       customerName,
       contactPerson,
       mainContact,
@@ -101,6 +104,7 @@ class addcustomer {
       {
         cardNo,
         customerName,
+        EnquiryId,
         contactPerson,
         category,
         mainContact,
@@ -123,6 +127,36 @@ class addcustomer {
     );
     if (data) {
       return res.json({ success: "Updated" });
+    }
+  }
+  async addCustomersViaExcelSheet(req, res) {
+    const data = req.body;
+
+    try {
+      // Get the latest card number from the database
+      const latestCustomer = await customerModel
+        .findOne()
+        .sort({ cardNo: -1 })
+        .exec();
+      const latestCardNo = latestCustomer ? latestCustomer.cardNo : 0;
+
+      // Increment the card number by 1
+      const customersWithCardNo = data.map((customer, index) => ({
+        ...customer,
+        cardNo: latestCardNo + index + 1,
+      }));
+      const inserteCustomer = await customerModel.insertMany(
+        customersWithCardNo
+      );
+
+      if (inserteCustomer.length > 0) {
+        return res.json({ success: "Customer added successfully" });
+      } else {
+        return res.status(400).json({ error: "Failed to add Customers" });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 

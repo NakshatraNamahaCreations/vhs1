@@ -69,6 +69,9 @@ const addCallSchema = new mongoose.Schema({
   },
   amount:{
     type:String
+  },
+  salesExecutive:{
+    type:String
   }
 });
 

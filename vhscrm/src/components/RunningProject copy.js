@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./layout/Header";
 import axios from "axios";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const active = {
   backgroundColor: "rgb(169, 4, 46)",
@@ -13,15 +13,14 @@ const active = {
 const inactive = { color: "black", backgroundColor: "white" };
 
 function RunningProject() {
-  const apiURL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const [selected, setSelected] = useState(0);
+  const apiURL = process.env.REACT_APP_API_URL;
   const [categorydata, setcategorydata] = useState([]);
   const [category, setcategory] = useState("");
   const [dsrdata, setdsrdata] = useState([]);
   const [treatmentdata, settreatmentData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [data, setData] = useState([])
 
   const handleClick = (divNum) => () => {
     setSelected(divNum);
@@ -48,34 +47,18 @@ function RunningProject() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const filteredData = res.data?.runningdata.filter(
-        (i) => i.contractType === "AMC"
+        (i) => i.contractType === "AMC" 
       );
       settreatmentData(filteredData);
       setSearchResults(filteredData);
       console.log("filteredData", filteredData);
     }
   };
-  // const updatetoclose = async (id) => {
-  //   try {
-  //     const config = {
-  //       url: `/closeproject/${id}`,
-  //       method: "post",
-  //       baseURL: apiURL,
-  //       headers: { "content-type": "application/json" },
-  //       data: {
-  //         closeProject: "closed",
-  //         closeDate: moment().format("L"),
-  //       },
-  //     };
-  //     await axios(config).then(function (response) {
-  //       if (response.status === 200) {
-  //         alert("Updated");
-  //         window.location.reload();
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Not updated");
+
+  // const getAlldsr = async () => {
+  //   let res = await axios.get(apiURL + "/getrunningdata");
+  //   if (res.status === 200) {
+  //     setdsrdata(res.data.runningdata.filter((i) => i.contractType === "AMC" && i.closeProject != "closed"));
   //   }
   // };
 
@@ -91,26 +74,24 @@ function RunningProject() {
           closeDate: moment().format("L"),
         },
       };
-      await axios(config);
-      // Remove the closed row from the state
-      const updatedData = treatmentdata.filter((item) => item._id !== id);
-      console.log("updatedData",updatedData)
-      settreatmentData(updatedData);
-      alert("Updated");
-      // Reload the page
-      window.location.reload();
+      await axios(config).then(function (response) {
+        if (response.status === 200) {
+          alert("Updated");
+          window.location.assign("/runningproject");
+        }
+      });
     } catch (error) {
       console.error(error);
-      alert("Not updated");
+      alert("  Not updated");
     }
   };
   
-  console.log(dsrdata._id);
+  const details = (data) => {
 
-  const redirectURL=(data)=>{
-console.log(data);
-    navigate(`/painting/${data.cardNo}`)
-  }
+    navigate(`/painting/${data.customerData[0]?.cardNo}`);
+  };
+
+  console.log(dsrdata._id);
   return (
     <div className="web">
       <Header />
@@ -118,6 +99,17 @@ console.log(data);
         <div className="vhs-input-label">
           <h3>Running Projects</h3>
         </div>
+        {/* <div className="group pt-1">
+          <select
+            className="col-md-12 vhs-input-value"
+            onChange={(e) => setcategory(e.target.value)}
+          >
+            <option>-select-</option>
+            {categorydata.map((item) => (
+              <option value={item.category}>{item.category}</option>
+            ))}
+          </select>
+        </div> */}
       </div>
 
       <div className="row m-auto" style={{ width: "100%" }}>
@@ -287,7 +279,7 @@ console.log(data);
                       <td>{item.customerData[0]?.customerName}</td>
                       <td>{item.customerData[0]?.mainContact}</td>
                       <td>
-                        {item.customerData[0]?.lnf} {" "} {item.customerData[0]?.rbhf} {" "}
+                        {item.customerData[0]?.lnf} {item.customerData[0]?.rbhf}
                         {item.customerData[0]?.cnap}
                       </td>
                       <td>{item.customerData[0]?.city}</td>
@@ -306,15 +298,13 @@ console.log(data);
                       <td>
                         <div>
                           <span>
-                            <a onClick={()=>redirectURL(item)}  
-                            style={{cursor:"pointer"}}
-                            >
+                            <a onClick={()=>details(item)} >
                               Details
                             </a>
                           </span>{" "}
                           /{" "}
                           <span
-                            style={{ color: "orange", cursor:"pointer" }}
+                            style={{ color: "orange" }}
                             onClick={() => updatetoclose(item._id)}
                           >
                             Close
@@ -323,6 +313,29 @@ console.log(data);
                       </td>
                     </tr>
                   ))}
+                  {/* <tr
+                    className="user-tbale-body"
+                    style={{ backgroundColor: "#eee", height: "40px" }}
+                  >
+                    <td className="text-center"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr> */}
                 </tbody>
               </table>{" "}
             </>

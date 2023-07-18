@@ -11,6 +11,7 @@ import { NavLink } from "react-bootstrap";
 const localizer = momentLocalizer(moment);
 
 function Surveycategory() {
+  const admin =JSON.parse(sessionStorage.getItem("admin"));
   const [categorydata, setcategorydata] = useState([]);
   const [category, setcategory] = useState([]);
   const [data, setenquiryflwdata] = useState([]);
@@ -123,9 +124,14 @@ function Surveycategory() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>-select-</option>
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
+                        {/* {categorydata.map((item) => (
+                          <option value={item.category}>{item.category}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>

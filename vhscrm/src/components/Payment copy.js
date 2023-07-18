@@ -1,30 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "./layout/Header";
 import Customersernav from "./Customersernav";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Payment() {
-  const { cardNo } = useParams();
+  const location = useLocation();
+  const paymentData = location && location.state ? location.state : {};
+  // const paymentData = location?.state?.data?.data?.customerData?.[0] || {};
+  console.log("payment Page", paymentData);
   const apiURL = process.env.REACT_APP_API_URL;
-  const navigate = useNavigate();
-
-  const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
-  };
-  const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
-  };
-  const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
-  };
-  const treatmentURL = () => {
-    navigate(`/customersearchdetails/${cardNo}`);
-  };
-  const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
-  };
-  const [data, setdata] = useState([])
 
   const [paymentDetails, setPaymentDetails] = useState([]);
   const [paymentDate, setPaymentDate] = useState("");
@@ -48,7 +33,7 @@ function Payment() {
           paymentMode: paymentMode,
           amount: paymentAmount,
           Comment: paymentComments,
-          customerId:data[0]?.customerData[0]._id,
+          customerId: paymentData?.data?.data?.customerData[0]._id,
         },
       };
       await axios(config).then(function (response) {
@@ -63,26 +48,9 @@ function Payment() {
     }
   };
 
-
-  const getservicedata = async () => {
-    let res = await axios.get(apiURL + "/getrunningdata");
-    if (res.status === 200) {
-      const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
-      );
-      setdata(filteredData);
-      console.log("filteredData", filteredData);
-    }
-  };
-
-  useEffect(() => {
-    getservicedata();
-  }, []);
-console.log("Payment Component", data)
   const getPaymentById = async () => {
     try {
-      const customerId = data[0]?.customerData[0]._id;
-      console.log("customerId",customerId)
+      const customerId = paymentData?.data?.data?.customerData[0]._id;
       let res = await axios.get(
         apiURL + `/getPaymentByCustomerId/${customerId}`
       );
@@ -96,7 +64,7 @@ console.log("Payment Component", data)
   };
   useEffect(() => {
     getPaymentById();
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     // Filter payments by paymentType
@@ -107,62 +75,65 @@ console.log("Payment Component", data)
     setVendorPayments(vendorPayments);
   }, [paymentDetails]);
 
-  const handleGoBack = () => {
-    navigate(-1); // Go back to the previous page
-  };
-
-
   return (
     <div className="web">
       <Header />
-      {/* <Customersernav data={paymentData}   /> */}
-      <ul className="nav-tab-ul">
-        <li>
-          <a
-            onClick={() => customerAddURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Customeradd
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => treatmentURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer",  }}
-          >
-            Treatment
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaintingURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Painting
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaymentURL()}
-            className="hover-tabs currentTab"
-            style={{ cursor: "pointer" }}
-          >
-            Payment
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => WorkURL()}
-            className="hover-tabs "
-            
-          >
-            Work
-          </a>
-        </li>
-      </ul>
+      <div className="row">
+        <div className="navbar">
+          <ul className="nav-tab-ul">
+            <li>
+              <Link
+                to="/customeradd"
+                activeClassName="active"
+                state={{ data: paymentData }}
+              >
+                Customeradd
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/customersearchdetails"
+                activeClassName="active"
+                state={{ data: paymentData }}
+              >
+                Treatment
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/painting"
+                activeClassName="active"
+                state={{ data: paymentData }}
+              >
+                Painting
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/payment"
+                activeClassName="active"
+                state={{ data: paymentData }}
+              >
+                Payment
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/work"
+                activeClassName="active"
+                state={{ data: paymentData }}
+              >
+                Work
+              </Link>
+            </li>
+            {/* <li>
+            <NavLink to="/cservices" activeClassName="active">
+              Services
+            </NavLink>
+          </li> */}
+          </ul>
+        </div>
+      </div>
       <div
         style={{
           border: "1px solid color(srgb 0.855 0.855 0.855)",
@@ -173,11 +144,11 @@ console.log("Payment Component", data)
         }}
       >
         <b>
-          Customer Payment &gt;{" "} 
-          {data[0]?.customerData[0].customerName
+          Customer Payment &gt;{" "}
+          {paymentData.data.data.customerData[0].customerName
             .charAt(0)
             .toUpperCase() +
-            data[0]?.customerData[0].customerName.slice(1)}
+            paymentData.data.data.customerData[0].customerName.slice(1)}
         </b>
       </div>
       <div className="m-3">
@@ -188,6 +159,7 @@ console.log("Payment Component", data)
                 <div className="col-4">
                   Payment Date <span className="text-danger"> *</span>
                 </div>
+                {/* <div className="col-0">:</div> */}
                 <div className="group pt-1 col-5 ml-3">
                   <input
                     type="date"
@@ -218,6 +190,7 @@ console.log("Payment Component", data)
                 <div className="col-4">
                   Payment Type <span className="text-danger"> *</span>
                 </div>
+                {/* <div className="col-0">:</div> */}
                 <div className="group pt-1 col-5 ml-3">
                   <select
                     className="col-md-12 vhs-input-value"
@@ -248,6 +221,7 @@ console.log("Payment Component", data)
                 <div className="col-4">
                   Payment Mode <span className="text-danger"> *</span>
                 </div>
+                {/* <div className="col-0">:</div> */}
                 <div className="group pt-1 col-5 ml-3">
                   <select
                     className="col-md-12 vhs-input-value"
@@ -391,143 +365,3 @@ console.log("Payment Component", data)
 }
 
 export default Payment;
-
-// import React, { useEffect, useState } from "react";
-// import Header from "./layout/Header";
-// import Customersernav from "./Customersernav";
-// import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-// import axios from "axios";
-
-// function Payment() {
-
-//   const { cardNo } = useParams();
-//   console.log(cardNo);
-//   const apiURL = process.env.REACT_APP_API_URL;
-//   // const location = useLocation();
-//   // const paymentData = location.state?.data;
-//   const navigate = useNavigate();
-//   // console.log("payment Page", paymentData);
-
-//   const [paymentDetails, setPaymentDetails] = useState([]);
-//   const [paymentDate, setPaymentDate] = useState("");
-//   const [paymentType, setPaymentType] = useState("");
-//   const [paymentComments, setPaymentComments] = useState("");
-//   const [paymentMode, setPaymentMode] = useState("");
-//   const [paymentAmount, setPaymentAmount] = useState("");
-//   const [customerPayments, setCustomerPayments] = useState([]);
-//   const [vendorPayments, setVendorPayments] = useState([]);
-
-//   // const addPayment = async () => {
-//   //   try {
-//   //     const config = {
-//   //       url: "/addPayment",
-//   //       method: "post",
-//   //       baseURL: apiURL,
-//   //       headers: { "content-type": "application/json" },
-//   //       data: {
-//   //         paymentDate: paymentDate,
-//   //         paymentType: paymentType,
-//   //         paymentMode: paymentMode,
-//   //         amount: paymentAmount,
-//   //         Comment: paymentComments,
-//   //         customerId: paymentData?.data?.customerData[0]._id,
-//   //       },
-//   //     };
-//   //     await axios(config).then(function (response) {
-//   //       if (response.status === 200) {
-//   //         alert("Payment Added");
-//   //         window.location.reload("");
-//   //       }
-//   //     });
-//   //   } catch (error) {
-//   //     console.log(error);
-//   //     alert(error.response.data.error);
-//   //   }
-//   // };
-
-//   // const getPaymentById = async () => {
-//   //   try {
-//   //     const customerId = paymentData?.data?.customerData[0]._id;
-//   //     let res = await axios.get(
-//   //       apiURL + `/getPaymentByCustomerId/${customerId}`
-//   //     );
-//   //     if (res.status === 200) {
-//   //       console.log("paymentDetails", res);
-//   //       setPaymentDetails(res.data?.payments);
-//   //     }
-//   //   } catch (error) {
-//   //     console.log("error:", error);
-//   //   }
-//   // };
-//   // useEffect(() => {
-//   //   getPaymentById();
-//   // }, []);
-
-//   // useEffect(() => {
-//   //   // Filter payments by paymentType
-//   //   const customerPayments = paymentDetails.filter(payment => payment.paymentType === 'Customer');
-//   //   const vendorPayments = paymentDetails.filter(payment => payment.paymentType === 'Vendor');
-
-//   //   setCustomerPayments(customerPayments);
-//   //   setVendorPayments(vendorPayments);
-//   // }, [paymentDetails]);
-
-//   // const handleGoBack = () => {
-//   //   navigate(-1); // Go back to the previous page
-//   // };
-
-//   const details = () => {
-//     navigate(`/painting/${cardNo}`);
-//   };
-
-//   useEffect(() => {
-//     getservicedata();
-//   }, []);
-
-//   const getservicedata = async () => {
-//     let res = await axios.get(apiURL + "/getrunningdata");
-//     if (res.status === 200) {
-//       const filteredData = res.data?.runningdata.filter(
-//         (i) => i.cardNo == cardNo
-//       );
-
-//       console.log("filteredData", filteredData);
-//     }
-//   };
-//   return (
-//     <div className="web">
-//       <Header />
-//       {/* <Customersernav data={paymentData}   /> */}
-//       {/* <button onClick={handleGoBack}>Go Back</button> */}
-//       <ul className="nav-tab-ul">
-//         <li>
-//           <Link to="/customeradd" activeClassName="active">
-//             Customeradd
-//           </Link>
-//         </li>
-//         <li>
-//           <Link to="/customersearchdetails" activeClassName="active">
-//             Treatment
-//           </Link>
-//         </li>
-//         <li>
-//           <a onClick={() => details()}>
-//             Painting
-//           </a>
-//         </li>
-//         <li>
-//           <a onClick={() => details()} activeClassName="active">
-//             Payment
-//           </a>
-//         </li>
-//         <li>
-//           <Link to="/work" activeClassName="active">
-//             Work
-//           </Link>
-//         </li>
-//       </ul>
-//     </div>
-//   );
-// }
-
-// export default Payment;

@@ -15,7 +15,7 @@ function Addcall() {
   const [servicedata, setservicedata] = useState([]);
   const [techniciandata, settechniciandata] = useState([]);
   const [bookingDate, setbookingDate] = useState(
-    moment().format("DD-MM-YYYY  ")
+    moment().format("DD-MM-YYYY")
   );
 
   const [priorityLevel, setpriorityLevel] = useState("");

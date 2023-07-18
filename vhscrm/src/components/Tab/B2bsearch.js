@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../layout/Header";
 import B2Bnav from "../B2Bnav";
 import axios from "axios";
@@ -13,6 +13,8 @@ function B2bsearch() {
   const [citydata, setcitydata] = useState([]);
   const [b2bdata, setb2bdata] = useState([]);
   const [results, setfilterdata] = useState([]);
+  const [searchClicked, setSearchClicked] = useState(false);
+  const [hasResults, setHasResults] = useState(false);
   const apiURL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
@@ -28,11 +30,12 @@ function B2bsearch() {
   };
   const getb2b = async () => {
     let res = await axios.get(apiURL + "/getB2B");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
+      console.log("b2bdata", res);
       setb2bdata(res.data?.B2B);
     }
   };
-  useEffect(() => {
+  const filterData = () => {
     const result = b2bdata.filter((item) => {
       return (
         item.b2bname.toLowerCase().match(b2bname.toLowerCase()) &&
@@ -42,9 +45,21 @@ function B2bsearch() {
       );
     });
     setfilterdata(result);
-  }, [b2bname, city, email, contactperson]);
+  };
 
-  let i = 0;
+  const handleSearchClick = (e) => {
+    e.preventDefault();
+    if (!b2bname && !city && !email && !contactperson) {
+      // No search criteria entered, show a message or perform any desired action
+      alert("Please enter search criteria");
+      return;
+    }
+
+    filterData();
+  };
+  //  [b2bname, city, email, contactperson];
+
+  // let i = 0;
   const columns = [
     {
       name: "B2B name",
@@ -495,14 +510,16 @@ function B2bsearch() {
                   Input Atleast 1 Filter For Quick Search
                 </div>
 
-                {/* <div className="row pt-3 justify-content-center">
+                <div className="row pt-3 justify-content-center">
                   <div className="col-md-1">
-                    <button className="vhs-button">Save</button>
+                    <button className="vhs-button" onClick={handleSearchClick}>
+                      Search
+                    </button>
                   </div>
                   <div className="col-md-1">
                     <button className="vhs-button mx-3">Cancel</button>
                   </div>
-                </div> */}
+                </div>
               </form>
             </div>
           </div>

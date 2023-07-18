@@ -25,7 +25,7 @@ function Ethismonth() {
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("")
-
+const [displayedData, setDisplayedData] = useState([])
 
   useEffect(() => {
     getenquiry();
@@ -180,7 +180,8 @@ useEffect(() => {
     //   ...item,
     //   category: getUniqueCategories()[item.category],
     // }));
-    setSearchResults(results);
+    setDisplayedData(results);
+    // setDisplayedData()
   };
   filterResults();
 }, [
@@ -362,7 +363,7 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-            {searchResults.map((item) => (
+            {displayedData.map((item) => (
                 <a onClick={() => enquirydetail(item)} className="tbl">
                   <tr key={i} className="trnew">
                     <td>{i++}</td>

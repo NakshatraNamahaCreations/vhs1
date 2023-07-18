@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Header from "./layout/Header";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import Customersernav from "./Customersernav";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
 function Work() {
   const apiURL = process.env.REACT_APP_API_URL;
-  const { cardNo } = useParams();
-  const navigate = useNavigate();
+  const location = useLocation();
+  const workData = location.state;
+  console.log("workData==", workData);
+
+  console.log("customerId", workData.data.data.data.customerData[0]._id);
 
   const [workDetails, setWorkDetails] = useState([]);
   const [workDate, setWorkDate] = useState("");
@@ -14,24 +18,6 @@ function Work() {
   const [details, setDetails] = useState("");
   const [matrialUse, setMatrialUse] = useState("");
   const [remark, setRemark] = useState("");
-
-  const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
-  };
-  const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
-  };
-  const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
-  };
-
-  const treatmentURL = () => {
-    navigate(`/customersearchdetails/${cardNo}`);
-  };
-  const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
-  };
-  const [data, setdata] = useState([]);
 
   const addWork = async () => {
     try {
@@ -46,7 +32,7 @@ function Work() {
           workDetails: details,
           workMaterialUse: matrialUse,
           workRemark: remark,
-          customerId: data[0]?.customerData[0]._id,
+          customerId: workData.data.data.data.customerData[0]._id,
         },
       };
       await axios(config).then(function (response) {
@@ -61,25 +47,9 @@ function Work() {
     }
   };
 
-  const getservicedata = async () => {
-    let res = await axios.get(apiURL + "/getrunningdata");
-    if (res.status === 200) {
-      const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
-      );
-      setdata(filteredData);
-    }
-  };
-
-  useEffect(() => {
-    getservicedata();
-  }, []);
-
-  console.log("Work Component", data);
   const getWorkById = async () => {
     try {
-      const customerId = data[0]?.customerData[0]._id;
-      console.log("customerId", customerId);
+      const customerId = workData.data.data.data.customerData[0]._id;
       let res = await axios.get(apiURL + `/getWorkByCustomerId/${customerId}`);
       if (res.status === 200) {
         console.log("workDetails", res);
@@ -91,58 +61,70 @@ function Work() {
   };
   useEffect(() => {
     getWorkById();
-  }, [data]);
+  }, []);
+
 
   return (
     <div className="web">
       <Header />
-      <ul className="nav-tab-ul">
-        <li>
-          <a
-            onClick={() => customerAddURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Customeradd
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => treatmentURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer",  }}
-          >
-            Treatment
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaintingURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Painting
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaymentURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Payment
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => WorkURL()}
-            className="hover-tabs currentTab"
-            
-          >
-            Work
-          </a>
-        </li>
-      </ul>
+      <div>
+        <div className="row">
+          <div className="navbar">
+            <ul className="nav-tab-ul">
+              <li>
+                <Link
+                  to="/customeradd"
+                  activeClassName="active"
+                  state={{ data: workData }}
+                >
+                  Customeradd
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/customersearchdetails"
+                  activeClassName="active"
+                  state={{ data: workData }}
+                >
+                  Treatment
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/painting"
+                  activeClassName="active"
+                  state={{ data: workData }}
+                >
+                  Painting
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/payment"
+                  activeClassName="active"
+                  state={{ data: workData }}
+                >
+                  Payment
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/work"
+                  activeClassName="active"
+                  state={{ data: workData }}
+                >
+                  Work
+                </Link>
+              </li>
+              {/* <li>
+            <NavLink to="/cservices" activeClassName="active">
+              Services
+            </NavLink>
+          </li> */}
+            </ul>
+          </div>
+        </div>
+      </div>
       <div
         style={{
           border: "1px solid color(srgb 0.855 0.855 0.855)",
@@ -154,8 +136,10 @@ function Work() {
       >
         <b>
           Customer Payment &gt;{" "}
-          {data[0]?.customerData[0].customerName.charAt(0).toUpperCase() +
-            data[0]?.customerData[0].customerName.slice(1)}
+          {workData.data.data.data.customerData[0].customerName
+            .charAt(0)
+            .toUpperCase() +
+            workData.data.data.data.customerData[0].customerName.slice(1)}
         </b>
       </div>
       <div className="m-3">

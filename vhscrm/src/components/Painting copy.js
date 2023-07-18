@@ -1,53 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Header from "./layout/Header";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import Customersernav from "./Customersernav";
+import Table from "react-bootstrap/Table";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import axios from "axios";
 
 function Painting() {
-  const apiURL = process.env.REACT_APP_API_URL;
+  const location = useLocation();
+  const locationData = location.state;
+  console.log("paintingData==", locationData);
   const [workDetails, setWorkDetails] = useState([]);
   const [paymentDetails, setPaymentDetails] = useState([]);
   const [customerPayments, setCustomerPayments] = useState([]);
   const [vendorPayments, setVendorPayments] = useState([]);
-  const [data, setdata] = useState([]);
-  const { cardNo } = useParams();
-  console.log(cardNo);
-  const navigate = useNavigate();
-  useEffect(() => {
-    getservicedata();
-  }, []);
-
-  const getservicedata = async () => {
-    let res = await axios.get(apiURL + "/getrunningdata");
-    if (res.status === 200) {
-      const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
-      );
-      setdata(filteredData);
-    }
-  };
-  console.log("CustomerDetails===", data);
-  const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
-  };
-  const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
-  };
-  const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
-  };
-
-  const treatmentURL = () => {
-    navigate(`/customersearchdetails/${cardNo}`);
-  };
-  const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
-  };
+  const apiURL = process.env.REACT_APP_API_URL;
 
   const getPaymentById = async () => {
     try {
-      const customerId = data[0]?.customer[0]?._id;
-      console.log("customerId", customerId);
+      const customerId = locationData.data.customerData[0]._id;
+      console.log("Customer ID:", customerId);
       let res = await axios.get(
         apiURL + `/getPaymentByCustomerId/${customerId}`
       );
@@ -62,8 +33,7 @@ function Painting() {
 
   const getWorkById = async () => {
     try {
-      const customerId = data[0]?.customer[0]?._id;
-      console.log("customerId", customerId);
+      const customerId = locationData.data.customerData[0]._id;
       let res = await axios.get(apiURL + `/getWorkByCustomerId/${customerId}`);
       if (res.status === 200) {
         console.log("workDetails", res);
@@ -77,7 +47,7 @@ function Painting() {
   useEffect(() => {
     getPaymentById();
     getWorkById();
-  }, [data]);
+  }, []);
 
   useEffect(() => {
     // Filter payments by paymentType
@@ -97,49 +67,68 @@ function Painting() {
   return (
     <div>
       <Header />
-      <ul className="nav-tab-ul">
-        <li>
-          <a
-            onClick={() => customerAddURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Customeradd
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => treatmentURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Treatment
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaintingURL()}
-            className="hover-tabs currentTab"
-            style={{ cursor: "pointer" }}
-          >
-            Painting
-          </a>
-        </li>
-        <li>
-          <a
-            onClick={() => PaymentURL()}
-            className="hover-tabs"
-            style={{ cursor: "pointer" }}
-          >
-            Payment
-          </a>
-        </li>
-        <li>
-          <a onClick={() => WorkURL()} className="hover-tabs ">
-            Work
-          </a>
-        </li>
-      </ul>
+      {/* <Customersernav data={locationData}   /> */}
+      <div>
+        <div className="row">
+          <div className="navbar">
+            <ul className="nav-tab-ul">
+              <li>
+                <Link
+                  to="/customeradd"
+                  activeClassName="active"
+                  state={{ data: locationData }}
+                >
+                  Customeradd
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/customersearchdetails"
+                  activeClassName="active"
+                  state={{ data: locationData }}
+                >
+                  Treatment
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/painting"
+                  activeClassName="active"
+                  state={{ data: locationData }}
+                >
+                  Painting
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/payment"
+                  activeClassName="active"
+                  state={{ data: locationData }}
+                >
+                  Payment
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/work"
+                  activeClassName="active"
+                  state={{ data: locationData }}
+                >
+                  Work
+                </Link>
+              </li>
+              {/* <li>
+            <NavLink to="/cservices" activeClassName="active">
+              Services
+            </NavLink>
+          </li> */}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {/* <div  > */}
+
+      {/* </div> */}
       <div
         style={{
           border: "1px solid color(srgb 0.855 0.855 0.855)",
@@ -152,8 +141,10 @@ function Painting() {
         <b>
           Customer Painting Details &gt;
           {/* &#8827;{" "}  */}{" "}
-          {data[0]?.customerData[0]?.customerName.charAt(0).toUpperCase() +
-            data[0]?.customerData[0]?.customerName.slice(1)}
+          {locationData.data.customerData[0].customerName
+            .charAt(0)
+            .toUpperCase() +
+            locationData.data.customerData[0].customerName.slice(1)}
         </b>
       </div>
       <div className="row m-auto">
@@ -257,24 +248,22 @@ function Painting() {
                 </tr>
               </thead>
               <tbody>
-                {data.map((enquiry, index) =>
-                  enquiry.enquiryData.map((item, itemIndex) => (
-                    <tr key={index + "-" + itemIndex}>
-                      <td>{index + 1} </td>
-                      <td> {item.category} </td>
-                      <td> {item.enquirydate} </td>
-                      <td> {item.executive} </td>
-                      <td> {item.name} </td>
-                      <td> {item.contact1} </td>
-                      <td>{item.contact2} </td>
-                      <td> {item.email} </td>
-                      <td> {item.address}</td>
-                      <td> {item.reference1} </td>
-                      <td> {item.intrestedfor} </td>
-                      <td> {item.comment} </td>
-                    </tr>
-                  ))
-                )}
+                <tr className="user-tbale-body">
+                  <td>{i++} </td>
+                  <td> {locationData?.data.enquiryData[0]?.category} </td>
+                  <td> {locationData.data.enquiryData[0]?.enquirydate} </td>
+                  <td> {locationData.data.enquiryData[0]?.executive} </td>
+                  <td> {locationData?.data.enquiryData[0]?.name} </td>
+                  <td> {locationData.data.enquiryData[0]?.contact1} </td>
+                  <td>{locationData.data.enquiryData[0]?.contact2} </td>
+                  <td> {locationData.data.enquiryData[0]?.email} </td>
+                  <td> {locationData.data.enquiryData[0]?.address}</td>
+                  <td> {locationData.data.enquiryData[0]?.reference1} </td>
+                  <td>
+                    <td> {locationData.data.enquiryData[0]?.intrestedfor} </td>
+                  </td>
+                  <td> {locationData.data.enquiryData[0]?.comment} </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -293,25 +282,26 @@ function Painting() {
                   <th>Next Foll</th>
                 </tr>
               </thead>
-
+              {/* {locationData.data?.enquiryFollowupData?.length > 0 ?( */}
               <tbody>
-                {data?.map((followup, index) =>
-                  followup.enquiryFollowupData.map((item, itemIndex) => (
-                    <tr key={index + "-" + itemIndex}>
+                {locationData.data?.enquiryFollowupData?.map(
+                  (followup, index) => (
+                    <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{item.folldate}</td>
-                      <td>{item.staffname}</td>
-                      <td>{item.response}</td>
-                      <td>{item.desc}</td>
-                      <td>{item.value}</td>
-                      <td>{item.nxtfoll}</td>
+                      <td>{followup?.folldate}</td>
+                      <td>{followup?.staffname}</td>
+                      <td>{followup?.response}</td>
+                      <td>{followup?.desc}</td>
+                      <td>{followup?.value}</td>
+                      <td>{followup?.nxtfoll}</td>
                     </tr>
-                  ))
+                  )
                 )}
               </tbody>
+              {/* ):""} */}
             </table>
           </div>
-          {/* <div className="mt-2 p-3">
+          <div className="mt-2 p-3">
             <h5>Quote Details</h5>
 
             <table class="table table-hover table-bordered mt-1">
@@ -329,16 +319,10 @@ function Painting() {
               <tbody>
                 <tr>
                   <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
                 </tr>
               </tbody>
             </table>
-          </div> */}
+          </div>
 
           <div className="mt-2 p-3">
             <h5>Work Details</h5>
@@ -357,7 +341,7 @@ function Painting() {
               <tbody>
                 {workDetails.map((work, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                      <td>{index + 1}</td>
                     <td>{work?.workDate}</td>
                     <td>{work?.workMileStone}</td>
                     <td>{work?.workDetails}</td>
@@ -420,7 +404,7 @@ function Painting() {
               </tbody>
             </table>
           </div>
-          {/* <div className="mt-2 p-3">
+          <div className="mt-2 p-3">
             <h5>Deep Cleaning Details</h5>
 
             <table class="table table-hover table-bordered mt-1">
@@ -433,11 +417,10 @@ function Painting() {
               </thead>
               <tbody></tbody>
             </table>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 export default Painting;
-

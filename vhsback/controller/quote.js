@@ -4,7 +4,6 @@ class addequote {
   //add
   async addquote(req, res) {
     let {
-  
       userId,
       EnquiryId,
       projectType,
@@ -26,9 +25,9 @@ class addequote {
           .sort({ quoteId: -1 })
           .exec();
         const latestCardNo = latestCustomer ? latestCustomer.quoteId : 0;
-        if (typeof GST !== "undefined") {
-          return GST;
-        }
+        // if (typeof GST !== "undefined") {
+        //   return GST;
+        // }
         // Increment the card number by 1
         const newCardNo = latestCardNo + 1;
         let quote = new quotemodel({
@@ -58,25 +57,7 @@ class addequote {
   async updatequoteDetails(req, res) {
     try {
       let id = req.params.id;
-    let {
-      quoteId,
-      userId,
-      EnquiryId,
-      projectType,
-      SUM,
-      GST,
-      total,
-      adjustments,
-      netTotal,
-      date,
-      time,
-    } = req.body;
-    if (typeof GST !== "undefined") {
-      GST =  GST;
-    }
-    let newData = await quotemodel.findOneAndUpdate(
-      { _id: id },
-      {
+      let {
         quoteId,
         userId,
         EnquiryId,
@@ -88,16 +69,33 @@ class addequote {
         netTotal,
         date,
         time,
+      } = req.body;
+      if (typeof GST !== "undefined") {
+        GST = GST;
       }
-    );
-    if (newData) {
-      return res.status(200).json({ Success: "Added" });
-    } else {
-      return res.status(500).json({ error: "Something went wrong" });
-    }
+      let newData = await quotemodel.findOneAndUpdate(
+        { _id: id },
+        {
+          quoteId,
+          userId,
+          EnquiryId,
+          projectType,
+          SUM,
+          GST,
+          total,
+          adjustments,
+          netTotal,
+          date,
+          time,
+        }
+      );
+      if (newData) {
+        return res.status(200).json({ Success: "Added" });
+      } else {
+        return res.status(500).json({ error: "Something went wrong" });
+      }
     } catch (error) {
-      console.log("error:",error);
-
+      console.log("error:", error);
     }
   }
 
@@ -110,6 +108,14 @@ class addequote {
             localField: "EnquiryId",
             foreignField: "EnquiryId",
             as: "enquirydata",
+          },
+        },
+        {
+          $lookup: {
+            from: "quotefollowups",
+            localField: "EnquiryId",
+            foreignField: "EnquiryId",
+            as: "quotefollowup",
           },
         },
       ]);

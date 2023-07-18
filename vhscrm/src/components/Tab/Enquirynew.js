@@ -9,7 +9,7 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker } from "react-date-range";
 
 function Enquirynew(props) {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [enquiryadddata, setenquiryadddata] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
@@ -26,28 +26,28 @@ function Enquirynew(props) {
   const [searchAppoDateTime, setSearchAppoDateTime] = useState("");
   const [searchNote, setSearchNote] = useState("");
   const [searchTechnician, setSearchTechnician] = useState("");
-  const [SearchTime, setSearchTime] = useState("")
+  const [SearchTime, setSearchTime] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     getenquiryadd();
-
   }, []);
 
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
-    if ((res.status = 200)) {
+    if (res.status === 200) {
       setenquiryadddata(res.data?.enquiryadd);
       setSearchResults(res.data?.enquiryadd);
     }
   };
 
-
   let i = 1;
 
-  const enquirydetail=(data)=>{
+  const enquirydetail = (data) => {
     console.log(data.EnquiryId);
-    navigate(`/enquirydetail/${data.EnquiryId}`)
-  }
+    navigate(`/enquirydetail/${data.EnquiryId}`);
+  };
 
   useEffect(() => {
     const filterResults = () => {
@@ -62,26 +62,20 @@ function Enquirynew(props) {
       if (searchDateTime) {
         results = results.filter(
           (item) =>
-            (item.enquirydate &&
-              item.enquirydate
-                .toLowerCase()
-                .includes(searchDateTime.toLowerCase())) 
+            item.enquirydate &&
+            item.enquirydate.toLowerCase().includes(searchDateTime.toLowerCase())
         );
       }
       if (SearchTime) {
         results = results.filter(
           (item) =>
-            (item.time &&
-              item.time
-                .toLowerCase()
-                .includes(SearchTime.toLowerCase())) 
+            item.time && item.time.toLowerCase().includes(SearchTime.toLowerCase())
         );
       }
       if (searchName) {
         results = results.filter(
           (item) =>
-            item.name &&
-            item.name.toLowerCase().includes(searchName.toLowerCase())
+            item.name && item.name.toLowerCase().includes(searchName.toLowerCase())
         );
       }
       if (searchContact) {
@@ -102,34 +96,27 @@ function Enquirynew(props) {
         results = results.filter(
           (item) =>
             item.reference1 &&
-            item.reference1
-              .toLowerCase()
-              .includes(searchReference.toLowerCase())
+            item.reference1.toLowerCase().includes(searchReference.toLowerCase())
         );
-      } //
+      }
       if (searchReference2) {
         results = results.filter(
           (item) =>
             item.reference2 &&
-            item.reference2
-              .toLowerCase()
-              .includes(searchReference2.toLowerCase())
+            item.reference2.toLowerCase().includes(searchReference2.toLowerCase())
         );
-      } //
+      }
       if (searchCity) {
         results = results.filter(
           (item) =>
-            item.city &&
-            item.city.toLowerCase().includes(searchCity.toLowerCase())
+            item.city && item.city.toLowerCase().includes(searchCity.toLowerCase())
         );
       }
       if (searchInterest) {
         results = results.filter(
           (item) =>
             item.intrestedfor &&
-            item.intrestedfor
-              .toLowerCase()
-              .includes(searchInterest.toLowerCase())
+            item.intrestedfor.toLowerCase().includes(searchInterest.toLowerCase())
         );
       }
       if (searchExecutive) {
@@ -143,9 +130,7 @@ function Enquirynew(props) {
         results = results.filter(
           (item) =>
             item.appoDate &&
-            item.appoDate
-              .toLowerCase()
-              .includes(searchAppoDateTime.toLowerCase())
+            item.appoDate.toLowerCase().includes(searchAppoDateTime.toLowerCase())
         );
       }
       if (searchNote) {
@@ -164,10 +149,7 @@ function Enquirynew(props) {
               .includes(searchTechnician.toLowerCase())
         );
       }
-      // results = results.map((item) => ({
-      //   ...item,
-      //   category: getUniqueCategories()[item.category],
-      // }));
+
       setSearchResults(results);
     };
     filterResults();
@@ -185,12 +167,43 @@ function Enquirynew(props) {
     searchNote,
     searchTechnician,
   ]);
+
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPagination = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <ul className="pagination">
+        {pageNumbers.map((number) => (
+          <li
+            key={number}
+            className={currentPage === number ? "active" : ""}
+            onClick={() => handlePageChange(number)}
+          >
+            {number}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
     <div className="web">
       <Header />
       <Enquirynav />
 
-  
       <div className="row m-auto">
         <div className="col-md-12">
           <Table striped bordered hover>
@@ -307,9 +320,7 @@ function Enquirynew(props) {
                     onChange={(e) => setSearchExecutive(e.target.value)}
                   />{" "}
                 </th>
-                
-
-              </tr>
+                </tr>
               <tr className="tr clr">
                 <th>#</th>
                 <th>Category</th>
@@ -320,19 +331,15 @@ function Enquirynew(props) {
                 <th>Address</th>
                 <th>Reference1</th>
                 <th>Reference2</th>
-        
                 <th>City</th>
-
                 <th>Interested for</th>
                 <th>Executive</th>
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((item) => (
-                <a
-                 onClick={()=>enquirydetail(item)}
-                 className="tbl"
-                >
+              {currentItems.map((item) => (
+
+                <a onClick={() => enquirydetail(item)} className="tbl">
                   <tr className="trnew" key={searchResults["id"]}>
                     <td>{i++}</td>
                     <td>{item.category}</td>
@@ -343,7 +350,6 @@ function Enquirynew(props) {
                     <td>{item.address}</td>
                     <td>{item.reference1}</td>
                     <td>{item.reference2}</td>
-           
                     <td>{item.city}</td>
                     <td>{item.intrestedfor}</td>
                     <td>{item.executive}</td>
@@ -352,6 +358,8 @@ function Enquirynew(props) {
               ))}
             </tbody>
           </Table>
+
+          {renderPagination()} {/* Add pagination component */}
         </div>
       </div>
     </div>

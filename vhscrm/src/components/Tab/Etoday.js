@@ -25,34 +25,38 @@ function Etoday() {
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("")
+  
 
-  useEffect(() => {
-    getenquiry();
-  }, []);
-
-  let i = 0;
-  const getenquiry = async () => {
-    let res = await axios.get(apiURL + "/getcalllateraggredata");
-    if ((res.status = 200)) {
-      setfilterdata(
-        res.data?.enquiryfollowup);
-      
-    }
-  };
-  const enquirydetail = (data) => {
-    console.log(data.EnquiryId);
-    navigate(`/enquirydetail/${data.EnquiryId}`);
-  };
+ 
  // Get today's date in the format 'YYYY-MM-DD'
  const today = new Date().toISOString().split('T')[0];
 
  // Filter the data based on today's date
- const filteredData = filterdata.filter(item => item.nxtfoll === today);
+//  const filteredData = filterdata.filter(item => item.nxtfoll === today);
 
 
  useEffect(() => {
+  getenquiry();
+}, []);
+
+let i = 0;
+const getenquiry = async () => {
+  let res = await axios.get(apiURL + "/getcalllateraggredata");
+  if ((res.status = 200)) {
+
+    setfilterdata(
+      res.data?.enquiryfollowup.filter(item => item.nxtfoll === today));
+      setSearchResults( res.data?.enquiryfollowup.filter(item => item.nxtfoll === today))
+    
+  }
+};
+const enquirydetail = (data) => {
+  console.log(data.EnquiryId);
+  navigate(`/enquirydetail/${data.EnquiryId}`);
+};
+ useEffect(() => {
   const filterResults = () => {
-    let results = filteredData;
+    let results = filterdata;
     if (searchCatagory) {
       results = results.filter(
         (item) =>

@@ -27,7 +27,7 @@ function Createquote() {
   const gettechnician = async () => {
     let res = await axios.get(apiURL + "/getalltechnician");
     if ((res.status = 200)) {
-      settechniciandata(res.data?.technician);
+      settechniciandata(res.data?.technician.filter((i)=>i.city === data.enquirydata[0].city && i.category === data.enquirydata[0].category));
     }
   };
 

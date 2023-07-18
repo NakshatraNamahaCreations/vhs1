@@ -4,6 +4,7 @@ import axios from "axios";
 import Table from "react-bootstrap/Table";
 import { useLocation, useParams, Link } from "react-router-dom";
 import DSRnav from "./DSRnav";
+import moment from "moment";
 
 function Dsrcallist() {
   const [treatmentData, settreatmentData] = useState([]);
@@ -17,33 +18,33 @@ function Dsrcallist() {
   const [searchJobType, setSearchJobType] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
 
-  const [filterdsrdata, setfilterdsrdata] = useState([]);
-
   const apiURL = process.env.REACT_APP_API_URL;
   const { date, category } = useParams();
   console.log("selectedData", date, category);
 
   const today = new Date();
   useEffect(() => {
-    // console.log("date", date);
-    // console.log("category", category);
     getservicedata();
   }, [category]);
 
   useEffect(() => {
-    // console.log("treatmentData", treatmentData);
+
   }, [treatmentData]);
 
   const getservicedata = async () => {
-    let res = await axios.get(apiURL + "/getaggredsrdata");
+    let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
-      const filteredData = res.data?.addcall.filter(
-        (event) => event.appoDate === date && event.category === category
-      );
-      console.log(
-        "filteredData",
-        res.data?.addcall.filter((event) => event.appoDate)
-      );
+      const data = res.data?.runningdata;
+ 
+      const filteredData = data.filter((item) => {
+        const formattedDates = item.dividedDates.map((date) =>
+          moment(date).format("YYYY-MM-DD")
+        );
+        return formattedDates.includes(date) && item.category === category;
+      });
+     
+
+      console.log("mydata",filteredData)
       settreatmentData(filteredData);
       setSearchResults(filteredData);
       console.log(filteredData);
@@ -156,7 +157,7 @@ function Dsrcallist() {
               <tr className="table-secondary">
                 <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
-                <th className="table-head" scope="col"></th>
+
                 <th
                   className="table-head"
                   style={{ width: "13%" }}
@@ -169,6 +170,7 @@ function Dsrcallist() {
                     onChange={(e) => setSearchJobCatagory(e.target.value)}
                   />{" "}
                 </th>
+                
                 <th scope="col" className="table-head">
                   <input
                     className="vhs-table-input"
@@ -235,8 +237,15 @@ function Dsrcallist() {
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
                 </th>
+                <th scope="col" className="table-head">
+                  <input
+                    className="vhs-table-input"
+                    value={searchDesc}
+                    onChange={(e) => setSearchDesc(e.target.value)}
+                  />{" "}
+                </th>
 {/* 
-                <th scope="col" className="table-head"></th>
+                // <th scope="col" className="table-head"></th>
                 <th scope="col" className="table-head"></th> */}
               </tr>
               <tr className="table-secondary">
@@ -290,8 +299,8 @@ function Dsrcallist() {
                   >
                     <td>{i++}</td>
                     <td>{selectedData.category}</td>
-                    <td>{selectedData.appoDate}</td>
-                    <td>{selectedData.appoTime}</td>
+                    <td>{selectedData.dateofService}</td>
+                    <td>{selectedData.time}</td>
                  
                     <td>{selectedData.customer[0]?.customerName}</td>
                     <td>{selectedData.customer[0]?.city}</td>
@@ -301,12 +310,12 @@ function Dsrcallist() {
                       {selectedData.customer[0]?.lnf}
                     </td>
                     <td>{selectedData.customer[0]?.mainContact}</td>
-                    <td>{selectedData.techName}</td>
+                    <td>{selectedData.dsrdata[0]?.techName}</td>
 
-                    <td>{selectedData.workerName}</td>
-                    <td>{selectedData.customerFeedback}</td>
-                    <td>{selectedData.amount}</td>
-                    {/* <td>{selectedData.time}</td> */}
+                    <td>{selectedData.dsrdata[0]?.workerName}</td>
+                    <td>{selectedData.dsrdata[0]?.customerFeedback}</td>
+                    <td>{selectedData.dsrdata[0]?.amount}</td>
+                  
                   </Link>
                 </tr>
               ))}

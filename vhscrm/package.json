@@ -46,7 +46,7 @@
     "react-icons": "^4.8.0",
     "react-pro-sidebar": "^0.7.1",
     "react-redux": "^8.0.5",
-    "react-router-dom": "^6.10.0",
+    "react-router-dom": "^6.14.1",
     "react-scripts": "5.0.1",
     "react-to-print": "^2.14.12",
     "react-to-print-advanced": "^2.1.2",
@@ -54,7 +54,8 @@
     "redux": "^4.2.1",
     "styled-components": "^5.3.9",
     "tui-calendar": "^1.15.3",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

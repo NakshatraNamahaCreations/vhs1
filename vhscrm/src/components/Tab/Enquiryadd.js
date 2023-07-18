@@ -3,9 +3,11 @@ import Header from "../layout/Header";
 import Enquirynav from "../Enquirynav";
 import axios from "axios";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const defaultstate = 1;
-function Enquiryadd() {
+function Enquiryadd() { 
+   const navigate = useNavigate();
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [citydata, setcitydata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
@@ -109,7 +111,7 @@ function Enquiryadd() {
             console.log("success");
 
             alert(" Added");
-            window.location.assign("/enquirynew");
+            navigate(`/enquirydetail/${latestEnquiryId ? latestEnquiryId + 1 : 1}`);
           }
         });
       } catch (error) {
@@ -254,9 +256,12 @@ function Enquiryadd() {
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option>--select--</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
+                        {/* {citydata.map((item) => (
+                          <option value={item.city}>{item.city}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>
@@ -273,8 +278,13 @@ function Enquiryadd() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>--select--</option>
-                        {categorydata.map((item) => (
+                        {/* {categorydata.map((item) => (
                           <option value={item.category}>{item.category}</option>
+                        ))} */}
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>

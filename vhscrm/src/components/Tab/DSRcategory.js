@@ -8,44 +8,106 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 function DSRcategory() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [servicedata, setservicedata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
   const [categorydata, setcategorydata] = useState([]);
-  const [category, setcategory] = useState([]);
+  const [dCategory, setcategory] = useState([]);
   const localizer = momentLocalizer(moment);
+  const [view, setView] = React.useState('month'); // The current view of the calendar
+
   const navigate = useNavigate();
- 
+
   const [dsrdata, setdsrdata] = useState([]);
   const [dsrnewdata, setdsrnewdata] = useState([]);
 
+  const [totalCount, setTotalCount] = useState(0);
+  const [filteredData, setFilteredData] = useState([]);
+
+
+
+  useEffect(() => {
+    const currentMonth = moment().month() + 1; // Get the current month (1-12)
+
+    const initialFilteredData = dsrdata.filter((item) => {
+      return item.dividedDates.some((date) => {
+        const month = moment(date).month() + 1;
+        return month === currentMonth;
+      });
+    });
+
+    let count = 0;
+    initialFilteredData.forEach((item) => {
+      count += item.dividedDates.length;
+    });
+
+    setTotalCount(count);
+    setFilteredData(initialFilteredData);
+  }, [dsrdata]); // Trigger the effect whenever the data changes
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+  };
+
+  const handleRangeChange = (range) => {
+    const targetMonth = range.start.getMonth() + 1; // Get the target month (1-12)
+
+    const newFilteredData = dsrdata.filter((item) => {
+      return item.dividedDates.some((date) => {
+        const month = moment(date).month() + 1;
+        return month === targetMonth;
+      });
+    });
+
+    let count = 0;
+    newFilteredData.forEach((item) => {
+      count += item.dividedDates.length;
+    });
+
+    setTotalCount(count);
+    setFilteredData(newFilteredData);
+    // Perform further operations with the filtered data and the total count
+  };
+
+
+
+
+  const convertedObject = dsrnewdata.reduce((result, item) => {
+    // Assuming each object in the array has a unique name property
+    const { dividedDates } = item;
+    result[dividedDates] = item;
+    return result;
+  }, {});
+  console.log("converted",convertedObject);
+
+  const newdata = new Date(convertedObject).toLocaleDateString();
+  console.log(newdata);
 
   useEffect(() => {
     getcategory();
     getAlldsr();
   }, []);
 
-
   const getAlldsr = async () => {
-    let res = await axios.get(apiURL + "/getalldsrlist");
+    let res = await axios.get(apiURL + "/getservicedetails");
     if (res.status === 200) {
-      setdsrdata(res.data.addcall);
-   
+      setdsrdata(res.data.servicedetails);
     }
   };
 
   useEffect(() => {
     postAllJobs();
-  }, [category]);
+  }, [dCategory]);
 
   const postAllJobs = async () => {
     try {
-      const res = await axios.post(apiURL + "/postdsrcategory", {
-        category: category,
+      const res = await axios.post(apiURL + "/postservicecat", {
+        category: dCategory,
       });
 
       if (res.status === 200) {
         console.log("servicedata", res);
-        setdsrnewdata(res.data?.addcall);
+        setdsrnewdata(res.data?.servicedetails);
       }
     } catch (error) {
       console.error(error);
@@ -61,11 +123,24 @@ function DSRcategory() {
     }
   };
 
- 
+  // const eventCounts = dsrnewdata.reduce((counts, item) => {
+  //   const newdate = item.dividedDates;
+  //   const date=moment(newdate).format("YYYY-MM-DD");
+  //   console.log("kulli",date);
+  //   counts[date] = (counts[date] || 0) + 1;
+  //   return counts;
+  // }, {});
 
   const eventCounts = dsrnewdata.reduce((counts, item) => {
-    const date = item.appoDate;
-    counts[date] = (counts[date] || 0) + 1;
+    const newdates = item.dividedDates;
+
+    newdates.forEach((newdate) => {
+      const formattedDate = moment(newdate).format("YYYY-MM-DD");
+      console.log("kulli", formattedDate);
+
+      counts[formattedDate] = (counts[formattedDate] || 0) + 1;
+    });
+
     return counts;
   }, {});
 
@@ -78,30 +153,16 @@ function DSRcategory() {
 
   const handleSelectEvent = (event) => {
     const selectedDate = moment(event.start).format("YYYY-MM-DD");
-    const selectedData = dsrdata.filter(
-      (item) => item.appoDate === selectedDate
-    );
+    const selectedData = dsrdata.filter((item) => item.dividedDates);
     console.log("selectedDatainDSRCatagory", selectedData); // Add this line to check the value
-    navigate(`/dsrcallist/${selectedDate}/${category}`, {
+    navigate(`/dsrcallist/${selectedDate}/${dCategory}`, {
       state: { data: selectedData },
     });
   };
 
-  function calculateTotalCount(array) {
-    let totalCount = 0;
 
-    for (let i = 0; i < array.length; i++) {
-      if (array[i].hasOwnProperty("appoDate")) {
-        totalCount++;
-      }
-    }
 
-    return totalCount;
-  }
-  const totalCount = calculateTotalCount(dsrdata);
 
-  console.log("totalCount===", totalCount);
-console.log("category",category);
   return (
     <div className="web">
       <Header />
@@ -121,9 +182,14 @@ console.log("category",category);
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>-select-</option>
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
+                        {/* {categorydata.map((item) => (
+                          <option value={item.category}>{item.category}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>
@@ -135,10 +201,12 @@ console.log("category",category);
             <Calendar
               localizer={localizer}
               events={myEventsList}
+              onView={handleViewChange}
               startAccessor="start"
               endAccessor="end"
               selectable
               onSelectEvent={handleSelectEvent}
+              onRangeChange={handleRangeChange}
               style={{ height: 500 }}
             />
             <br />

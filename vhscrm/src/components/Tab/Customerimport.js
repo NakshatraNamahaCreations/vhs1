@@ -5,22 +5,42 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { CSVLink, CSVDownload } from "react-csv";
 import { Button } from "react-bootstrap";
+import * as XLSX from "xlsx";
 
 function Customerimport() {
   const [customerdata, setcustomerdata] = useState([]);
+  const [excel, setExcel] = useState();
+  const [importXLSheet, setImportXLSheet] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
   useEffect(() => {
     getcustomer();
   }, []);
 
   const getcustomer = async () => {
-    let res = await axios.get(apiURL+"/getcustomer");
-    if ((res.status = 200)) {
+    let res = await axios.get(apiURL + "/getcustomer");
+    if (res.status === 200) {
       setcustomerdata(res.data?.customers);
       console.log(res.data.customers);
     }
   };
-  
+
+  const deleteUser = async (id) => {
+    const confirm = window.confirm(
+      `Are you sure you want to delete this user?`
+    );
+    if (confirm) {
+      try {
+        const responce = await axios.post(apiURL + "/deletetercustomer/" + id);
+        console.log(responce);
+        alert("Deleted successfully");
+        window.location.reload();
+      } catch (error) {
+        console.log(error.response.data);
+        alert("Something went wrong");
+      }
+    }
+  };
+
   const columns = [
     {
       name: "Sl  No",
@@ -46,9 +66,11 @@ function Customerimport() {
       name: "Address",
       cell: (row) => (
         <div>
-          <p>{row.rbhf}{row.cnap}{row.lnf}</p>
+          <p>
+            {row.rbhf} {row.cnap} {row.lnf}
+          </p>
         </div>
-      )
+      ),
     },
     {
       name: "City",
@@ -62,7 +84,97 @@ function Customerimport() {
       name: "Customer type",
       selector: (row) => row.customerType,
     },
+    {
+      name: "Action",
+      selector: (row) => (
+        <div>
+          <button
+            style={{
+              border: 0,
+              backgroundColor: "#a9042e",
+              color: "white",
+              borderRadius: "5px",
+              padding: "8px 15px",
+            }}
+            onClick={() => deleteUser(row._id)}
+          >
+            Delete
+          </button>
+        </div>
+      ),
+    },
   ];
+
+  useEffect(() => {
+    if (excel && importXLSheet.length === 0) {
+      readFile();
+    }
+  }, [excel, importXLSheet]);
+
+  function readFile() {
+    var name = excel.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      // evt = on_file_select event
+      /* Parse data */
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+      /* Update state */
+      console.log("Data>>>" + data); // shows that excel data is read
+      console.log(convertToJson(data)); // shows data in json format
+      setImportXLSheet(JSON.parse(convertToJson(data)));
+    };
+    reader.readAsBinaryString(excel);
+  }
+
+  function convertToJson(csv) {
+    var lines = csv.split("\n");
+
+    var result = [];
+
+    var headers = lines[0].split(",");
+
+    for (var i = 1; i < lines.length; i++) {
+      var obj = {};
+      var currentline = lines[i].split(",");
+
+      for (var j = 0; j < headers.length; j++) {
+        obj[headers[j]] = currentline[j];
+      }
+
+      result.push(obj);
+    }
+
+    //return result; //JavaScript object
+    return JSON.stringify(result); //JSON
+  }
+
+  const handleImport = async () => {
+    if (importXLSheet.length > 0) {
+      try {
+        const res = await axios.post(
+          apiURL + "/addcustomersviaexcelesheet",
+          importXLSheet
+        );
+        if (res.status === 200) {
+          alert("File uploaded successfully");
+          window.location.reload();
+          console.log("Data stored in the database successfully");
+          setcustomerdata((prevData) => [...prevData, ...importXLSheet]);
+          setExcel(null);
+          setImportXLSheet([]);
+        }
+      } catch (error) {
+        console.error(`Error while uploading file ${error}`);
+      }
+    }
+  };
+
   return (
     <div className="web">
       <Header />
@@ -72,8 +184,39 @@ function Customerimport() {
           <h6>All Customer Data</h6>
         </div>
         <div className="mt-2">
-        <CSVLink data={customerdata}  filename={"customer.csv"}> <Button className="btn btn-secondary">Export</Button></CSVLink>
-
+          <CSVLink data={customerdata} filename={"customer.csv"}>
+            {" "}
+            <Button
+              className="btn btn-danger"
+              style={{ backgroundColor: "#a9042e", border: 0 }}
+            >
+              Export
+            </Button>
+          </CSVLink>
+          <input
+            accept=".xlsx,.xls,.csv"
+            style={{ display: "none" }}
+            id="icon-button-file"
+            type="file"
+            onChange={(e) => setExcel(e.target.files[0])}
+          />{" "}
+          <label
+            className="btn btn-outline-danger "
+            style={{ borderColor: "#a9042e" }}
+            htmlFor="icon-button-file"
+          >
+            {" "}
+            Import Excel
+          </label>{" "}
+          {excel && (
+            <Button
+              className="btn btn-danger"
+              style={{ backgroundColor: "#a9042e", border: 0 }}
+              onClick={handleImport}
+            >
+              Upload
+            </Button>
+          )}
         </div>
         <div className="mt-1 border">
           <DataTable

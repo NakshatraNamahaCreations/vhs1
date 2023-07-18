@@ -10,6 +10,9 @@ const serviceSchema = new mongoose.Schema({
   category: {
     type: String,
   },
+  dCategory:{
+    type: String,
+  },
   contractType: {
     type: String,
   },
@@ -20,7 +23,7 @@ const serviceSchema = new mongoose.Schema({
     type: String,
   },
   dateofService: {
-    type: String,
+    type: Array,
     default: "00-00-0000",
   },
   desc: {
@@ -53,6 +56,12 @@ const serviceSchema = new mongoose.Schema({
   time: {
     type: String,
   },
+  closeProject:{
+    type:String
+  },
+  closeDate:{
+    type:String
+  }
 });
 
 const servicedetailsmodel = mongoose.model("servicedetails", serviceSchema);

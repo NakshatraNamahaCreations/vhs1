@@ -52,7 +52,7 @@ import Vendordetails from "./components/Tab/Vendordetails";
 import Communitypayments from "./components/Tab/Communitypayment";
 import Communityedit from "./components/Tab/Communityedit";
 import Communitypassword from "./components/Tab/Communitypassword";
-import Communityrights from "./components/Tab/Communityrights";
+// import Communityrights from "./components/Tab/Communityrights";
 import Loginindex from "./components/Loginindex";
 import Quotationterm from "./components/Tab/Quotationterm";
 import Services from "./components/Tab/Services";
@@ -139,8 +139,11 @@ import Payment from "./components/Payment";
 import Work from "./components/Work";
 // import Services from "./components/Services";
 import Customersernav from "./components/Customersernav";
-import Cservices from "./components/Cservices";
+// import Cservices from "./components/Cservices";
 import Dsrquote from "./components/Dsrquote";
+import Quotedatatable from "./components/Quotedatatable";
+import Communityrights from "./components/Communityrights";
+
 function App() {
   return (
     <BrowserRouter>
@@ -246,6 +249,7 @@ function App() {
           <Route path="/econfirm" element={<Econfirmed />} />
           <Route path="/enotintrested" element={<Enotintrested />} />
           <Route path="/esend" element={<Esend />} />
+          <Route path="/communityrights" element={<Communityrights />} />
           <Route path="/etemplate" element={<Etemplate />} />
           <Route path="/region" element={<Region />} />
           <Route path="/newqt" element={<Newqt />} />
@@ -254,7 +258,7 @@ function App() {
           <Route path="/addbank" element={<Addbank />} />
           <Route path="/editenquiry/:enquiryid" element={<Enquiryedit />} />
           <Route path="/convertcustomer/:id" element={<Convertcustomer />} />
-          <Route path="/createquote" element={<Createquote />} />
+          <Route path="/createquote/:enquiryid" element={<Createquote />} />
           <Route path="/quotelist" element={<Quoteadd />} />
           <Route path="/stoday" element={<Stoday />} />
           <Route path="/surveydetails" element={<Surveydetails />} />
@@ -262,16 +266,22 @@ function App() {
           <Route path="/section2" element={<Termsgroup2 />} />
           <Route path="/context" element={<Contextdata />} />
           <Route path="/dsrcallist/:date/:category" element={<Dsrcallist />} />
+          <Route path="/quotedatatable/:date/:category" element={<Quotedatatable />} />
+
           <Route path="/addcall/:id" element={<Addcall />} />
           <Route path="/qheader" element={<Qheader />} />
           <Route path="/qfooter" element={<Qfooter />} />
           <Route path="/dsrdetails" element={<Dsrdetails />} />
           <Route path="/customersearchdetails/:id" element={<Customersearchdetails />} />
-          <Route path="/painting" element={<Painting />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/payment" element={<Payment />} />
+          <Route path="/painting/:cardNo" element={<Painting />} />
+          {/* <Route path="/painting" element={<Painting />} /> */}
+
+          <Route path="/work/:cardNo" element={<Work />} />
+          {/* <Route path="/payment" element={<Payment />} /> */}
+          <Route path="/payment/:cardNo" element={<Payment />} />
+
           <Route path="/customerservnav" element={<Customersernav />} />
-          <Route path="/cservices" element={<Cservices />} />
+          {/* <Route path="/cservices" element={<Cservices />} /> */}
 
 
           <Route

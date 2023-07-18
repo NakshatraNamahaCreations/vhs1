@@ -1,9 +1,14 @@
 const mongoose = require("mongoose");
 
 const customerSchema = new mongoose.Schema({
+
   cardNo: {
     type: Number,
     default: 0, // or set it as required: true
+  },
+  EnquiryId: {
+    type: Number,
+ 
   },
   customerName: {
     type: String,

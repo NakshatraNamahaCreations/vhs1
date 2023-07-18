@@ -58,8 +58,14 @@ function Quotefollowup() {
   }));
 
   const handleSelectEvent = (event) => {
-    const selectedDate = moment(event.start).format("YYYY-MM-DD");
-    navigate(`/enquirydatatable/${selectedDate}`);
+    const selectedDate = moment(event.start).format("DD-MM-YYYY");
+    const selectedData = quoteflwdata.filter(
+      (item) => item.date === selectedDate
+    );
+    console.log("selectedDatainsurveyCatagory", selectedData);
+    navigate(`/quotedatatable/${selectedDate}/${category}`, {
+      state: { data: selectedData },
+    });
   };
 
 

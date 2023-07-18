@@ -9,36 +9,50 @@ function Dsrdetails() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const location = useLocation();
   const { data } = location.state || {};
-  console.log(data);
+
   const [servicedata, setservicedata] = useState([]);
   const [techniciandata, settechniciandata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
-  const [bookingDate, setbookingDate] = useState(
-   data.bookingDate
-  );
+  const [bookingDate, setbookingDate] = useState(data.bookingDate);
   const [jobCategory, setjobCategory] = useState(data.jobCategory);
-  const [priorityLevel, setpriorityLevel] = useState(data.priorityLevel);
-  const [appoDate, setappoDate] = useState(data.appoDate);
-  const [appoTime, setappoTime] = useState(data.appoTime);
-  const [customerFeedback, setcustomerFeedback] = useState(data.customerFeedback);
+  const [priorityLevel, setpriorityLevel] = useState(
+    data.dsrdata[0]?.priorityLevel
+  );
+  const [appoDate, setappoDate] = useState(data.dsrdata[0]?.appoDate);
+  const [appoTime, setappoTime] = useState(data.dsrdata[0]?.appoTime);
+  const [customerFeedback, setcustomerFeedback] = useState(
+    data.dsrdata[0]?.customerFeedback
+  );
   const [jobType, setjobType] = useState(data.jobType);
-  const [techComment, settechComment] = useState(data.techComment);
-  const [techName, settechName] = useState(data.techName);
-  const [complaintRef, setcomplaintRefo] = useState(0);
-  const [Showinapp, setShowinapp] = useState(data.showinApp || false);
-  const [jobComplete, setjobComplete] = useState(data.jobComplete || false);
-  const [sendSms, setsendSms] = useState(data.sendSms);
-  const [workerAmount, setworkerAmount] = useState("");
-  const [workerName, setworkerName] = useState("");
-  const [daytoComplete, setdaytoComplete] = useState("");
+  const [techComment, settechComment] = useState(data.dsrdata[0]?.techComment);
+  const [techName, settechName] = useState(data.dsrdata[0]?.techName);
+  const [complaintRef, setcomplaintRefo] = useState([]);
+  const [Showinapp, setShowinapp] = useState(
+    data.dsrdata[0]?.showinApp || false
+  );
+  const [jobComplete, setjobComplete] = useState(
+    data.dsrdata[0]?.jobComplete || false
+  );
+  const [sendSms, setsendSms] = useState(data.dsrdata[0]?.sendSms);
+  const [workerAmount, setworkerAmount] = useState(
+    data.dsrdata[0]?.workerAmount
+  );
+  const [workerName, setworkerName] = useState(data.dsrdata[0]?.workerName);
+  const [daytoComplete, setdaytoComplete] = useState(
+    data.dsrdata[0]?.daytoComplete
+  );
 
   const [dsrdata, setdsrdata] = useState([]);
-console.log("new",data)
+const [LatestCardNo, setLatestCardNo] = useState(0);
+
+
+  console.log("new", data);
 
   useEffect(() => {
     getservices();
     gettechnician();
-    getAlldsr();
+    getaddcall();
+    getAlldata();
   }, []);
 
   const getservices = async () => {
@@ -61,15 +75,64 @@ console.log("new",data)
     setjobComplete(event.target.value);
   };
 
-  const save = async (e) => {
+  const newdata = async (e) => {
     e.preventDefault();
 
-    if (!jobCategory || !jobType) {
+    if (!workerName || !Showinapp || !daytoComplete) {
       alert("Fill all feilds");
     } else {
       try {
         const config = {
-          url: `/updatedsrdata/${data._id}`,
+          url: "/adddsrcall",
+          method: "post",
+          baseURL: apiURL,
+          // data: formdata,
+          headers: { "content-type": "application/json" },
+          data: {
+            cardNo: data.cardNo,
+            category: data.category,
+            bookingDate: moment().format("DD-MM-YYYY"),
+            priorityLevel: priorityLevel,
+            appoDate: appoDate,
+            appoTime: appoTime,
+            customerFeedback: customerFeedback,
+            techComment: techComment,
+            workerName: workerName,
+            workerAmount: workerAmount,
+            daytoComplete: daytoComplete,
+            backofficerno: admin.contactno,
+            techName: techName,
+            showinApp: Showinapp,
+            sendSms: sendSms,
+            jobComplete: jobComplete,
+            amount: data.serviceCharge,
+          },
+        };
+        await axios(config).then(function (response) {
+          if (response.status === 200) {
+            console.log("success");
+            alert(" Added");
+
+            window.location.assign("/dsrcategory");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        alert(" Not Added");
+      }
+    }
+  };
+
+
+  const save = async (e) => {
+    e.preventDefault();
+
+    if (!workerName) {
+      alert("Fill all feilds");
+    } else {
+      try {
+        const config = {
+          url: `/updatedsrdata/${data.dsrdata[0]?._id}`,
           method: "post",
           baseURL: apiURL,
           // data: formdata,
@@ -89,6 +152,9 @@ console.log("new",data)
             showinApp: Showinapp,
             sendSms: sendSms,
             jobComplete: jobComplete,
+            workerAmount: workerAmount,
+            workerName: workerName,
+            daytoComplete: daytoComplete,
           },
         };
         await axios(config).then(function (response) {
@@ -106,10 +172,17 @@ console.log("new",data)
     }
   };
 
-  console.log(data);
-  console.log("dsr", dsrdata);
-  const getAlldsr = async () => {
-    let res = await axios.get(apiURL + "/getalldsrlist");
+  const getaddcall = async () => {
+    let res = await axios.get(apiURL+"/getalldsrlist");
+    if (res.status === 200) {
+      console.log("allCustomer----", res);
+    
+      setLatestCardNo(res.data?.addcall[0]?.complaintRef);
+    }
+  };
+  console.log("latestCardNo==", LatestCardNo + 1);
+  const getAlldata = async () => {
+    let res = await axios.get(apiURL + "/getaggredsrdata");
     if (res.status === 200) {
       setdsrdata(res.data.addcall);
       setcomplaintRefo(
@@ -117,6 +190,7 @@ console.log("new",data)
       );
     }
   };
+  console.log("data", complaintRef);
   let i = 1;
   return (
     <div className="web">
@@ -137,12 +211,12 @@ console.log("new",data)
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={data.bookingDate}
+                      defaultValue={(data.dsrdata[0]?.bookingDate)?(data.dsrdata[0]?.bookingDate):moment().format("DD-MM-YY")}
                       onChange={(e) => setbookingDate(e.target.value)}
                     />
                   </div>
                 </div>
-               
+
                 <div className="col-md-4">
                   <div className="vhs-input-label">Complaint Ref. </div>
                   <div className="group pt-1">
@@ -150,7 +224,8 @@ console.log("new",data)
                       type="text"
                       className="col-md-12 vhs-input-value"
                       placeholder="253773637"
-                      value={data.complaintRef}
+                      // defaultValue={}
+                      value={(data.dsrdata[0]?.complaintRef)?data.dsrdata[0]?.complaintRef +1:LatestCardNo + 1}
                     />
                   </div>
                 </div>
@@ -160,9 +235,12 @@ console.log("new",data)
                 <div className="col-md-4">
                   <div className="vhs-input-label">Priority Level</div>
                   <div className="group pt-1">
-                    <select className="col-md-12 vhs-input-value" onChange={(e) => setpriorityLevel(e.target.value)}>
-                      {data.priorityLevel ? (
-                        <option>{data.priorityLevel}</option>
+                    <select
+                      className="col-md-12 vhs-input-value"
+                      onChange={(e) => setpriorityLevel(e.target.value)}
+                    >
+                      {data.dsrdata[0]?.priorityLevel ? (
+                        <option>{data.dsrdata[0]?.priorityLevel}</option>
                       ) : (
                         <option>--select--</option>
                       )}
@@ -178,7 +256,7 @@ console.log("new",data)
                     <input
                       type="date"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={data.appoDate}
+                      defaultValue={(data.dsrdata[0]?.appoDate)?(data.dsrdata[0]?.appoDate):moment().format('LT')}
                       onChange={(e) => setappoDate(e.target.value)}
                     />
                   </div>
@@ -189,7 +267,7 @@ console.log("new",data)
                     <input
                       type="time"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={data.appoTime}
+                      defaultValue={(data.dsrdata[0]?.appoTime)?data.dsrdata[0]?.appoTime:moment().format("LT")}
                       onChange={(e) => setappoTime(e.target.value)}
                     />
                     <p>Time Given</p>
@@ -316,21 +394,21 @@ console.log("new",data)
                     </tr>
                   </thead>
                   <tbody>
-                    {data.servicedetails.map((item) => (
-                      <tr>
-                        <td>{i++}</td>
-                        <td>{item.category}</td>
-                        <td>{item.contractType}</td>
-                        <td>{item.service}</td>
-                        <td>{item.serviceFrequency}</td>
-                        <td>
-                          {item.startDate}/{item.expiryDate}
-                        </td>
-                        <td>{item.dateofService}</td>
-                        <td>{item.desc}</td>
-                        <td>{item.serviceCharge}</td>
-                      </tr>
-                    ))}
+                    {/* {data.map((item) => ( */}
+                    <tr>
+                      <td>{i++}</td>
+                      <td>{data?.category}</td>
+                      <td>{data?.contractType}</td>
+                      <td>{data?.service}</td>
+                      <td>{data?.serviceFrequency}</td>
+                      <td>
+                        {data?.startDate}/{data?.expiryDate}
+                      </td>
+                      <td>{data?.dateofService}</td>
+                      <td>{data?.desc}</td>
+                      <td>{data?.serviceCharge}</td>
+                    </tr>
+                    {/* ))} */}
                   </tbody>
                 </table>
               </div>
@@ -352,80 +430,80 @@ console.log("new",data)
                   cols={20}
                   className="col-md-12 vhs-input-label"
                   onChange={(e) => setcustomerFeedback(e.target.value)}
-                  defaultValue={data.customerFeedback}
+                  defaultValue={data.dsrdata[0]?.customerFeedback}
                 />
               </div>
             </div>
 
             <div className="col-6 d-flex">
-                <div className="col-4">Technician Comment </div>
-                <div className="col-1">:</div>
-                <div className="group pt-1 col-7">
-                  <textarea
-                    name="postContent"
-                    rows={4}
-                    cols={40}
-                    className="col-md-12 vhs-input-label"
-                    defaultValue={data.techComment}
-                    onChange={(e) => settechComment(e.target.value)}
-                  />
-                </div>
+              <div className="col-4">Technician Comment </div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+                <textarea
+                  name="postContent"
+                  rows={4}
+                  cols={40}
+                  className="col-md-12 vhs-input-label"
+                  defaultValue={data.dsrdata[0]?.techComment}
+                  onChange={(e) => settechComment(e.target.value)}
+                />
               </div>
+            </div>
           </div>
         </div>
         <div className="row pt-3">
-            <div className="row">
-              <div className="col-6 d-flex">
-                <div className="col-4">
-                  Worker Names <span className="text-danger"> *</span>
-                </div>
-                <div className="col-1">:</div>
-                <div className="group pt-1 col-7">
-                  <textarea
-                    name="postContent"
-                    rows={4}
-                    cols={40}
-                    className="col-md-12 vhs-input-label"
-                    defaultValue={data.workerName}
-                    onChange={(e) => setworkerName(e.target.value)}
-                  />
-                </div>
+          <div className="row">
+            <div className="col-6 d-flex">
+              <div className="col-4">
+                Worker Names <span className="text-danger"> *</span>
               </div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+                <textarea
+                  name="postContent"
+                  rows={4}
+                  cols={40}
+                  className="col-md-12 vhs-input-label"
+                  defaultValue={data.dsrdata[0]?.workerName}
+                  onChange={(e) => setworkerName(e.target.value)}
+                />
+              </div>
+            </div>
 
-              <div className="col-6 d-flex">
-                <div className="col-4">Worker Amount </div>
-                <div className="col-1">:</div>
-                <div className="group pt-1 col-7">
-                  <textarea
-                    name="postContent"
-                    rows={4}
-                    cols={40}
-                    className="col-md-12 vhs-input-label"
-                    defaultValue={data.workerAmount}
-                    onChange={(e) => setworkerAmount(e.target.value)}
-                  />
-                </div>
+            <div className="col-6 d-flex">
+              <div className="col-4">Worker Amount </div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+                <textarea
+                  name="postContent"
+                  rows={4}
+                  cols={40}
+                  className="col-md-12 vhs-input-label"
+                  defaultValue={data.dsrdata[0]?.workerAmount}
+                  onChange={(e) => setworkerAmount(e.target.value)}
+                />
               </div>
             </div>
           </div>
-          <div className="row pt-3">
-            <div className="row">
-              <div className="col-6 d-flex">
-                <div className="col-4">
-                  Day To Complete <span className="text-danger"> *</span>
-                </div>
-                <div className="col-1">:</div>
-                <div className="group pt-1 col-7">
-                  <input
-                    type="date"
-                    className="col-md-12 vhs-input-value"
-                    defaultValue={data.daytoComplete}
-                    onChange={(e) => setdaytoComplete(e.target.value)}
-                  />
-                </div>
+        </div>
+        <div className="row pt-3">
+          <div className="row">
+            <div className="col-6 d-flex">
+              <div className="col-4">
+                Day To Complete <span className="text-danger"> *</span>
+              </div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+                <input
+                  type="date"
+                  className="col-md-12 vhs-input-value"
+                  defaultValue={data.dsrdata[0]?.daytoComplete}
+                  onChange={(e) => setdaytoComplete(e.target.value)}
+                />
               </div>
             </div>
           </div>
+        </div>
 
         <div className="row pt-3">
           <div className="row">
@@ -440,7 +518,7 @@ console.log("new",data)
 
             <div className="col-6 d-flex">
               <div className="col-4">
-               Project manager
+                Project manager
                 <span className="text-danger">*</span>
               </div>
               <div className="col-1">:</div>
@@ -449,8 +527,8 @@ console.log("new",data)
                   className="col-md-12 vhs-input-value"
                   onChange={(e) => settechName(e.target.value)}
                 >
-                  {data.techName ? (
-                    <option>{data.techName}</option>
+                  {data.dsrdata[0]?.techName ? (
+                    <option>{data.dsrdata[0]?.techName}</option>
                   ) : (
                     <option>--select--</option>
                   )}
@@ -502,8 +580,8 @@ console.log("new",data)
                   className="col-md-12 vhs-input-value"
                   onChange={(e) => setsendSms(e.target.value)}
                 >
-                  {data.sendSms ? (
-                    <option>{data.sendSms}</option>
+                  {data.dsrdata[0]?.sendSms ? (
+                    <option>{data.dsrdata[0]?.sendSms}</option>
                   ) : (
                     <option>--select--</option>
                   )}
@@ -561,24 +639,35 @@ console.log("new",data)
               />
               NO
             </label>
-           
           </div>
         </div>
       </div>
       <div className="row pt-3 justify-content-center pb-5">
         <div className="col-md-1">
-          <button className="vhs-button" onClick={save}>
+          {!(data?.dsrdata[0])? <button className="vhs-button" onClick={newdata}>
             Save
-          </button>
+          </button>: <button className="vhs-button" onClick={save}>
+            Save
+          </button>}
+         
         </div>
         <div className="col-md-1">
           <button className="vhs-button">Cancel</button>
         </div>
         <div className="col-md-1">
-          <Link to="/dsrquote" state={{data:dsrdata}}>
-          <button className="vhs-button">Quotation</button>
-
+          <Link to="/dsrquote" state={{ data: data }}>
+            <button className="vhs-button">Invoice</button>
           </Link>
+        </div>
+        <div className="col-md-1">
+       
+            <button className="vhs-button">Bill SMS</button>
+         
+        </div>
+        <div className="col-md-1">
+         
+            <button className="vhs-button">Bill Whatsapp</button>
+      
         </div>
       </div>
     </div>

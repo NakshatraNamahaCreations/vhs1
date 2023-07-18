@@ -13,8 +13,7 @@ import moment from "moment";
 import axios from "axios";
 
 function Enquirynewdetail() {
-  const {EnquiryId}=useParams();
-
+  const { EnquiryId } = useParams();
 
   const admin = JSON.parse(sessionStorage.getItem("admin"));
 
@@ -53,7 +52,7 @@ function Enquirynewdetail() {
     let res = await axios.get(apiURL + "/getenquiry");
     if ((res.status = 200)) {
       setfilterdata(
-        res.data?.enquiryadd.filter((item) => item.EnquiryId ==EnquiryId)
+        res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
       );
     }
   };
@@ -62,9 +61,7 @@ function Enquirynewdetail() {
     let res = await axios.get(apiURL + "/getenquiryfollowup");
     if ((res.status = 200)) {
       setflwdata(
-        res.data?.enquiryfollowup.filter(
-          (item) => item.EnquiryId == EnquiryId
-        )
+        res.data?.enquiryfollowup.filter((item) => item.EnquiryId == EnquiryId)
       );
     }
   };
@@ -165,7 +162,7 @@ function Enquirynewdetail() {
           data: {
             EnquiryId: EnquiryId,
             staffname: admin.displayname,
-            category:filterdata[0]?.category,
+            category: filterdata[0]?.category,
             folldate: moment().format("llll"),
             response: response,
             desc: desc,
@@ -235,7 +232,7 @@ function Enquirynewdetail() {
     if (Ask === true) {
       axios({
         method: "post",
-        url: apiURL + "/deleteteenquiry/" +filterdata[0]?._id,
+        url: apiURL + "/deleteteenquiry/" + filterdata[0]?._id,
       })
         .then(function (response) {
           //handle success
@@ -251,11 +248,12 @@ function Enquirynewdetail() {
       window.location.assign("/enquirynew");
     }
   };
-  const editdetails=(data)=>{
-
-    navigate(`/editenquiry/${data.EnquiryId}`)
-  }
-  
+  const editdetails = (data) => {
+    navigate(`/editenquiry/${data}`);
+  };
+  const createQuote = (data) => {
+    navigate(`/createquote/${data}`);
+  };
 
   return (
     <div className="row">
@@ -326,13 +324,9 @@ function Enquirynewdetail() {
                                     Modify
                                   </span>
                                   |<Link onClick={deleteenquiry}>Delete |</Link>
-                                  {/* <Link
-                                    to="/createquote"
-                                    state={{ data: data }}
-                                  > */}
-                                    {" "}
+                                  <span onClick={() => createQuote(EnquiryId)}>
                                     Create Quote
-                                  {/* </Link> */}
+                                  </span>
                                 </div>
                               </div>
                               <table class="table table-hover table-bordered">
@@ -528,22 +522,62 @@ function Enquirynewdetail() {
                                     </div>
                                   </div>
 
+                                  {response == "New" ? (
+                                    <>
+                                      <div className="row pt-3">
+                                        <div className="col-md-4"></div>
+                                        <div className="col-md-1">
+                                          <button
+                                            className="vhs-button mx-5"
+                                            onClick={addenquiryfollowup1}
+                                          >
+                                            Save
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  {response == "Not Intrested" ? (
+                                    <>
+                                      <div className="row pt-3">
+                                        <div className="col-md-4"></div>
+                                        <div className="col-md-1">
+                                          <button
+                                            className="vhs-button mx-5"
+                                            onClick={addenquiryfollowup1}
+                                          >
+                                            Save
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+
                                   {response == "Survey" ? (
                                     <>
-                                      <div className="col-md-4">
-                                        <div className="vhs-input-label">
-                                          Nxt Foll date
-                                          <span className="text-danger">*</span>
-                                        </div>
-                                        <div className="group pt-1">
-                                          <input
-                                            type="date"
-                                            className="col-md-12 vhs-input-value"
-                                            onChange={(e) =>
-                                              setnxtfoll(e.target.value)
-                                            }
-                                            placeholder={moment().format("L")}
-                                          />
+                                      <div className="row pt-3">
+                                        <div className="col-md-4">
+                                          <div className="vhs-input-label">
+                                            Nxt Foll date
+                                            <span className="text-danger">
+                                              *
+                                            </span>
+                                          </div>
+                                          <div className="group pt-1">
+                                            <input
+                                              type="date"
+                                              className="col-md-12 vhs-input-value"
+                                              onChange={(e) =>
+                                                setnxtfoll(e.target.value)
+                                              }
+                                              placeholder={moment().format("L")}
+                                            />
+                                          </div>
                                         </div>
                                         <div className="col-md-1">
                                           <button
@@ -632,12 +666,12 @@ function Enquirynewdetail() {
                                       </div>
                                     ) : (
                                       <div className="col-md-1">
-                                        <button
+                                        {/* <button
                                           className="vhs-button mx-5"
                                           onClick={addenquiryfollowup1}
                                         >
                                           Save
-                                        </button>
+                                        </button> */}
                                       </div>
                                     )}
                                   </div>

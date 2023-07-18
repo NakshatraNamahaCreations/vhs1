@@ -12,7 +12,7 @@ function Customersearchdetails() {
   const { id } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
   const [serviceCharge, setserviceCharge] = useState("");
-  const [dateofService, setdateofService] = useState("00-00-0000");
+  const [dateofService, setdateofService] = useState([]);
   const [desc, setdesc] = useState("");
   const [serviceFrequency, setserviceFrequency] = useState("");
   const [startDate, setstartDate] = useState("00-00-0000");
@@ -26,6 +26,8 @@ function Customersearchdetails() {
   const [servicedata, setservicedata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
   const [editenable, seteditEnable] = useState(false);
+  const [onetime, setonetime] = useState([]);
+  
 
   useEffect(() => {
     getcustomer();
@@ -61,7 +63,7 @@ function Customersearchdetails() {
     }
   };
   console.log(startDate);
-  const sDate = moment(startDate, "YYYY-MM-DD");
+  const sDate = moment(dateofService, "YYYY-MM-DD");
   const eDate = moment(expiryDate, "YYYY-MM-DD");
 
   const totalDays = Math.ceil(eDate.diff(sDate, "days"));
@@ -70,6 +72,7 @@ function Customersearchdetails() {
 
   const dividedDates = [];
   const dividedCharges = [];
+  
 
   for (let i = 0; i < serviceFrequency; i++) {
     const date = sDate.clone().add(interval * i, "days");
@@ -97,9 +100,10 @@ function Customersearchdetails() {
           headers: { "content-type": "application/json" },
           data: {
             customerData: customerdata,
-            dividedDates: dividedDates,
+            dividedDates: contractType ==="AMC"? dividedDates:dateofService,
             dividedCharges: dividedCharges,
             cardNo: id,
+            dCategory:customerdata[0].category,
             category: category,
             contractType: contractType,
             service: treatment,
@@ -176,7 +180,7 @@ function Customersearchdetails() {
   return (
     <div className="web">
       <Header />
-    <Customersernav customer={customerdata} />
+    <Customernav />
       <div></div>
       <div className="row m-auto">
         {" "}
@@ -369,12 +373,12 @@ function Customersearchdetails() {
                             </span>
                           </div>
                           <div className="col-md-4 pt-3">
-                            <div className="vhs-input-label">Start Date</div>
+                            <div className="vhs-input-label">1st Service Date</div>
                             <input
                               type="date"
                               name="startdate"
                               className="col-md-12 vhs-input-value"
-                              onChange={(e) => setstartDate(e.target.value)}
+                              onChange={(e) => setdateofService(e.target.value)}
                             />
                           </div>
                           <div className="col-md-4 pt-3">
@@ -400,7 +404,7 @@ function Customersearchdetails() {
                               onChange={(e) => setserviceCharge(e.target.value)}
                             />
                           </div>
-                          <div className="col-md-4 pt-3">
+                          {/* <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               1st Service Date{" "}
                             </div>
@@ -412,7 +416,7 @@ function Customersearchdetails() {
                                 setfirstserviceDate(e.target.value)
                               }
                             />
-                          </div>
+                          </div> */}
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">Description</div>
                             <textarea
@@ -568,7 +572,7 @@ function Customersearchdetails() {
                               type="date"
                               name="startdate"
                               className="col-md-12 vhs-input-value"
-                              onChange={(e) => setstartDate(e.target.value)}
+                              onChange={(e) => setdateofService(e.target.value)}
                               defaultValue={editenable.startDate}
                             />
                           </div>
@@ -692,7 +696,7 @@ function Customersearchdetails() {
                     <td>{item.service}</td>
                     <td>{item.serviceFrequency}</td>
                     <td>
-                      {item.startDate}/{item.expiryDate}
+                      {item.dateofService}/{item.expiryDate}
                     </td>
                     <td>{item.dateofService}</td>
                     <td>{item.desc}</td>

@@ -44,7 +44,7 @@ function Surveydatatable() {
       const fd = res.data?.enquiryfollowup.filter(
         (i) => i.response === "Survey"
       );
-      console.log(fd);
+    
 
       const filteredData = fd.filter(
         (entry) => entry.category === category && entry.nxtfoll === date
@@ -230,7 +230,7 @@ function Surveydatatable() {
 
       <div className="">
         <div className="col-md-12">
-          <Table className="m-2" striped bordered hover>
+          <table className="m-2" striped bordered hover>
             <thead>
               <tr className="tr ">
                 <th scope="col">
@@ -441,7 +441,7 @@ function Surveydatatable() {
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header>

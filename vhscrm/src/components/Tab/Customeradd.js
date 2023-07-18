@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Customeradd() {
+  const admin =JSON.parse(sessionStorage.getItem("admin"));
   const navigate=useNavigate();
   const [citydata, setcitydata] = useState([]);
   const [customertypedata, setcustomertypedata] = useState([]);
@@ -240,9 +241,14 @@ function Customeradd() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>--select--</option>
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
+                        {/* {categorydata.map((item) => (
+                          <option value={item.category}>{item.category}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>
@@ -325,9 +331,12 @@ function Customeradd() {
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option>-select all-</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
+                        {/* {citydata.map((item) => (
+                          <option value={item.city}>{item.city}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>

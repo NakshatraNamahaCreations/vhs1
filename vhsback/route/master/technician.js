@@ -16,6 +16,17 @@ router.route("/addtechnician").post(async (req, res) => {
     category,
     languagesknow,
   } = req.body;
+
+   // Check if the contact already exists
+   const contactnoExists = await technicianmodel.findOne({
+    $or: [
+      { number: number },
+      // { email: loginnameOrEmail },
+    ],
+  });
+  if (contactnoExists) {
+    return res.status(500).json({ error: "Conatct Number already exists" });
+  }
   let technician = new technicianmodel({
     servicetype,
     vhsname,

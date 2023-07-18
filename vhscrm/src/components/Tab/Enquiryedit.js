@@ -6,9 +6,7 @@ import moment from "moment";
 import { useLocation, useParams } from "react-router-dom";
 
 function Enquiryadd() {
-  // const location = useLocation();
-  // const { data[0]? } = location.state;
-  // var enid = Math.floor(1000 + Math.random() * 9000);
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
   const { enquiryid } = useParams();
 
   const [data, setdata] = useState([]);
@@ -30,6 +28,8 @@ function Enquiryadd() {
   const [reference3, setreference3] = useState(data.reference3);
   const [comment, setcomment] = useState(data.comment);
   const [intrestedfor, setinterestedfor] = useState(data.intrestedfor);
+  // const [executive, setinterestedfor] = useState(data.intrestedfor);
+
   const [time, settime] = useState(data.time);
   const apiURL = process.env.REACT_APP_API_URL;
   const [subcategorydata, setsubcategorydata] = useState([]);
@@ -60,7 +60,7 @@ function Enquiryadd() {
         data: {
           EnquiryId: EnquiryId,
           enquirydate: enquirydate,
-          executive: executive,
+          executive: admin.displayname,
           name: name,
           time: time,
           contact1: contact1,
@@ -74,6 +74,7 @@ function Enquiryadd() {
           reference3: reference3,
           comment: comment,
           intrestedfor: intrestedfor,
+        
         },
       };
       await axios(config).then(function (response) {
@@ -163,7 +164,7 @@ function Enquiryadd() {
                       <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1 vhs-non-editable">
-                      Pankaj Kumar Choudhary
+                  {admin.displayname}
                     </div>
                   </div>
                 </div>
@@ -247,8 +248,11 @@ function Enquiryadd() {
                         defaultValue={data[0]?.city}
                       >
                         <option> {data[0]?.city}</option>
-                        {citydata.map((item) => (
+                        {/* {citydata.map((item) => (
                           <option value={data[0]?.city}>{item.city}</option>
+                        ))} */}
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
                       </select>
                     </div>
@@ -266,8 +270,13 @@ function Enquiryadd() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>{data[0]?.category}</option>
-                        {categorydata.map((item) => (
+                        {/* {categorydata.map((item) => (
                           <option value={data[0]?.category}>{item.category}</option>
+                        ))} */}
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>
