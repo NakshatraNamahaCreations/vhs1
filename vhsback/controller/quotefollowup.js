@@ -70,7 +70,7 @@ class addquoteflw {
   }
 
 
-  async getenquiryagreegate(req, res) {
+  async getquoteagreegate(req, res) {
     let quote = await quotefollowupModel.aggregate([
       {
         $lookup: {
@@ -78,6 +78,14 @@ class addquoteflw {
           localField: "EnquiryId",
           foreignField: "EnquiryId",
           as: "enquirydata",
+        },
+      },
+      {
+        $lookup: {
+          from: "enquiryfollowups",
+          localField: "EnquiryId",
+          foreignField: "EnquiryId",
+          as: "enquiryfollowupdata",
         },
       },
       {

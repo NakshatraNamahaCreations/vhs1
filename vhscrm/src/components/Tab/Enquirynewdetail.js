@@ -25,11 +25,14 @@ function Enquirynewdetail() {
   const [desc, setdesc] = useState("");
   const [colorcode, setcolorcode] = useState("");
   const [nxtfoll, setnxtfoll] = useState("00/00/0000");
-  const [value, setvalue] = useState("00.00");
+  const [value, setvalue] = useState("");
   const [filterdata, setfilterdata] = useState([]);
   const [responsedata, setresponsedata] = useState([]);
   const [flwdata, setflwdata] = useState([]);
+
   const apiURL = process.env.REACT_APP_API_URL;
+
+  console.log("color code", colorcode);
 
   useEffect(() => {
     getresponse();
@@ -110,7 +113,7 @@ function Enquirynewdetail() {
   const addcalllater = async (e) => {
     e.preventDefault();
 
-    if (!desc || !response || !nxtfoll) {
+    if (!desc || !response || !nxtfoll || !colorcode) {
       alert("Fill all feilds");
     } else {
       try {
@@ -202,12 +205,11 @@ function Enquirynewdetail() {
           data: {
             EnquiryId: EnquiryId,
             category: filterdata[0]?.category,
-            staffname: admin.displayName,
+            staffname: admin.displayname,
             folldate: moment().format("llll"),
             response: response,
             desc: desc,
             value: value,
-            colorcode: colorcode,
             nxtfoll: nxtfoll,
           },
         };
@@ -254,6 +256,18 @@ function Enquirynewdetail() {
   const createQuote = (data) => {
     navigate(`/createquote/${data}`);
   };
+
+  function getColor(colorcode) {
+    if (colorcode === "easy") {
+      return "#ffb9798f";
+    } else if (colorcode === "medium") {
+      return "#0080002e";
+    } else if (colorcode === "different") {
+      return '#ffb9798f"';
+    } else {
+      return "transparent";
+    }
+  }
 
   return (
     <div className="row">
@@ -417,46 +431,50 @@ function Enquirynewdetail() {
                             <div className="vhs-sub-heading">
                               Follow-Up Detail
                             </div>
-                            <table class="table table-hover table-bordered mt-1">
+                            <table class=" mt-1">
                               <thead className="">
-                                <tr className="table-secondary">
-                                  <th className="table-head" scope="col">
+                                <tr className="bg">
+                                  <th className="bor" scope="col">
                                     Sr
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Date
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Staff
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Response
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Description
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Value
                                   </th>
-                                  <th className="table-head" scope="col">
+                                  <th className="bor" scope="col">
                                     Next Foll.
                                   </th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {flwdata.map((item) => (
-                                  <div className="tbl">
-                                    <tr className="user-tbale-body tbl1">
-                                      <td>{i++}</td>
-                                      <td>{item.folldate}</td>
-                                      <td>{item.staffname}</td>
-                                      <td>{item.response}</td>
-                                      <td>{item.desc}</td>
-                                      <td>{item.value}</td>
-
-                                      <td>{item.nxtfoll}</td>
-                                    </tr>
-                                  </div>
+                                  <tr
+                                    key={item.id}
+                                    className="user-tbale-body tbl1"
+                                    style={{
+                                      backgroundColor: getColor(item.colorcode),
+                                      color: "black",
+                                    }}
+                                  >
+                                    <td>{i++}</td>
+                                    <td>{item.folldate}</td>
+                                    <td>{item.staffname}</td>
+                                    <td>{item.response}</td>
+                                    <td>{item.desc}</td>
+                                    <td>{item.value}</td>
+                                    <td>{item.nxtfoll}</td>
+                                  </tr>
                                 ))}
                               </tbody>
                             </table>
@@ -611,9 +629,13 @@ function Enquirynewdetail() {
                                               }
                                             >
                                               <option>--select--</option>
-                                              <option>Easy</option>
-                                              <option>Medium</option>
-                                              <option>Different</option>
+                                              <option value="easy">Easy</option>
+                                              <option value="medium">
+                                                Medium
+                                              </option>
+                                              <option value="different">
+                                                Different
+                                              </option>
                                             </select>
                                           </div>
 
@@ -653,16 +675,32 @@ function Enquirynewdetail() {
                                     <></>
                                   )}
 
-                                  <div className="row pt-3 justify-content-center">
+                                 
                                     {response === "Confirmed" ? (
-                                      <div className="col-md-1">
-                                        <button
-                                          className="vhs-button mx-5"
-                                          style={{ width: "150px" }}
-                                          onClick={postconvertcustomer}
-                                        >
-                                          Convert to Customer{" "}
-                                        </button>
+                                      <div className="col-md-12 mt-2">
+                                        <div className="vhs-input-label">
+                                          Value
+                                          <span className="text-danger">*</span>
+                                        </div>
+                                        <div className="group pt-1">
+                                          <input
+                                            type="text"
+                                            className="col-md-4 vhs-input-value"
+                                            onChange={(e) =>
+                                              setvalue(e.target.value)
+                                            }
+                                          />
+                                        </div>
+
+                                        <div className="col-md-1 mt-2">
+                                          <button
+                                            className="vhs-button mx-5"
+                                            style={{ width: "150px" }}
+                                            onClick={postconvertcustomer}
+                                          >
+                                            Convert to Customer{" "}
+                                          </button>
+                                        </div>
                                       </div>
                                     ) : (
                                       <div className="col-md-1">
@@ -674,7 +712,7 @@ function Enquirynewdetail() {
                                         </button> */}
                                       </div>
                                     )}
-                                  </div>
+                                 
                                 </form>
                               </div>
                             </div>

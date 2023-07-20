@@ -25,7 +25,8 @@ const enquiryfollowSchema = new mongoose.Schema({
   },
   value: {
     type: String,
-  },
+    default:"00.00"
+    },
   colorcode: {
     type: String,
   },

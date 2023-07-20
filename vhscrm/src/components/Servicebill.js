@@ -133,20 +133,21 @@ function Servicebill() {
                 <table class="table table-bordered border-danger">
                   <thead>
                     <tr className="hclr">
-                      <th>S.No</th>
-                      <th>Description</th>
-                      <th>Contract</th>
-                      <th>Service Date</th>
+                      <th className="text-center">S.No</th>
+                      <th className="text-center">Description</th>
+                      <th className="text-center">Contract</th>
+                      <th className="text-center">Service Date</th>
+                      <th className="text-center">Amount Paid Date</th>
 
-                      <th>Amount</th>
+                      <th className="text-center">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td scope="row">{i++}</td>
-                      <td scope="row">{data.desc}</td>
+                      <td scope="row" className="text-center">{i++}</td>
+                      <td scope="row" className="text-center">{data.desc}</td>
 
-                      <td>{data?.contractType}</td>
+                      <td className="text-center">{data?.contractType}</td>
                       {(data?.contractType ==="AMC") ? <td>
                         {data.dividedDates.map((item) => (
                           <div>
@@ -157,8 +158,16 @@ function Servicebill() {
                         ))}
                       </td>:<td>{data?.dateofService}</td>}
 
+                      {(data?.contractType ==="AMC") ?   <td>
+                        {data.dividedamtDates.map((item) => (
+                          <div>
+                            <p className="text-end">{new Date(item).toLocaleDateString()}</p>
+                          </div>
+                        ))}
+                      </td>:<td>{data?.dateofService}</td>}
+                    
                      {(data?.contractType ==="AMC") ?   <td>
-                        {data.dividedCharges.map((item) => (
+                        {data.dividedamtCharges.map((item) => (
                           <div>
                             <p className="text-end">{item}</p>
                           </div>

@@ -27,9 +27,10 @@ function Dsrdetails() {
   const [techComment, settechComment] = useState(data.dsrdata[0]?.techComment);
   const [techName, settechName] = useState(data.dsrdata[0]?.techName);
   const [complaintRef, setcomplaintRefo] = useState([]);
-  const [Showinapp, setShowinapp] = useState(
-    data.dsrdata[0]?.showinApp || false
-  );
+  // const [Showinapp, setShowinapp] = useState(
+  //   data.dsrdata[0]?.showinApp  ? data.dsrdata[0]?.showinApp : true
+  // );
+  const [Showinapp, setShowinapp] = useState(data.dsrdata[0]?.showinApp ?? true);
   const [jobComplete, setjobComplete] = useState(
     data.dsrdata[0]?.jobComplete || false
   );
@@ -104,6 +105,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
             techName: techName,
             showinApp: Showinapp,
             sendSms: sendSms,
+            jobType:jobType,
             jobComplete: jobComplete,
             amount: data.serviceCharge,
           },
@@ -256,7 +258,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
                     <input
                       type="date"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={(data.dsrdata[0]?.appoDate)?(data.dsrdata[0]?.appoDate):moment().format('LT')}
+                      defaultValue={(data.dsrdata[0]?.appoDate)?(data.dsrdata[0]?.appoDate):moment().format("DD-MM-YYYY")}
                       onChange={(e) => setappoDate(e.target.value)}
                     />
                   </div>
@@ -441,12 +443,31 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
               <div className="group pt-1 col-7">
                 <textarea
                   name="postContent"
-                  rows={4}
+                  rows={2}
                   cols={40}
                   className="col-md-12 vhs-input-label"
                   defaultValue={data.dsrdata[0]?.techComment}
                   onChange={(e) => settechComment(e.target.value)}
                 />
+              </div>
+            </div>
+            <div className="col-6 d-flex">
+              <div className="col-4">Job Type </div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+              <select
+                  className="col-md-12 vhs-input-value"
+                  onChange={(e) => setjobType(e.target.value)}
+                >
+                  {data.dsrdata[0]?.jobType ? (
+                    <option>{data.dsrdata[0]?.jobType}</option>
+                  ) : (
+                    <option>--select--</option>
+                  )}
+                  {servicedata.map((item) => (
+                    <option>{item.subcategory}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

@@ -28,7 +28,10 @@ function Quotelist() {
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("");
-  console.log(enquiryflwdata);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   // Get today's date
   const today = new Date();
   useEffect(() => {
@@ -143,8 +146,8 @@ function Quotelist() {
       if (searchDesc) {
         results = results.filter(
           (item) =>
-            item.desc &&
-            item.desc.toLowerCase().includes(searchDesc.toLowerCase())
+            item.quotefollowup[0]?.desc &&
+            item.quotefollowup[0]?.desctoLowerCase().includes(searchDesc.toLowerCase())
         );
       }
       if (searchNxtfoll) {
@@ -180,6 +183,24 @@ function Quotelist() {
   const click = (data) => {
     navigate(`/quotedetails/${data.EnquiryId}`);
   };
+
+   // Pagination logic
+   const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+   const pageOptions = Array.from(
+     { length: totalPages },
+     (_, index) => index + 1
+   );
+ 
+   // Get current items for the current page
+   const indexOfLastItem = currentPage * itemsPerPage;
+   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+   const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+ 
+
+   // Change page
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage);
+  };
   return (
     <div className="web">
       <Header />
@@ -187,7 +208,25 @@ function Quotelist() {
 
       <div className="row m-auto">
         <div className="col-md-12">
-          <Table striped bordered hover>
+
+           {/* Pagination */}
+           <div className="pagination">
+            <span>Page </span>
+            <select
+            className="m-1"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
+            </select>
+            <span> of {totalPages}</span>
+          </div>
+
+          <table >
             <thead>
               <tr className="tr ">
                 <th scope="col">
@@ -214,8 +253,8 @@ function Quotelist() {
                   {" "}
                   <input
                     className="vhs-table-input"
-                    value={searchDateTime}
-                    onChange={(e) => setSearchDateTime(e.target.value)}
+                    // value={searchDateTime}
+                    // onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
                 <th scope="col">
@@ -331,28 +370,31 @@ function Quotelist() {
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
                 </th>
+                <th scope="col">
+                 
+                </th>
               </tr>
-              <tr className="tr">
-                <th>#</th>
-                <th>Category</th>
-                <th>QId</th>
-                <th>Q Dt-Tm</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Service</th>
-                <th>QAmt</th>
-                <th>Executive</th>
-                <th>Booked by</th>
-                <th>Last F/W Dt</th>
-                <th>Next F/W Dt</th>
-                <th>Desc</th>
-                <th>Type</th>
+              <tr className="bg">
+                <th className="bor">#</th>
+                <th className="bor">Category</th>
+                <th className="bor">QId</th>
+                <th className="bor">Q Dt-Tm</th>
+                <th className="bor">Name</th>
+                <th className="bor">Contact</th>
+                <th className="bor">Address</th>
+                <th className="bor">City</th>
+                <th className="bor">Service</th>
+                <th className="bor">QAmt</th>
+                <th className="bor">Executive</th>
+                <th className="bor">Booked by</th>
+                <th className="bor">Last F/W Dt</th>
+                <th className="bor">Next F/W Dt</th>
+                <th className="bor">Desc</th>
+                <th className="bor">Type</th>
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((item) => (
+              {currentItems.map((item) => (
                 <a onClick={() => click(item)} className="tbl">
                   <tr className="trnew">
                     <td>{i++}</td>
@@ -371,17 +413,17 @@ function Quotelist() {
                     <td>{item?.enquirydata[0]?.intrestedfor}</td>
                     <td>{item?.netTotal}</td>
                     <td>{item?.enquirydata[0]?.executive}</td>
-                    <td>{item?.response}</td>
+                    <td>{item?.Bookedby}</td>
                     <td>{item?.enquirydata[0]?.enquirydate}</td>
                     <td>{item?.quotefollowup[0]?.nxtfoll}</td>
-                    <td>{item?.enquirydata[0]?.comment}</td>
-                    <td>{item?.nxtfoll}</td>
+                    <td>{item?.quotefollowup[0]?.desc}</td>
+                    <td></td>
                   </tr>
                 </a>
                 // </Link>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       </div>
     </div>

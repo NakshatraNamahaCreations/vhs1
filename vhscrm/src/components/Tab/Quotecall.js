@@ -41,7 +41,7 @@ function Quotecall() {
 
   const handleSelectEvent = (event) => {
     const selectedDate = moment(event.start).format("YYYY-MM-DD");
-    navigate(`/enquirydatatable/${selectedDate}`);
+    navigate(`/quotecalldatatable/${selectedDate}`);
   };
 
   function calculateTotalCount(array) {

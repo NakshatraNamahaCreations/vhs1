@@ -337,7 +337,7 @@ function Enquirynew(props) {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {/* {currentItems.map((item) => (
 
                 <a onClick={() => enquirydetail(item)} className="tbl">
                   <tr className="trnew" key={searchResults["id"]}>
@@ -355,7 +355,7 @@ function Enquirynew(props) {
                     <td>{item.executive}</td>
                   </tr>
                 </a>
-              ))}
+              ))} */}
             </tbody>
           </Table>
 

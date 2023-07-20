@@ -25,8 +25,13 @@ function Enquirydatatable() {
   const [searchStaff, setSearchStaff] = useState("");
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
-  const [searchNxtfoll, setSearchNxtfoll] = useState("")
+  const [searchNxtfoll, setSearchNxtfoll] = useState("");
 
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+  
   const today = new Date();
   useEffect(() => {
     getenquiry();
@@ -38,11 +43,15 @@ function Enquirydatatable() {
       setfilterdata(
         res.data?.enquiryfollowup.filter((i) => i.nxtfoll === date)
       );
-      setSearchResults(res.data?.enquiryfollowup.filter((i) => i.nxtfoll === date));
+      setSearchResults(
+        res.data?.enquiryfollowup.filter((i) => i.nxtfoll === date)
+      );
     }
   };
+
+  console.log("nn",filterdata);
   const enquirydetail = (data) => {
-    console.log(data.EnquiryId);
+ 
     navigate(`/enquirydetail/${data.EnquiryId}`);
   };
   let i = 0;
@@ -60,32 +69,38 @@ function Enquirydatatable() {
       if (searchDateTime) {
         results = results.filter(
           (item) =>
-            (item.enquirydata[0]?.enquirydate &&
-              item.enquirydate
-                .toLowerCase()
-                .includes(searchDateTime.toLowerCase())) 
+            item.enquirydata[0]?.enquirydate &&
+            item.enquirydate
+              .toLowerCase()
+              .includes(searchDateTime.toLowerCase())
         );
       }
-     
+
       if (searchName) {
         results = results.filter(
           (item) =>
             item.enquirydata[0]?.name &&
-            item.enquirydata[0]?.name.toLowerCase().includes(searchName.toLowerCase())
+            item.enquirydata[0]?.name
+              .toLowerCase()
+              .includes(searchName.toLowerCase())
         );
       }
       if (searchContact) {
         results = results.filter(
           (item) =>
             item.enquirydata[0]?.contact1 &&
-            item.enquirydata[0]?.contact1.toLowerCase().includes(searchContact.toLowerCase())
+            item.enquirydata[0]?.contact1
+              .toLowerCase()
+              .includes(searchContact.toLowerCase())
         );
       }
       if (searchAddress) {
         results = results.filter(
           (item) =>
             item.enquirydata[0]?.address &&
-            item.enquirydata[0]?.address.toLowerCase().includes(searchAddress.toLowerCase())
+            item.enquirydata[0]?.address
+              .toLowerCase()
+              .includes(searchAddress.toLowerCase())
         );
       }
       if (searchReference) {
@@ -110,7 +125,9 @@ function Enquirydatatable() {
         results = results.filter(
           (item) =>
             item.enquirydata[0]?.city &&
-            item.enquirydata[0]?.city.toLowerCase().includes(searchCity.toLowerCase())
+            item.enquirydata[0]?.city
+              .toLowerCase()
+              .includes(searchCity.toLowerCase())
         );
       }
       if (searchInterest) {
@@ -133,9 +150,7 @@ function Enquirydatatable() {
         results = results.filter(
           (item) =>
             item.staffname &&
-            item.staffname
-              .toLowerCase()
-              .includes(searchStaff.toLowerCase())
+            item.staffname.toLowerCase().includes(searchStaff.toLowerCase())
         );
       }
       if (searchResponse) {
@@ -149,18 +164,14 @@ function Enquirydatatable() {
         results = results.filter(
           (item) =>
             item.desc &&
-            item.desc
-              .toLowerCase()
-              .includes(searchDesc.toLowerCase())
+            item.desc.toLowerCase().includes(searchDesc.toLowerCase())
         );
       }
       if (searchNxtfoll) {
         results = results.filter(
           (item) =>
-            (item.nxtfoll &&
-              item.nxtfoll
-                .toLowerCase()
-                .includes(searchNxtfoll.toLowerCase())) 
+            item.nxtfoll &&
+            item.nxtfoll.toLowerCase().includes(searchNxtfoll.toLowerCase())
         );
       }
       // results = results.map((item) => ({
@@ -183,8 +194,37 @@ function Enquirydatatable() {
     searchStaff,
     searchResponse,
     searchDesc,
-    searchNxtfoll
+    searchNxtfoll,
   ]);
+
+  function getColor(colorcode) {
+    if (colorcode === "easy") {
+      return "#ffb9798f";
+    } else if (colorcode === "medium") {
+      return "#0080002e";
+    } else if (colorcode === "hard") {
+      return '#ffb9798f"';
+    } else {
+      return "transparent";
+    }
+  }
+
+   // Pagination logic
+   const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+   const pageOptions = Array.from(
+     { length: totalPages },
+     (_, index) => index + 1
+   );
+ 
+   // Get current items for the current page
+   const indexOfLastItem = currentPage * itemsPerPage;
+   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+   const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+ 
+   // Change page
+   const handlePageChange = (selectedPage) => {
+     setCurrentPage(selectedPage);
+   };
   return (
     <div>
       <Header />
@@ -192,9 +232,26 @@ function Enquirydatatable() {
 
       <div className="row m-auto">
         <div className="col-md-12">
-          <Table striped bordered hover>
+
+           {/* Pagination */}
+           <div className="pagination">
+            <span>Page </span>
+            <select
+            className="m-1"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
+            </select>
+            <span> of {totalPages}</span>
+          </div>
+          <table >
             <thead>
-            <tr className="tr ">
+              <tr className="tr ">
                 <th scope="col">
                   <input className="vhs-table-input" />{" "}
                 </th>
@@ -221,7 +278,7 @@ function Enquirydatatable() {
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-           
+
                 <th scope="col">
                   {" "}
                   <input
@@ -257,22 +314,25 @@ function Enquirydatatable() {
                   >
                     <option value="">Select </option>
                     {searchResults.map((e) => (
-                      <option value={e.enquirydata[0]?.city} key={e.enquirydata[0]?.city}>
+                      <option
+                        value={e.enquirydata[0]?.city}
+                        key={e.enquirydata[0]?.city}
+                      >
                         {e.enquirydata[0]?.city}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
-               
+
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Reference"
                     className="vhs-table-input"
                     value={searchReference2}
                     onChange={(e) => setSearchReference2(e.target.value)}
                   />{" "}
                 </th>
-                
+
                 <th scope="col">
                   {" "}
                   <input
@@ -291,45 +351,41 @@ function Enquirydatatable() {
                     onChange={(e) => setSearchFolldate(e.target.value)}
                   />{" "}
                 </th>
-                
+
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Staff"
                     className="vhs-table-input"
                     value={searchStaff}
                     onChange={(e) => setSearchStaff(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Response"
                     className="vhs-table-input"
                     value={searchResponse}
                     onChange={(e) => setSearchResponse(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Desc"
                     className="vhs-table-input"
                     value={searchDesc}
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Nxt foll"
                     className="vhs-table-input"
                     value={searchNxtfoll}
                     onChange={(e) => setSearchNxtfoll(e.target.value)}
                   />{" "}
-                 
                 </th>
               </tr>
-              <tr className="tr clr">
+              <tr className="bg">
                 <th>#</th>
                 <th>Category</th>
                 <th>Date</th>
@@ -349,10 +405,17 @@ function Enquirydatatable() {
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((item) => (
+            {currentItems.map((item, index) => (
                 <a onClick={() => enquirydetail(item)} className="tbl">
-                  <tr key={i} className="trnew">
-                    <td>{i++}</td>
+                  <tr
+                    key={item.id}
+                    className="user-tbale-body tbl1 trnew"
+                    style={{
+                      backgroundColor: getColor(item.colorcode),
+                      color: "black",
+                    }}
+                  >
+                    <td>{index + 1}</td>
                     <td>{item.category}</td>
                     <td>{item.enquirydata[0]?.enquirydate}</td>
 
@@ -372,7 +435,7 @@ function Enquirydatatable() {
                 </a>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       </div>
     </div>

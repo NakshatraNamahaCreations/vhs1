@@ -3,24 +3,6 @@ const servicedetailsmodel = require("../model/servicedetails");
 class servicedetails {
   async addservicedetails(req, res) {
     let {
-      // customerName,
-      // contactPerson,
-      // mainContact,
-      // alternateContact,
-      // email,
-      // gstinid,
-      // rbhf,
-      // cnap,
-      // lnf,
-      // mainArea,
-      // city,
-      // pinCode,
-      // customerType,
-      // size,
-      // color,
-      // instructions,
-      // approach,
-      // serviceExecute,
       customerData,
       dCategory,
       cardNo,
@@ -37,33 +19,17 @@ class servicedetails {
       date,
       time,
       dividedDates,
-      dividedCharges
+      dividedCharges,
+      dividedamtDates,
+      dividedamtCharges,
     } = req.body;
-    // let file = req.file.filename;
-    if (!category ) {
+
+    if (!category) {
       return res.status(500).json({ error: "Field must not be empty" });
     } else {
       let add = new servicedetailsmodel({
-        // customerName:customerName,
-        // contactPerson:contactPerson,
-        // mainContact:mainContact,
-        // alternateContact:alternateContact,
-        // email:email,
-        // gstinid:gstinid,
-        // rbhf:rbhf,
-        // cnap:rbhf,
-        // lnf:lnf,
-        // mainArea:mainArea,
-        // city:city,
-        // pinCode:pinCode,
-        // customerType:customerType,
-        // size:size,
-        // color:color,
-        // instructions:instructions,
-        // approach:approach,
-        // serviceExecute:serviceExecute,
         customerData,
-        cardNo:cardNo,
+        cardNo: cardNo,
         dCategory,
         category: category,
         contractType: contractType,
@@ -75,10 +41,12 @@ class servicedetails {
         startDate: startDate,
         expiryDate: expiryDate,
         firstserviceDate: firstserviceDate,
-        date:date,
-        time:time,
+        date: date,
+        time: time,
         dividedDates,
-        dividedCharges
+        dividedCharges,
+        dividedamtDates,
+        dividedamtCharges,
       });
       let save = add.save();
       if (save) {
@@ -86,7 +54,7 @@ class servicedetails {
       }
     }
   }
-  //edit 
+  //edit
   async editservicedetails(req, res) {
     let id = req.params.id;
     let {
@@ -122,7 +90,7 @@ class servicedetails {
       category,
       expiryDate,
       dividedDates,
-      dividedCharges
+      dividedCharges,
     } = req.body;
 
     let data = await servicedetailsmodel.findOneAndUpdate(
@@ -160,20 +128,19 @@ class servicedetails {
         category,
         expiryDate,
         dividedDates,
-        dividedCharges
+        dividedCharges,
       }
     );
     if (data) {
       return res.json({ success: "Updated" });
-    }
-    else{
-      return res.json({error:"error"})
+    } else {
+      return res.json({ error: "error" });
     }
   }
   async getallrunningdata(req, res) {
     try {
-      // const customerId = req.query.customerId; 
-      // const userId = req.query.userId; 
+      // const customerId = req.query.customerId;
+      // const userId = req.query.userId;
       let data = await servicedetailsmodel.aggregate([
         {
           $lookup: {
@@ -193,52 +160,52 @@ class servicedetails {
         },
         {
           $lookup: {
-            from: "enquiryadds", 
+            from: "enquiryadds",
             localField: "customer.EnquiryId",
-            foreignField: "EnquiryId", 
+            foreignField: "EnquiryId",
             as: "enquiryData",
           },
         },
         {
-        $lookup: {
-          from: "enquiryfollowups", 
-          localField: "customer.EnquiryId",
-          foreignField: "EnquiryId", 
-          as: "enquiryFollowupData",
+          $lookup: {
+            from: "enquiryfollowups",
+            localField: "customer.EnquiryId",
+            foreignField: "EnquiryId",
+            as: "enquiryFollowupData",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "payments", 
-          localField: "customer.customerData._id",
-          foreignField: "customerId", 
-          as: "paymentData",
+        {
+          $lookup: {
+            from: "payments",
+            localField: "customer.customerData._id",
+            foreignField: "customerId",
+            as: "paymentData",
+          },
         },
-      },
-      // {
-      //   $match: {
-      //     "paymentData.customer": customerId
-      //   }
-      // },
-      // {
-      //   $lookup: {
-      //     from: "payments",
-      //     let: { customerId: "$customer.customerData._id" },
-      //     pipeline: [
-      //       {
-      //         $match: {
-      //           $expr: {
-      //             $and: [
-      //               { $eq: ["$customerId", "$$customerId"] },
-      //               { $eq: ["$customerId", userId] }
-      //             ]
-      //           }
-      //         }
-      //       }
-      //     ],
-      //     as: "paymentData",
-      //   },
-      // },
+        // {
+        //   $match: {
+        //     "paymentData.customer": customerId
+        //   }
+        // },
+        // {
+        //   $lookup: {
+        //     from: "payments",
+        //     let: { customerId: "$customer.customerData._id" },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $expr: {
+        //             $and: [
+        //               { $eq: ["$customerId", "$$customerId"] },
+        //               { $eq: ["$customerId", userId] }
+        //             ]
+        //           }
+        //         }
+        //       }
+        //     ],
+        //     as: "paymentData",
+        //   },
+        // },
       ]);
       if (data) {
         return res.json({ runningdata: data });
@@ -258,12 +225,12 @@ class servicedetails {
   }
   async updateclose(req, res) {
     let id = req.params.id;
-    let { closeProject,closeDate } = req.body;
+    let { closeProject, closeDate } = req.body;
     let newData = await servicedetailsmodel.findOneAndUpdate(
       { _id: id },
       {
         closeProject,
-        closeDate
+        closeDate,
       },
       { new: true } // Option to return the updated document
     );
@@ -273,10 +240,10 @@ class servicedetails {
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
-  
+
   async postcategory(req, res) {
     let { category } = req.body;
-    let servicedetails   = await servicedetailsmodel.find({ category });
+    let servicedetails = await servicedetailsmodel.find({ category });
 
     if (servicedetails) {
       return res.json({ servicedetails: servicedetails });

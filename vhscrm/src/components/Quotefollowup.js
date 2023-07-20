@@ -58,7 +58,7 @@ function Quotefollowup() {
   }));
 
   const handleSelectEvent = (event) => {
-    const selectedDate = moment(event.start).format("DD-MM-YYYY");
+    const selectedDate = moment(event.start).format("YYYY-MM-DD");
     const selectedData = quoteflwdata.filter(
       (item) => item.date === selectedDate
     );

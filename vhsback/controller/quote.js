@@ -14,6 +14,7 @@ class addequote {
       netTotal,
       date,
       time,
+      Bookedby,
     } = req.body;
 
     if (!total) {
@@ -42,6 +43,7 @@ class addequote {
           netTotal,
           date,
           time,
+          Bookedby,
         });
 
         let save = quote.save();
@@ -69,6 +71,7 @@ class addequote {
         netTotal,
         date,
         time,
+        Bookedby,
       } = req.body;
       if (typeof GST !== "undefined") {
         GST = GST;
@@ -87,6 +90,7 @@ class addequote {
           netTotal,
           date,
           time,
+          Bookedby,
         }
       );
       if (newData) {

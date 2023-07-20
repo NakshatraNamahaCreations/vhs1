@@ -3,12 +3,12 @@ import Header from "../layout/Header";
 import Enquirynav from "../Enquirynav";
 import axios from "axios";
 import moment from "moment";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 function Enquiryadd() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const { enquiryid } = useParams();
-
+const navigate=useNavigate();
   const [data, setdata] = useState([]);
   console.log(data);
   const [citydata, setcitydata] = useState([]);
@@ -81,7 +81,8 @@ function Enquiryadd() {
         if (response.status === 200) {
           console.log("success");
           alert(" Added");
-          window.location.assign("/enquiryadd");
+          navigate(`/enquirydetail/${enquiryid}`)
+ 
         }
       });
     } catch (error) {

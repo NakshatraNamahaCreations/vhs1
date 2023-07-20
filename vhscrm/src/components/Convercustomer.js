@@ -45,9 +45,10 @@ function Convertcustomer() {
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + "/getenquiry");
     if ((res.status = 200)) {
-      setdata(res.data?.enquiryadd.filter((item) => item._id === id));
+      setdata(res.data?.enquiryadd.filter((item) => item.EnquiryId == id));
     }
   };
+
 
   const addcustomer = async (e) => {
     e.preventDefault();

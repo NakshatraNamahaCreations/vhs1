@@ -7,6 +7,8 @@ router.get("/getajob",ajobcontroller.getajob);
 router.post("/editajob/:id",ajobcontroller.editajob);
 router.post("/deleteajob/:id",ajobcontroller.postdeleteajob);
 router.post("/postajob",ajobcontroller.postajob);
+
+
 router.post("/postajobrate",ajobcontroller.postajobrate);
 
 module.exports=router;

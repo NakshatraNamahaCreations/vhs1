@@ -11,10 +11,6 @@ function Quotedetails() {
   const { EnquiryId } = useParams();
   console.log(EnquiryId);
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const data = location.state?.data || null;
-
-  // const [techniciandata, settechniciandata] = useState([]);
   const [materialdata, setmaterialdata] = useState([]);
   const [regiondata, setregiondata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
@@ -26,7 +22,6 @@ function Quotedetails() {
   const [qty, setqty] = useState("");
   const [job, setjob] = useState("");
   const [rate, setrate] = useState("");
-  // const [treatmentdata, setfilterdata] = useState([]);
   const [quoteflowdata, setquoteflowdata] = useState([]);
   const [quotenxtfoll, setquotenxtfoll] = useState("");
   const [staffname, setstaffname] = useState("");
@@ -40,21 +35,22 @@ function Quotedetails() {
   const [categorydata, setcategorydata] = useState([]);
   const [Gst, setGST] = useState(false);
 
-  const [adjustment, setadjustment] = useState("");
+  const [adjustments, setadjustment] = useState("");
   const [SUM, setSUM] = useState("");
   const [quotepagedata, setquotepagedata] = useState([]);
+  const [enquirydata, setenquirydata] = useState([]);
   const [projecttype, setprojecttype] = useState(
     quotepagedata[0]?.quotedata[0]?.projectType
   );
-  // console.log("data", quotepagedata);
-
-  const [netTotal, setnetTotal] = useState("");
+  const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby)
+  const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
 
   const nearte = parseInt(ajobdatarate.map((i) => i.rate));
 
   useEffect(() => {
     getresponse();
     getcategory();
+    getenquiryadd();
   }, []);
 
   const getcategory = async () => {
@@ -68,6 +64,14 @@ function Quotedetails() {
     let res = await axios.get(apiURL + "/getresponse");
     if ((res.status = 200)) {
       setresponse(res.data?.response);
+    }
+  };
+  const getenquiryadd = async () => {
+    let res = await axios.get(apiURL + "/getenquiry");
+    if ((res.status = 200)) {
+      setenquirydata(
+        res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
+      );
     }
   };
 
@@ -161,12 +165,6 @@ function Quotedetails() {
     }
   };
 
-  const getmaterial = async () => {
-    let res = await axios.get(apiURL + "/master/getamaterial");
-    if ((res.status = 200)) {
-      setmaterialdata(res.data?.amaterial);
-    }
-  };
   const getquote = async () => {
     let res = await axios.get(apiURL + "/getquote");
     if ((res.status = 200)) {
@@ -174,21 +172,38 @@ function Quotedetails() {
     }
   };
 
-  const getregion = async () => {
-    let res = await axios.get(apiURL + "/master/getaregion");
-    if ((res.status = 200)) {
-      console.log(res);
-      setregiondata(res.data?.aregion);
-    }
-  };
   useEffect(() => {
-    // gettechnician();
-    getmaterial();
-    getregion();
+    // getmaterial();
+    // getregion();
     getquote();
     getquotepage();
     gettreatment();
   }, []);
+
+  useEffect(() => {
+    postallajob();
+    postallmaterial();
+    postallregion();
+  }, [category]);
+
+  const postallregion = async () => {
+    let res = await axios.post(apiURL + "/master/categoryaregion", {
+      category: category,
+    });
+    if ((res.status = 200)) {
+      setregiondata(res.data?.aregion);
+    }
+  };
+
+  const postallmaterial = async () => {
+    let res = await axios.post(apiURL + "/master/categorymaterial", {
+      category: category,
+    });
+    if ((res.status = 200)) {
+      setmaterialdata;
+      setmaterialdata(res.data?.amaterial);
+    }
+  };
 
   useEffect(() => {
     if (quotedata.length > 0) {
@@ -251,17 +266,13 @@ function Quotedetails() {
 
   const total = calculateTotalPrice(treatmentdata);
   const GSTAmount = total * 0.05;
-  const totalWithGST = total + GSTAmount;
+  const totalWithGST = Gst?(total + GSTAmount):total;
 
-  console.log("total", total);
-  console.log("totalWithGST", totalWithGST);
+  const adjustedTotal = total - parseFloat(adjustments);
+  const adjustedNetTotal = Gst ? totalWithGST - parseFloat(adjustments): adjustedTotal;
+  const net=adjustedNetTotal?adjustedNetTotal:totalWithGST
 
-  const handleChange = (event) => {
-    // setGst(event.target.value);
-    // if (Gst) {
-    //   window.location.reload();
-    // }
-  };
+
   const savequote = async (e) => {
     e.preventDefault();
 
@@ -269,6 +280,9 @@ function Quotedetails() {
       alert("something went wrong");
     } else {
       try {
+        // Calculate adjusted total and net total
+     
+
         const config = {
           url: "/addquote",
           method: "post",
@@ -279,11 +293,12 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: Gst ? totalWithGST : total,
-            adjustment: adjustment,
+            qamt: adjustedNetTotal?adjustedNetTotal:total,
+            adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: Gst ? totalWithGST : total,
+            netTotal:adjustedNetTotal?adjustedNetTotal:total ,
+            Bookedby:admin.displayname,
             date: moment().format("L"),
             time: moment().format("LT"),
           },
@@ -319,13 +334,14 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: Gst ? totalWithGST : total,
-            adjustment: adjustment,
+            qamt: adjustedNetTotal?adjustedNetTotal:total,
+            adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: Gst ? totalWithGST : total,
+            netTotal: adjustedNetTotal?adjustedNetTotal:total,
             date: quotedata[0]?.date,
             time: quotedata[0]?.time,
+            Bookedby:admin.displayname,
           },
         };
         await axios(config).then(function (response) {
@@ -363,19 +379,19 @@ function Quotedetails() {
                 <div className="row">
                   <div className="col-md-4">
                     <b>Enquiry Id : </b>
-                    {quotepagedata[0]?.EnquiryId}
+                    {enquirydata[0]?.EnquiryId}
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Mobile No : </b>
-                      {quotepagedata[0]?.contact1}
+                      {enquirydata[0]?.contact1}
                     </div>
                   </div>
 
                   <div className="col-md-4">
                     <div className="">
                       <b>Customer Name : </b>
-                      {quotepagedata[0]?.name}
+                      {enquirydata[0]?.name}
                     </div>
                   </div>
                 </div>
@@ -383,19 +399,19 @@ function Quotedetails() {
                   <div className="col-md-4">
                     <div className="">
                       <b>Email : </b>
-                      {quotepagedata[0]?.email}
+                      {enquirydata[0]?.email}
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Address : </b>
-                      {quotepagedata[0]?.address}
+                      {enquirydata[0]?.address}
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Interested for : </b>
-                      {quotepagedata[0]?.intrestedfor}
+                      {enquirydata[0]?.intrestedfor}
                     </div>
                   </div>
                 </div>
@@ -428,9 +444,11 @@ function Quotedetails() {
                       name="region"
                     >
                       <option>--select--</option>
-                      {categorydata.map((item) => (
-                        <option value={item.category}>{item.category}</option>
-                      ))}
+                      {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))}
                     </select>
                   </div>{" "}
                   <div className="col-md-4">
@@ -656,6 +674,7 @@ function Quotedetails() {
                       type="text"
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setadjustment(e.target.value)}
+                      defaultValue={quotedata[0]?.adjustments}
                     />
                   </div>
                 </div>{" "}
@@ -665,7 +684,11 @@ function Quotedetails() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={Gst ? totalWithGST : total}
+                      value={adjustments ?adjustedNetTotal:totalWithGST}
+                    
+                      onChange={(e)=>setnetTotal(e.target.value)}
+                      // value={adjustedNetTotal?adjustedNetTotal:totalWithGST}
+                      // defaultValue={ netTotal? quotedata[0]?.netTotal?quotedata[0]?.netTotal: net}
                     />
                   </div>
                 </div>{" "}

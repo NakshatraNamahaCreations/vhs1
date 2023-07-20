@@ -6,7 +6,7 @@ import Surveynav from "../components/Surveynav";
 import Quotenav from "../components/Quotenav";
 import moment from "moment";
 
-function Quotedetails() {
+function Createquote() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const { EnquiryId } = useParams();
   console.log(EnquiryId);
@@ -43,6 +43,7 @@ function Quotedetails() {
   const [adjustment, setadjustment] = useState("");
   const [SUM, setSUM] = useState("");
   const [quotepagedata, setquotepagedata] = useState([]);
+  const [enquirydata, setenquirydata] = useState([]);
   const [projecttype, setprojecttype] = useState(
     quotepagedata[0]?.quotedata[0]?.projectType
   );
@@ -55,6 +56,7 @@ function Quotedetails() {
   useEffect(() => {
     getresponse();
     getcategory();
+    getenquiryadd();
   }, []);
 
   const getcategory = async () => {
@@ -68,6 +70,14 @@ function Quotedetails() {
     let res = await axios.get(apiURL + "/getresponse");
     if ((res.status = 200)) {
       setresponse(res.data?.response);
+    }
+  };
+  const getenquiryadd = async () => {
+    let res = await axios.get(apiURL + "/getenquiry");
+    if ((res.status = 200)) {
+      setenquirydata(
+        res.data?.enquiryadd.filter((item) => item.EnquiryId == EnquiryId)
+      );
     }
   };
 
@@ -363,19 +373,19 @@ function Quotedetails() {
                 <div className="row">
                   <div className="col-md-4">
                     <b>Enquiry Id : </b>
-                    {quotepagedata[0]?.EnquiryId}
+                    {enquirydata[0]?.EnquiryId}
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Mobile No : </b>
-                      {quotepagedata[0]?.contact1}
+                      {enquirydata[0]?.contact1}
                     </div>
                   </div>
 
                   <div className="col-md-4">
                     <div className="">
                       <b>Customer Name : </b>
-                      {quotepagedata[0]?.name}
+                      {enquirydata[0]?.name}
                     </div>
                   </div>
                 </div>
@@ -383,19 +393,19 @@ function Quotedetails() {
                   <div className="col-md-4">
                     <div className="">
                       <b>Email : </b>
-                      {quotepagedata[0]?.email}
+                      {enquirydata[0]?.email}
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Address : </b>
-                      {quotepagedata[0]?.address}
+                      {enquirydata[0]?.address}
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="">
                       <b>Interested for : </b>
-                      {quotepagedata[0]?.intrestedfor}
+                      {enquirydata[0]?.intrestedfor}
                     </div>
                   </div>
                 </div>
@@ -829,4 +839,4 @@ function Quotedetails() {
   );
 }
 
-export default Quotedetails;
+export default Createquote;

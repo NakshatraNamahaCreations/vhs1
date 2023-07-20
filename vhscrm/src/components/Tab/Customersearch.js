@@ -3,9 +3,11 @@ import Header from "../layout/Header";
 import Customernav from "../Customernav";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Customersearch() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
   const navigate=useNavigate();
   const [customername, setcustomername] = useState("");
   const [maincontact, setmaincontact] = useState("");
@@ -119,7 +121,17 @@ function Customersearch() {
       name: "Customer type",
       selector: (row) => row.customerType,
     },
+    {
+      name: "Action",
+      cell:(row)=>(
+        <div>
+          <Link to="/customeredit" state={{data:row}} >Edit</Link>
+        </div>
+      )
+    },
   ];
+
+  
 
   const handleRowClick = (row) => {
     navigate(`/customersearchdetails/${row.cardNo}`);
@@ -166,8 +178,8 @@ function Customersearch() {
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option value="">-select-</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
                       </select>
                     </div>

@@ -281,6 +281,9 @@ function Dsrcallist() {
                   Worker Name
                 </th>
                 <th scope="col" className="table-head">
+                  Job Type
+                </th>
+                <th scope="col" className="table-head">
                   Description
                 </th>
 
@@ -299,7 +302,7 @@ function Dsrcallist() {
                   >
                     <td>{i++}</td>
                     <td>{selectedData.category}</td>
-                    <td>{selectedData.dateofService}</td>
+                    <td>{date}</td>
                     <td>{selectedData.time}</td>
                  
                     <td>{selectedData.customer[0]?.customerName}</td>
@@ -313,6 +316,8 @@ function Dsrcallist() {
                     <td>{selectedData.dsrdata[0]?.techName}</td>
 
                     <td>{selectedData.dsrdata[0]?.workerName}</td>
+                    <td>{selectedData.dsrdata[0]?.jobType}</td>
+
                     <td>{selectedData.dsrdata[0]?.customerFeedback}</td>
                     <td>{selectedData.dsrdata[0]?.amount}</td>
                   

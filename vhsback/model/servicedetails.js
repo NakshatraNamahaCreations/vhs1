@@ -50,6 +50,12 @@ const serviceSchema = new mongoose.Schema({
   dividedCharges: {
     type: Array,
   },
+  dividedamtDates:{
+    type:Array
+  },
+  dividedamtCharges:{
+    type:Array
+  },
   date: {
     type: String,
   },

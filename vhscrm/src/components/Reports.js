@@ -1,15 +1,11 @@
 import React from "react";
 import Header from "./layout/Header";
-import moment from "moment";
 
 function Reports() {
-
-
   return (
     <div className="web">
       <Header />
 
-    
       {/* <div className="row m-auto mt-2">
         <div className="col-md-12">
           <div className="card sticky">
@@ -21,59 +17,73 @@ function Reports() {
       </div> */}
       <div className="row m-auto mt-3">
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Category</div>
+          <a href="/report/catagory">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Category</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">DSR</div>
+          <a href="/report/dsr">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">DSR</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Enquiry Report</div>
+          <a href="/report/enquiry">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Enquiry Report</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
         <div className="col-md-3 ">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Survey</div>
+          <a href="/report/survey">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Survey</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
       </div>
       <div className="row m-auto pt-3">
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Quotation</div>
+          <a href="/report/quotation">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Quotation</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Running Projects</div>
+          <a href="/report/runningprojects">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Running Projects</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <div className="col-md-3">
-          <div className="card home-col">
-            <div className="card-body">
-              <div className="home-content">Closed Projects</div>
+          <a href="/report/enquiry">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">Closed Projects</div>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
         <div className="col-md-3 "></div>
       </div>

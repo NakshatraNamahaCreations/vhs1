@@ -6,7 +6,7 @@ router.post("/addquotefollowup", quotefollowupcontroller.Addquotefollowup);
 router.get("/getquotefollowup", quotefollowupcontroller.getallquotefollowup);
 router.get("/getquotecalldata", quotefollowupcontroller.getquotedata);
 router.post("/quotecategory", quotefollowupcontroller.postquotecall);
-router.get("/getenquirydata", quotefollowupcontroller.getenquiryagreegate);
+router.get("/getenquirydata", quotefollowupcontroller.getquoteagreegate);
 
 
 

@@ -25,7 +25,8 @@ class addcall {
       outSignDateTime,
       jobComplete,
       category,
-      amount
+      amount,
+      jobType
     } = req.body;
     try {
       // Get the latest card number from the database
@@ -62,7 +63,8 @@ class addcall {
         inSignDateTime,
         outSignDateTime,
         jobComplete,
-        amount
+        amount,
+        jobType
       });
       // Save the customer data to the database
       const savedCustomer = await customer.save();
@@ -102,7 +104,8 @@ class addcall {
       inSignDateTime,
       outSignDateTime,
       jobComplete,
-      amount
+      amount,
+      jobType
     } = req.body;
     let data = await addcallModel.findOneAndUpdate(
       { _id: id },
@@ -129,7 +132,8 @@ class addcall {
         inSignDateTime,
         outSignDateTime,
         jobComplete,
-        amount
+        amount,
+        jobType
       }
     );
     if (data) {

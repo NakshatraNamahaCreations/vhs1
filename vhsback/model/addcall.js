@@ -72,6 +72,9 @@ const addCallSchema = new mongoose.Schema({
   },
   salesExecutive:{
     type:String
+  },
+  jobType:{
+    type:String
   }
 });
 

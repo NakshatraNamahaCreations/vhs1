@@ -35,6 +35,14 @@ class amaterial {
     }
   }
 
+  async postcategory(req,res){
+    let {category} =req.body;
+    let amaterial=await amaterialmodel.find({category}).sort({_id:-1});
+
+    if(amaterial){
+      return res.json({amaterial:amaterial})
+    }
+  }
 
 
   async postdeleteamaterial(req, res) {

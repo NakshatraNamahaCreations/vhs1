@@ -143,6 +143,16 @@ import Customersernav from "./components/Customersernav";
 import Dsrquote from "./components/Dsrquote";
 import Quotedatatable from "./components/Quotedatatable";
 import Communityrights from "./components/Communityrights";
+import Customeredit from "./components/Customeredit";
+import Quotecalldatatable from "./components/Quotecalldatatable";
+import Report_Catagory from "./components/Report/Report_Catagory";
+import Report_DSR from "./components/Report/Report_DSR";
+import Report_Enquiry from "./components/Report/Report_Enquiry";
+import Report_Quotation from "./components/Report/Report_Quotation";
+import Report_RunningProjects from "./components/Report/Report_RunningProjects";
+import Report_Survey from "./components/Report/Report_Survey";
+
+
 
 function App() {
   return (
@@ -258,7 +268,7 @@ function App() {
           <Route path="/addbank" element={<Addbank />} />
           <Route path="/editenquiry/:enquiryid" element={<Enquiryedit />} />
           <Route path="/convertcustomer/:id" element={<Convertcustomer />} />
-          <Route path="/createquote/:enquiryid" element={<Createquote />} />
+          <Route path="/createquote/:EnquiryId" element={<Createquote />} />
           <Route path="/quotelist" element={<Quoteadd />} />
           <Route path="/stoday" element={<Stoday />} />
           <Route path="/surveydetails" element={<Surveydetails />} />
@@ -267,6 +277,7 @@ function App() {
           <Route path="/context" element={<Contextdata />} />
           <Route path="/dsrcallist/:date/:category" element={<Dsrcallist />} />
           <Route path="/quotedatatable/:date/:category" element={<Quotedatatable />} />
+          <Route path="/quotecalldatatable/:date" element={<Quotecalldatatable />} />
 
           <Route path="/addcall/:id" element={<Addcall />} />
           <Route path="/qheader" element={<Qheader />} />
@@ -274,7 +285,7 @@ function App() {
           <Route path="/dsrdetails" element={<Dsrdetails />} />
           <Route path="/customersearchdetails/:id" element={<Customersearchdetails />} />
           <Route path="/painting/:cardNo" element={<Painting />} />
-          {/* <Route path="/painting" element={<Painting />} /> */}
+          <Route path="/customeredit" element={<Customeredit />} />
 
           <Route path="/work/:cardNo" element={<Work />} />
           {/* <Route path="/payment" element={<Payment />} /> */}
@@ -283,7 +294,15 @@ function App() {
           <Route path="/customerservnav" element={<Customersernav />} />
           {/* <Route path="/cservices" element={<Cservices />} /> */}
 
-
+          <Route path="/report/catagory" element={<Report_Catagory />} />
+        <Route path="/report/dsr" element={<Report_DSR />} />
+        <Route path="/report/enquiry" element={<Report_Enquiry />} />
+        <Route path="/report/survey" element={<Report_Survey />} />
+        <Route path="/report/quotation" element={<Report_Quotation />} />
+        <Route
+          path="/report/runningprojects"
+          element={<Report_RunningProjects />}
+        />
           <Route
             path="/enquirydatatable/:date"
             element={<Enquirydatatable />}

@@ -6,5 +6,5 @@ router.post("/addaregion",aregioncontroller.addaregion);
 router.get("/getaregion",aregioncontroller.getaregion);
 router.post("/editaregion/:id",aregioncontroller.editaregion);
 router.post("deletearegion/:id",aregioncontroller.postdeletearegion);
-
+router.post("/categoryaregion",aregioncontroller.postcategory);
 module.exports=router;

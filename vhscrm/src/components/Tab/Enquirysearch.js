@@ -4,8 +4,11 @@ import Enquirynav from "../Enquirynav";
 import axios from "axios";
 // import Table from "react-bootstrap/Table";
 import DataTable from "react-data-table-component";
+import { useNavigate } from "react-router-dom";
 
 function Enquirysearch() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+  const navigate=useNavigate();
   const [citydata, setcitydata] = useState([]);
   const [enquiryAddData, setenquiryadddata] = useState([]);
   const [name, setname] = useState("");
@@ -16,11 +19,7 @@ function Enquirysearch() {
   const [status, setstatus] = useState("");
   const [executive, setexecutive] = useState("");
   const [filterdata, setfilterdata] = useState([]);
-  const [hasResults, setHasResults] = useState(false);
-  const [resultData, setResultData] = useState([]);
-  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
-
-  const apiURL = process.env.REACT_APP_API_URL;
+   const apiURL = process.env.REACT_APP_API_URL;
 
   // console.log(enquiryadddata);
 
@@ -59,88 +58,12 @@ function Enquirysearch() {
 
   const handleSearchClick = (e) => {
     e.preventDefault();
-    // if (
-    //   !name ||
-    //   // !fromdate ||
-    //   // !todate ||
-    //   !contact ||
-    //   // !status ||
-    //   !executive
-    //   // !city
-    // ) {
-    //   // No search criteria entered, show a message or perform any desired action
-    //   alert("Please enter search criteria");
-    //   return;
-    // }
+    
 
     filterData();
   };
 
-  // const filterData = () => {
-  //   if (
-  //     !name ||
-  //     !fromdate ||
-  //     !todate ||
-  //     !contact ||
-  //     !status ||
-  //     !executive ||
-  //     !city
-  //   ) {
-  //     setResultData([]);
-  //     setHasResults(false);
-  //     return;
-  //   }
-  //   const filterResult = enquiryAddData?.filter((item) => {
-  //     //backend api
-  //     const itemName = item.name ? item.name.toLowerCase() : "";
-  //     const itemFromDate = item.enquirydate ? item.enquirydate : "";
-  //     const itemToDate = item.enquirydate ? item.enquirydate : "";
-  //     const itemContact = item.contact1 ? item.contact1.toString() : "";
-  //     const itemStatus = item.enquirydetails[0]?.response
-  //       ? item.enquirydetails[0]?.response.toLowerCase()
-  //       : "";
-  //     const itemExecutive = item.executive ? item.executive.toString() : "";
-  //     const itemCity = item.city ? item.city.toLowerCase() : "";
-
-  //     //frontend
-  //     const filterName = name ? name.toLocaleLowerCase() : "";
-  //     const filterFromDate = fromdate ? fromdate : "";
-  //     const filterToDate = todate ? todate : "";
-  //     const filterContact = contact ? contact.toString() : "";
-  //     const filterStatus = status ? status.toLowerCase() : "";
-  //     const filterExecutive = executive ? executive.toLowerCase() : "";
-  //     const filterCity = city ? city.toLowerCase() : "";
-
-  //     //matching both
-  //     const mergingNames = itemName.includes(filterName);
-  //     const mergingFromDates = itemFromDate.includes(filterFromDate);
-  //     const mergingToDates = itemToDate.includes(filterToDate);
-  //     const mergingContacts = itemContact.includes(filterContact);
-  //     const mergingStatus = itemStatus.includes(filterStatus);
-  //     const mergingExecutive = itemExecutive.includes(filterExecutive);
-  //     const mergingCity = itemCity.includes(filterCity);
-
-  //     return (
-  //       //returing
-  //       mergingNames &&
-  //       mergingFromDates &&
-  //       mergingToDates &&
-  //       mergingContacts &&
-  //       mergingStatus &&
-  //       mergingExecutive &&
-  //       mergingCity
-  //     );
-  //   });
-  //   setResultData(filterResult);
-  //   setHasResults(filterResult.length > 0);
-  // };
-
-  // const handleSearchData = (e) => {
-  //   e.preventDefault();
-  //   setIsLoadingSearch(true);
-  //   console.log("enquiryAddData", enquiryAddData);
-  //   filterData();
-  // };
+  
   const columns = [
     {
       name: "Sl  No",
@@ -192,9 +115,10 @@ function Enquirysearch() {
     },
   ];
 
-  // const handleRowClick = (row) => {
-  //   navigate(`/customersearchdetails/${row.cardNo}`);
-  // };
+  const handleRowClick = (row) => {
+
+    navigate(`/enquirydetail/${row.EnquiryId}`);
+  };
 
   return (
     <div className="web">
@@ -260,14 +184,15 @@ function Enquirysearch() {
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">City</div>
                     <div className="group pt-1">
-                      <select
+                    <select
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option>--select--</option>
-                        {citydata.map((item) => (
-                          <option value={item.value}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
+                      
                       </select>
                     </div>
                   </div>
@@ -331,7 +256,7 @@ function Enquirysearch() {
             selectableRowsHighlight
             subHeaderAlign="left"
             highlightOnHover
-            // onRowClicked={handleRowClick}
+            onRowClicked={handleRowClick}
           />
           {/* )} */}
           {/* {searchClicked && hasResults && ( */}

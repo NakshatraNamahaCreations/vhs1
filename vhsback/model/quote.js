@@ -39,6 +39,9 @@ const quoteaddSchema = new mongoose.Schema({
   time: {
     type: String,
   },
+  Bookedby:{
+    type:String
+  }
 });
 
 const quotemodel = mongoose.model("quote", quoteaddSchema);

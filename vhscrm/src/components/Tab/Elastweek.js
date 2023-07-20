@@ -27,22 +27,15 @@ function Ethisweek() {
   const [searchNxtfoll, setSearchNxtfoll] = useState("")
 
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+
   useEffect(() => {
     getenquiry();
   }, []);
 
-  let i = 0;
-  const getenquiry = async () => {
-    let res = await axios.get(apiURL + "/getcalllateraggredata");
-    if ((res.status = 200)) {
-      setfilterdata(
-        res.data?.enquiryfollowup);
-    }
-  };
-  const enquirydetail = (data) => {
-    console.log(data.EnquiryId);
-    navigate(`/enquirydetail/${data.EnquiryId}`);
-  };
+ 
 
 // Function to calculate the start and end dates of the previous week
 const getLastWeekDates = () => {
@@ -57,12 +50,24 @@ const getLastWeekDates = () => {
 // Get the start and end dates of the previous week
 const { startDate, endDate } = getLastWeekDates();
 
-// Filter the data based on the previous week's dates
-const filteredData = filterdata.filter(item => item.nxtfoll >= startDate && item.nxtfoll <= endDate);
-
+let i = 0;
+const getenquiry = async () => {
+  let res = await axios.get(apiURL + "/getcalllateraggredata");
+  if ((res.status = 200)) {
+    setfilterdata(
+      res.data?.enquiryfollowup.filter(item => item.nxtfoll >= startDate && item.nxtfoll <= endDate));
+      setSearchResults(
+        res.data?.enquiryfollowup.filter((item) => item.nxtfoll >= startDate && item.nxtfoll <= endDate)
+      );
+  }
+};
+const enquirydetail = (data) => {
+  console.log(data.EnquiryId);
+  navigate(`/enquirydetail/${data.EnquiryId}`);
+};
 useEffect(() => {
   const filterResults = () => {
-    let results = filteredData;
+    let results = filterdata;
     if (searchCatagory) {
       results = results.filter(
         (item) =>
@@ -199,6 +204,34 @@ useEffect(() => {
   searchNxtfoll
 ]);
 
+function getColor(colorcode) {
+  if (colorcode === "easy") {
+    return "#ffb9798f";
+  } else if (colorcode === "medium") {
+    return "#0080002e";
+  } else if (colorcode === "hard") {
+    return "#ffb9798f";
+  } else {
+    return "transparent";
+  }
+}
+
+  // Pagination logic
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+  const pageOptions = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
+
+  // Get current items for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage);
+  };
   return (
     <div>
       <Header />
@@ -206,9 +239,26 @@ useEffect(() => {
 
       <div className="row m-auto">
         <div className="col-md-12">
-        <Table striped bordered hover>
+
+           {/* Pagination */}
+           <div className="pagination">
+            <span>Page </span>
+            <select
+            className="m-1"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
+            </select>
+            <span> of {totalPages}</span>
+          </div>
+        <table>
             <thead>
-            <tr className="tr ">
+              <tr className="tr ">
                 <th scope="col">
                   <input className="vhs-table-input" />{" "}
                 </th>
@@ -235,7 +285,7 @@ useEffect(() => {
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-           
+
                 <th scope="col">
                   {" "}
                   <input
@@ -271,22 +321,25 @@ useEffect(() => {
                   >
                     <option value="">Select </option>
                     {searchResults.map((e) => (
-                      <option value={e.enquirydata[0]?.city} key={e.enquirydata[0]?.city}>
+                      <option
+                        value={e.enquirydata[0]?.city}
+                        key={e.enquirydata[0]?.city}
+                      >
                         {e.enquirydata[0]?.city}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
-               
+
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Reference"
                     className="vhs-table-input"
                     value={searchReference2}
                     onChange={(e) => setSearchReference2(e.target.value)}
                   />{" "}
                 </th>
-                
+
                 <th scope="col">
                   {" "}
                   <input
@@ -305,67 +358,70 @@ useEffect(() => {
                     onChange={(e) => setSearchFolldate(e.target.value)}
                   />{" "}
                 </th>
-                
+
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Staff"
                     className="vhs-table-input"
                     value={searchStaff}
                     onChange={(e) => setSearchStaff(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Response"
                     className="vhs-table-input"
                     value={searchResponse}
                     onChange={(e) => setSearchResponse(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Desc"
                     className="vhs-table-input"
                     value={searchDesc}
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
-                 
                 </th>
                 <th scope="col">
-                <input
+                  <input
                     placeholder="Nxt foll"
                     className="vhs-table-input"
                     value={searchNxtfoll}
                     onChange={(e) => setSearchNxtfoll(e.target.value)}
                   />{" "}
-                 
                 </th>
               </tr>
-            <tr className="tr clr">
-                <th>#</th>
-                <th>Category</th>
-                <th>Date</th>
+              <tr className="bg">
+                <th className="bor">#</th>
+                <th className="bor">Category</th>
+                <th className="bor">Date</th>
 
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>Reference2</th>
+                <th className="bor">Name</th>
+                <th className="bor">Contact</th>
+                <th className="bor">Address</th>
+                <th className="bor">City</th>
+                <th className="bor">Reference2</th>
 
-                <th>Interested for</th>
-                <th>Foll Date</th>
-                <th>Staff</th>
-                <th>Response</th>
-                <th>Desc</th>
-                <th>Nxt Foll</th>
+                <th className="bor">Interested for</th>
+                <th className="bor">Foll Date</th>
+                <th className="bor">Staff</th>
+                <th className="bor">Response</th>
+                <th className="bor">Desc</th>
+                <th className="bor">Nxt Foll</th>
               </tr>
             </thead>
             <tbody>
-            {searchResults.map((item) => (
+              {currentItems.map((item) => (
                 <a onClick={() => enquirydetail(item)} className="tbl">
-                  <tr key={i} className="trnew">
+                  <tr
+                    key={item.id}
+                    className="user-tbale-body tbl1 trnew"
+                    style={{
+                      backgroundColor: getColor(item.colorcode),
+                      color: "black",
+                    }}
+                  >
                     <td>{i++}</td>
                     <td>{item.category}</td>
                     <td>{item.enquirydata[0]?.enquirydate}</td>
@@ -386,7 +442,7 @@ useEffect(() => {
                 </a>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
       </div>
     </div>
@@ -394,3 +450,4 @@ useEffect(() => {
 }
 
 export default Ethisweek;
+

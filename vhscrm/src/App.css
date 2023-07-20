@@ -633,5 +633,36 @@ background-color: #a9042e;
 }
 .currentTab{
   background-color: #a9042e;
-  color: white !important;
+  color: white ;
 }
+.table-header-row {
+  background-color: #a32d2d; /* Set your desired background color here */
+}
+.bg{
+  background-color: lightgray;
+  font-size: 13px;
+  color: black;
+
+}
+.bg th{
+  border:1px solid lightgray
+}
+.bor{
+  border: 1px solid rgb(200, 185, 185) !important;
+}
+
+.pag{
+  padding: 5px;
+  margin: 10px;
+  font-size: 12px;
+}
+
+.report-font-hover:hover{
+  color:#4a4a4a !important;
+  cursor: pointer;
+  }
+  .report-select{
+    border-radius: 5px;
+      padding: 2px 22px;
+      width: 100%;
+  }

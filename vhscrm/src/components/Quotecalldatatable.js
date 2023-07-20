@@ -7,9 +7,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import Surveynav from "./Surveynav";
 import Quotenav from "./Quotenav";
+import Quotefollowupnav from "./Quotefollowupnav";
 
-function Quotelist() {
-  const { date, category } = useParams();
+function Quotecalldatatable() {
+  const { date } = useParams();
   const navigate = useNavigate();
   const [enquiryflwdata, setenquiryflwdata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
@@ -42,8 +43,8 @@ function Quotelist() {
   const getenquiryadd = async () => {
     let res = await axios.get(apiURL + "/getenquirydata");
     if (res.status === 200) {
-      setenquiryflwdata(res.data?.quotefollowup.filter((i)=>i.category === category && i.nxtfoll === date));
-      setSearchResults(res.data?.quotefollowup.filter((i)=>i.category === category && i.nxtfoll === date)); // Update the searchResults state with the full data
+      setenquiryflwdata(res.data?.quotefollowup.filter((i)=> i.nxtfoll === date));
+      setSearchResults(res.data?.quotefollowup.filter((i)=>i.nxtfoll === date)); // Update the searchResults state with the full data
     }
   };
   let i = 0;
@@ -204,7 +205,8 @@ console.log("quotedata-----",enquiryflwdata)
   return (
     <div className="web">
       <Header />
-      <Quotenav />
+      <Quotefollowupnav />
+
 
       <div className="row m-auto">
         <div className="col-md-12">
@@ -424,4 +426,4 @@ console.log("quotedata-----",enquiryflwdata)
   );
 }
 
-export default Quotelist;
+export default Quotecalldatatable;

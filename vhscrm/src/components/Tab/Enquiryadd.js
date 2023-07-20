@@ -259,9 +259,7 @@ function Enquiryadd() {
                         {admin?.city.map((item) => (
                           <option value={item.name}>{item.name}</option>
                         ))}
-                        {/* {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
-                        ))} */}
+                      
                       </select>
                     </div>
                   </div>

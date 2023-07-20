@@ -34,6 +34,14 @@ class Aregion {
     }
   }
 
+  async postcategory(req,res){
+    let {category} =req.body;
+    let region=await aregionmodel.find({category}).sort({_id:-1});
+
+    if(region){
+      return res.json({aregion:region})
+    }
+  }
   
 
   async postdeletearegion(req, res) {

@@ -8,6 +8,8 @@ import Customersernav from "./Customersernav";
 import { NavLink } from "react-router-dom";
 
 function Customersearchdetails() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
   const navigate = useNavigate();
   const { id } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
@@ -27,7 +29,9 @@ function Customersearchdetails() {
   const [categorydata, setcategorydata] = useState([]);
   const [editenable, seteditEnable] = useState(false);
   const [onetime, setonetime] = useState([]);
-  
+  const [amtFrequency, setamtFrequency] = useState("");
+  const [firstDateamt, setfirstDateamt] = useState("");
+  const [expiryDateamt, setexpiryDateamt] = useState("");
 
   useEffect(() => {
     getcustomer();
@@ -36,7 +40,7 @@ function Customersearchdetails() {
     gettreatment();
   }, []);
 
-  console.log("customerdata",customerdata)
+  console.log("customerdata", customerdata);
   const getcustomer = async () => {
     let res = await axios.get(apiURL + "/getcustomer");
     if (res.status === 200) {
@@ -44,8 +48,12 @@ function Customersearchdetails() {
     }
   };
 
+  useEffect(() => {
+    getsubcategory();
+  }, [category]);
+
   const getsubcategory = async () => {
-    let res = await axios.get(apiURL + "/getsubcategory");
+    let res = await axios.post(apiURL + `/postsubcategory/`, { category });
     if ((res.status = 200)) {
       setservicedata(res.data?.subcategory);
     }
@@ -62,29 +70,48 @@ function Customersearchdetails() {
       settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
     }
   };
-  console.log(startDate);
+
   const sDate = moment(dateofService, "YYYY-MM-DD");
   const eDate = moment(expiryDate, "YYYY-MM-DD");
 
   const totalDays = Math.ceil(eDate.diff(sDate, "days"));
   const interval = Math.ceil(totalDays / serviceFrequency);
-  const dividedServiceCharge = Math.ceil(serviceCharge / serviceFrequency);
+  // const dividedServiceCharge = Math.ceil(serviceCharge / serviceFrequency);
 
   const dividedDates = [];
-  const dividedCharges = [];
-  
+  // const dividedCharges = [];
 
   for (let i = 0; i < serviceFrequency; i++) {
     const date = sDate.clone().add(interval * i, "days");
     dividedDates.push(date);
 
-    const charge =
-      i === serviceFrequency - 1
-        ? serviceCharge - dividedServiceCharge * (serviceFrequency - 1)
-        : dividedServiceCharge;
-    dividedCharges.push(charge);
+    // const charge =
+    //   i === serviceFrequency - 1
+    //     ? serviceCharge - dividedServiceCharge * (serviceFrequency - 1)
+    //     : dividedServiceCharge;
+    // dividedCharges.push(charge);
   }
 
+  const sAmtDate = moment(firstDateamt, "YYYY-MM-DD");
+  const eamtDate = moment(expiryDateamt, "YYYY-MM-DD");
+
+  const totalamtDays = Math.ceil(eamtDate.diff(sAmtDate, "days"));
+  const intervalamt = Math.ceil(totalamtDays / amtFrequency);
+  const dividedamtCharge = Math.ceil(serviceCharge / amtFrequency);
+
+  const dividedamtDates = [];
+  const dividedamtCharges = [];
+
+  for (let i = 0; i < amtFrequency; i++) {
+    const date = sDate.clone().add(intervalamt * i, "days");
+    dividedamtDates.push(date);
+
+    const charge =
+      i === amtFrequency - 1
+        ? serviceCharge - dividedamtCharge * (amtFrequency - 1)
+        : dividedamtCharge;
+    dividedamtCharges.push(charge);
+  }
   const addtreatmentdetails = async (e) => {
     e.preventDefault();
 
@@ -100,10 +127,11 @@ function Customersearchdetails() {
           headers: { "content-type": "application/json" },
           data: {
             customerData: customerdata,
-            dividedDates: contractType ==="AMC"? dividedDates:dateofService,
-            dividedCharges: dividedCharges,
+            dividedDates: contractType === "AMC" ? dividedDates : dateofService,
+            dividedamtDates: dividedamtDates,
+            dividedamtCharges: dividedamtCharges,
             cardNo: id,
-            dCategory:customerdata[0].category,
+            dCategory: customerdata[0].category,
             category: category,
             contractType: contractType,
             service: treatment,
@@ -177,10 +205,14 @@ function Customersearchdetails() {
     console.log(id);
     navigate(`/addcall/${id}`);
   };
+
+  console.log("dividedamtDates-===", dividedamtDates);
+  console.log("dividedamtCharges-===", dividedamtCharges);
+
   return (
     <div className="web">
       <Header />
-    <Customernav />
+      <Customernav />
       <div></div>
       <div className="row m-auto">
         {" "}
@@ -373,7 +405,9 @@ function Customersearchdetails() {
                             </span>
                           </div>
                           <div className="col-md-4 pt-3">
-                            <div className="vhs-input-label">1st Service Date</div>
+                            <div className="vhs-input-label">
+                              1st Service Date
+                            </div>
                             <input
                               type="date"
                               name="startdate"
@@ -404,19 +438,47 @@ function Customersearchdetails() {
                               onChange={(e) => setserviceCharge(e.target.value)}
                             />
                           </div>
-                          {/* <div className="col-md-4 pt-3">
+                          <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
-                              1st Service Date{" "}
+                              Amount Frequency
+                            </div>
+
+                            <input
+                              type="number"
+                              name="qty"
+                              className="col-md-12 vhs-input-value"
+                              onChange={(e) => setamtFrequency(e.target.value)}
+                              defaultValue={editenable.amtFrequency}
+                            />
+                            {/* <span style={{ fontSize: "10px" }}>
+                              (Total No. Of Services In Given Contract Period)
+                            </span> */}
+                          </div>
+
+                          <div className="col-md-4 pt-3">
+                            <div className="vhs-input-label">
+                              1st Service Amt Date
                             </div>
                             <input
                               type="date"
-                              name="qty"
+                              name="startdate"
                               className="col-md-12 vhs-input-value"
-                              onChange={(e) =>
-                                setfirstserviceDate(e.target.value)
-                              }
+                              onChange={(e) => setfirstDateamt(e.target.value)}
                             />
-                          </div> */}
+                          </div>
+                        </div>
+                        <div className="row mt-2">
+                          <div className="col-md-4 pt-3">
+                            <div className="vhs-input-label">
+                              Amt Expiry Date
+                            </div>
+                            <input
+                              type="date"
+                              name="startdate"
+                              className="col-md-12 vhs-input-value"
+                              onChange={(e) => setexpiryDateamt(e.target.value)}
+                            />
+                          </div>
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">Description</div>
                             <textarea
@@ -459,11 +521,11 @@ function Customersearchdetails() {
                           name="material"
                         >
                           <option>{editenable.category}</option>
-                          {categorydata.map((item) => (
-                            <option value={item.category}>
-                              {item.category}
-                            </option>
-                          ))}
+                          {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -601,6 +663,7 @@ function Customersearchdetails() {
                               defaultValue={editenable.serviceCharge}
                             />
                           </div>
+
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               1st Service Date{" "}
@@ -673,14 +736,14 @@ function Customersearchdetails() {
                     Service Date
                   </th>
                   <th className="table-head" scope="col">
-                    Description
+                   Amount paid Date
                   </th>
                   <th className="table-head" scope="col">
-                    Charges
+                   Total Charges
                   </th>
-                  {/* <th className="table-head" scope="col">
-                    1 Community
-                  </th> */}
+                  <th className="table-head" scope="col">
+                    Description
+                  </th>
                   <th className="table-head" scope="col">
                     Action
                   </th>
@@ -698,9 +761,31 @@ function Customersearchdetails() {
                     <td>
                       {item.dateofService}/{item.expiryDate}
                     </td>
-                    <td>{item.dateofService}</td>
-                    <td>{item.desc}</td>
+                    {item.contractType === "AMC" ? (
+                        <td>
+                          {item.dividedDates.map((a) => (
+                            <div>
+                              <p>{new Date(a).toLocaleDateString()}</p>
+                            </div>
+                          ))}
+                        </td>
+                      ) : (
+                        <td>{item.dateofService}</td>
+                      )}
+                       {item.contractType === "AMC" ? (
+                        <td>
+                          {item.dividedamtDates.map((a) => (
+                            <div>
+                              <p>{new Date(a).toLocaleDateString()}</p>
+                            </div>
+                          ))}
+                        </td>
+                      ) : (
+                        <td>{item.dateofService}</td>
+                      )}
                     <td>{item.serviceCharge}</td>
+
+                    <td>{item.desc}</td>
 
                     <td>
                       {" "}
@@ -811,6 +896,9 @@ function Customersearchdetails() {
                     Service Date
                   </th>
                   <th className="table-head" scope="col">
+                    Amount Paid Date
+                  </th>
+                  <th className="table-head" scope="col">
                     Service Charges
                   </th>
                   <th className="table-head" scope="col">
@@ -838,10 +926,20 @@ function Customersearchdetails() {
                       ) : (
                         <td>{item.dateofService}</td>
                       )}
-
                       {item.contractType === "AMC" ? (
                         <td>
-                          {item.dividedCharges.map((a) => (
+                          {item.dividedamtDates.map((a) => (
+                            <div>
+                              <p>{new Date(a).toLocaleDateString()}</p>
+                            </div>
+                          ))}
+                        </td>
+                      ) : (
+                        <td>{item.dateofService}</td>
+                      )}
+                      {item.contractType === "AMC" ? (
+                        <td>
+                          {item.dividedamtCharges.map((a) => (
                             <div>
                               <p>{a}</p>
                             </div>
