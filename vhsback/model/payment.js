@@ -20,6 +20,8 @@ const paymentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'customers' // Assuming your Customer model is named 'Customer'
   }
+}, {
+  timestamps: true,
 });
 
 const Payment = mongoose.model("Payment", paymentSchema);

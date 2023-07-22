@@ -13,6 +13,8 @@ const subcategorySchema = new mongoose.Schema({
   videolink: {
     type: String,
   },
+}, {
+  timestamps: true,
 });
 
 const subcategoryModel = mongoose.model("subcategory", subcategorySchema);

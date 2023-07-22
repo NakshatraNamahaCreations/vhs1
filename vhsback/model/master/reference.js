@@ -6,7 +6,9 @@ const referenceSchema=new mongoose.Schema({
         require:true
     },
    
-});
+}, {
+    timestamps: true,
+  });
 
 const referencemodel=mongoose.model("masterreference",referenceSchema);
 module.exports=referencemodel;

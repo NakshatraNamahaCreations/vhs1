@@ -316,10 +316,10 @@ function Dsrcallist() {
                     <td>{selectedData.dsrdata[0]?.techName}</td>
 
                     <td>{selectedData.dsrdata[0]?.workerName}</td>
-                    <td>{selectedData.dsrdata[0]?.jobType}</td>
+                    <td>{selectedData.service}</td>
 
-                    <td>{selectedData.dsrdata[0]?.customerFeedback}</td>
-                    <td>{selectedData.dsrdata[0]?.amount}</td>
+                    <td>{selectedData.desc}</td>
+                    <td>{selectedData.serviceCharge}</td>
                   
                   </Link>
                 </tr>

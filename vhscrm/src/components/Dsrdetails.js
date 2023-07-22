@@ -30,9 +30,9 @@ function Dsrdetails() {
   // const [Showinapp, setShowinapp] = useState(
   //   data.dsrdata[0]?.showinApp  ? data.dsrdata[0]?.showinApp : true
   // );
-  const [Showinapp, setShowinapp] = useState(data.dsrdata[0]?.showinApp ?? true);
+  const [Showinapp, setShowinapp] = useState(data.dsrdata[0]?.showinApp || "YES");
   const [jobComplete, setjobComplete] = useState(
-    data.dsrdata[0]?.jobComplete || false
+    data.dsrdata[0]?.jobComplete || "NO"
   );
   const [sendSms, setsendSms] = useState(data.dsrdata[0]?.sendSms);
   const [workerAmount, setworkerAmount] = useState(
@@ -65,7 +65,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
   const gettechnician = async () => {
     let res = await axios.get(apiURL + "/getalltechnician");
     if ((res.status = 200)) {
-      settechniciandata(res.data?.technician);
+      settechniciandata(res.data?.technician.filter((i)=>i.city === data.customerData[0]?.city && i.category === data.customerData[0]?.category));
     }
   };
 
@@ -79,9 +79,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
   const newdata = async (e) => {
     e.preventDefault();
 
-    if (!workerName || !Showinapp || !daytoComplete) {
-      alert("Fill all feilds");
-    } else {
+ 
       try {
         const config = {
           url: "/adddsrcall",
@@ -122,16 +120,14 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
         console.error(error);
         alert(" Not Added");
       }
-    }
+   
   };
 
 
   const save = async (e) => {
     e.preventDefault();
 
-    if (!workerName) {
-      alert("Fill all feilds");
-    } else {
+   
       try {
         const config = {
           url: `/updatedsrdata/${data.dsrdata[0]?._id}`,
@@ -171,7 +167,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
         console.error(error);
         alert(" Not Added");
       }
-    }
+
   };
 
   const getaddcall = async () => {
@@ -255,14 +251,16 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
                 <div className="col-md-4">
                   <div className="vhs-input-label">Appointment Date</div>
                   <div className="group pt-1">
-                    <input
+                  <input
                       type="date"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={(data.dsrdata[0]?.appoDate)?(data.dsrdata[0]?.appoDate):moment().format("DD-MM-YYYY")}
+                      defaultValue ={appoDate ? appoDate  : moment().format("YYYY-MM-DD")}
                       onChange={(e) => setappoDate(e.target.value)}
                     />
                   </div>
                 </div>
+
+               
                 <div className="col-md-4">
                   <div className="vhs-input-label">Appointment Time</div>
                   <div className="group pt-1">
@@ -451,32 +449,14 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
                 />
               </div>
             </div>
-            <div className="col-6 d-flex">
-              <div className="col-4">Job Type </div>
-              <div className="col-1">:</div>
-              <div className="group pt-1 col-7">
-              <select
-                  className="col-md-12 vhs-input-value"
-                  onChange={(e) => setjobType(e.target.value)}
-                >
-                  {data.dsrdata[0]?.jobType ? (
-                    <option>{data.dsrdata[0]?.jobType}</option>
-                  ) : (
-                    <option>--select--</option>
-                  )}
-                  {servicedata.map((item) => (
-                    <option>{item.subcategory}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
+           
           </div>
         </div>
         <div className="row pt-3">
           <div className="row">
             <div className="col-6 d-flex">
               <div className="col-4">
-                Worker Names <span className="text-danger"> *</span>
+                Worker Names 
               </div>
               <div className="col-1">:</div>
               <div className="group pt-1 col-7">
@@ -511,7 +491,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
           <div className="row">
             <div className="col-6 d-flex">
               <div className="col-4">
-                Day To Complete <span className="text-danger"> *</span>
+                Day To Complete 
               </div>
               <div className="col-1">:</div>
               <div className="group pt-1 col-7">
@@ -523,8 +503,17 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
                 />
               </div>
             </div>
+          
           </div>
         </div>
+        <div className="col-6 d-flex">
+              <div className="col-4">Logged User</div>
+              <div className="col-1">:</div>
+              <div className="group pt-1 col-7">
+                <p style={{ marginBottom: 0 }}> {admin.displayname}</p>
+                <p>{admin.contactno}</p>
+              </div>
+            </div>
 
         <div className="row pt-3">
           <div className="row">
@@ -532,8 +521,8 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
               <div className="col-4">Backoffice Executive</div>
               <div className="col-1">:</div>
               <div className="group pt-1 col-7">
-                <p style={{ marginBottom: 0 }}> {data.backofficerExe}</p>
-                <p>{data.backofficerno}</p>
+                <p style={{ marginBottom: 0 }}> {data.BackofficeExecutive}</p>
+                {/* <p>{data.backofficerno}</p> */}
               </div>
             </div>
 
@@ -564,7 +553,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
 
         <div className="row pt-3">
           <div className="row">
-            <div className="col-6 d-flex">
+            {/* <div className="col-6 d-flex">
               <div className="col-4">SHOW IN APP</div>
               <div className="col-1">:</div>
               <div className="group pt-1 col-7">
@@ -591,7 +580,7 @@ const [LatestCardNo, setLatestCardNo] = useState(0);
                   </label>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="col-6 d-flex">
               <div className="col-4">Send SMS</div>

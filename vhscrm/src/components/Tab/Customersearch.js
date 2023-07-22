@@ -121,14 +121,14 @@ function Customersearch() {
       name: "Customer type",
       selector: (row) => row.customerType,
     },
-    {
-      name: "Action",
-      cell:(row)=>(
-        <div>
-          <Link to="/customeredit" state={{data:row}} >Edit</Link>
-        </div>
-      )
-    },
+    // {
+    //   name: "Action",
+    //   cell:(row)=>(
+    //     <div>
+    //       <Link to="/customeredit" state={{data:row}} >Edit</Link>
+    //     </div>
+    //   )
+    // },
   ];
 
   

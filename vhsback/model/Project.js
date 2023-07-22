@@ -60,6 +60,8 @@ const projectSchema = new mongoose.Schema({
     require: true,
   },
  
+}, {
+  timestamps: true,
 });
 
 const projectmodel = mongoose.model("project", projectSchema);

@@ -7,7 +7,11 @@ const aregionSchema=new mongoose.Schema({
     },
     category:{
         type:String
-    }
+    },
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
    
 });
 

@@ -17,6 +17,7 @@ const active = {
 const inactive = { color: "black", backgroundColor: "white" };
 
 function Technician() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [selected, setSelected] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [city, setcity] = useState("");
@@ -27,6 +28,7 @@ function Technician() {
   const [password, setpassword] = useState("");
   const [experiance, setexperiance] = useState("");
   const [language, setlanguagesknow] = useState("");
+  const [Type, setType] = useState("");
   const [data, setdata] = useState([]);
 
   const [city1, setcity1] = useState(data.city);
@@ -37,6 +39,8 @@ function Technician() {
   const [password1, setpassword1] = useState(data.password);
   const [experiance1, setexperiance1] = useState(data.experiance);
   const [language1, setlanguagesknow1] = useState(data.language);
+  const [Type1, setType1] = useState(data.Type);
+
   const [techniciandata, settechniciandata] = useState([]);
   const [citydata, setcitydata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
@@ -58,36 +62,42 @@ function Technician() {
   const addtechnician = async (e) => {
     e.preventDefault();
 
-    try {
-      const config = {
-        url: "/addtechnician",
-        method: "post",
-        baseURL: apiURL,
-        // data: formdata,
-        headers: { "content-type": "application/json" },
-        data: {
-          category: category,
-          vhsname: vhsname,
-          smsname: smsname,
-          number: number,
-          password: password,
-          experiance: experiance,
-          languagesknow: language,
-          city: city,
-        
-        },
-      };
-      await axios(config).then(function (response) {
-        if (response.status === 200) {
-          console.log("success");
-          alert(" Added");
-          window.location.assign("/technician");
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      alert(" Not Added");
+    if(!city || !category ||!vhsname ||!number ||!password ||!experiance ||!language){
+      alert("Please fill all fields")
+    }else{
+      try {
+        const config = {
+          url: "/addtechnician",
+          method: "post",
+          baseURL: apiURL,
+          // data: formdata,
+          headers: { "content-type": "application/json" },
+          data: {
+            Type:Type,
+            category: category,
+            vhsname: vhsname,
+            smsname: smsname,
+            number: number,
+            password: password,
+            experiance: experiance,
+            languagesknow: language,
+            city: city,
+          
+          },
+        };
+        await axios(config).then(function (response) {
+          if (response.status === 200) {
+            console.log("success");
+            alert(" Added");
+            window.location.assign("/technician");
+          }
+        });
+      } catch (error) {
+        console.error(error); // Log the error to the browser console
+  alert("An error occurred: " + error.message); 
+      }
     }
+   
   };
   useEffect(() => {
     gettechnician();
@@ -139,6 +149,10 @@ function Technician() {
     {
       name: "Sl  No",
       selector: (row,index) => index+1,
+    },
+    {
+      name: "Type",
+      selector: (row) => row.Type,
     },
     {
       name: "VHS Name",
@@ -207,6 +221,7 @@ function Technician() {
         baseURL: apiURL,
         headers: { "content-type": "application/json" },
         data: {
+          Type:Type1,
           category: category1,
           vhsname: vh,
           smsname: smsname1,
@@ -247,6 +262,24 @@ function Technician() {
             <div className="card-body p-3">
               <form>
                 <div className="row pt-2">
+
+                <div className="col-md-4">
+                    <div className="vhs-input-label">
+                      Type <span className="text-danger"> *</span>
+                    </div>
+                    <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setType(e.target.value)}
+                      >
+                        <option>--select--</option>
+                        <option value="executive">Executive</option>
+                        <option value="technician">Technician</option>
+                        <option value="pm">Project Manager</option>
+               
+                      </select>
+                    </div>
+                  </div>
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       City <span className="text-danger"> *</span>
@@ -257,8 +290,8 @@ function Technician() {
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option>--select--</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
                       </select>
                     </div>
@@ -266,7 +299,7 @@ function Technician() {
 
                   <div className="col-md-4">
                     <div className="vhs-input-label">
-                     Category Type <span className="text-danger"> *</span>
+                     Category<span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
                       <select
@@ -274,14 +307,20 @@ function Technician() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>--select--</option>
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                
+                </div>
+
+                <div className="row pt-3">
+                <div className="col-md-4">
                     <div className="vhs-input-label">
                       VHS Name <span className="text-danger"> *</span>
                     </div>
@@ -293,12 +332,9 @@ function Technician() {
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="row pt-3">
                   <div className="col-md-4">
                     <div className="vhs-input-label">
-                      SMS Name <span className="text-danger"> *</span>
+                      SMS Name 
                     </div>
                     <div className="group pt-1">
                       <input
@@ -322,7 +358,11 @@ function Technician() {
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                
+                </div>
+
+                <div className="row pt-3">
+                <div className="col-md-4">
                     <div className="vhs-input-label">
                       Password <span className="text-danger"> *</span>
                     </div>
@@ -334,9 +374,6 @@ function Technician() {
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="row pt-3">
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Experiance <span className="text-danger"> *</span>
@@ -420,6 +457,23 @@ function Technician() {
             <div className="card-body p-3">
               <form>
                 <div className="row pt-2">
+                <div className="col-md-4">
+                    <div className="vhs-input-label">
+                      Type <span className="text-danger"> *</span>
+                    </div>
+                    <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setType1(e.target.value)}
+                      >
+                        <option>--select--</option>
+                        <option value="exicutive">Exicutive</option>
+                        <option value="technician">Technician</option>
+                        <option value="pm">Project Manager</option>
+               
+                      </select>
+                    </div>
+                  </div>
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       City <span className="text-danger"> *</span>
@@ -427,29 +481,35 @@ function Technician() {
                     <div className="group pt-1">
                       <select className="col-md-12 vhs-input-value" onChange={(e)=>setcity1(e.target.value)} >
                       <option value={data.city}>{data.city}</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                      {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
-                       
                       </select>
                     </div>
                   </div>
 
                   <div className="col-md-4">
                     <div className="vhs-input-label">
-                      Type <span className="text-danger"> *</span>
+                      Category <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
                       <select className="col-md-12 vhs-input-value" onChange={(e)=>setcategory1(e.target.value)}>
                     
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                      {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                
+                </div>
+
+                <div className="row pt-3">
+
+                <div className="col-md-4">
                     <div className="vhs-input-label">
                       VHS Name <span className="text-danger"> *</span>
                     </div>
@@ -462,9 +522,6 @@ function Technician() {
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="row pt-3">
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       SMS Name <span className="text-danger"> *</span>
@@ -493,7 +550,11 @@ function Technician() {
                     </div>
                   </div>
 
-                  <div className="col-md-4">
+                 
+                </div>
+
+                <div className="row pt-3">
+                <div className="col-md-4">
                     <div className="vhs-input-label">
                       Password <span className="text-danger"> *</span>
                     </div>
@@ -506,9 +567,6 @@ function Technician() {
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="row pt-3">
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Experiance <span className="text-danger"> *</span>

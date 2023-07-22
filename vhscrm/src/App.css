@@ -666,3 +666,10 @@ background-color: #a9042e;
       padding: 2px 22px;
       width: 100%;
   }
+  .btnn{
+    background: rgb(64, 59, 59);
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  padding-left: 10px;}

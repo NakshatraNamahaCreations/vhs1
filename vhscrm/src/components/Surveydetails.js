@@ -27,7 +27,7 @@ function Createquote() {
   const gettechnician = async () => {
     let res = await axios.get(apiURL + "/getalltechnician");
     if ((res.status = 200)) {
-      settechniciandata(res.data?.technician.filter((i)=>i.city === data.enquirydata[0].city && i.category === data.enquirydata[0].category));
+      settechniciandata(res.data?.technician.filter((i)=>i.city === data.enquirydata[0].city && i.category === data.enquirydata[0].category && i.Type === "executive"));
     }
   };
 
@@ -217,7 +217,7 @@ function Createquote() {
                     {" "}
                     <div className="col-md-4">
                       <div className="vhs-input-label">
-                        Technician Name
+                        Executive Name
                         {/* <span className="text-danger">*</span> */}
                       </div>
                       <select

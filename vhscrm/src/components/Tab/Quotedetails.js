@@ -200,7 +200,7 @@ function Quotedetails() {
       category: category,
     });
     if ((res.status = 200)) {
-      setmaterialdata;
+     
       setmaterialdata(res.data?.amaterial);
     }
   };
@@ -299,6 +299,7 @@ function Quotedetails() {
             total: total,
             netTotal:adjustedNetTotal?adjustedNetTotal:total ,
             Bookedby:admin.displayname,
+            
             date: moment().format("L"),
             time: moment().format("LT"),
           },
@@ -684,7 +685,7 @@ function Quotedetails() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={adjustments ?adjustedNetTotal:totalWithGST}
+                      value={adjustedNetTotal?adjustedNetTotal:quotedata[0]?.netTotal}
                     
                       onChange={(e)=>setnetTotal(e.target.value)}
                       // value={adjustedNetTotal?adjustedNetTotal:totalWithGST}

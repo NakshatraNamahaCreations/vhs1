@@ -28,7 +28,10 @@ const newShema=new mongoose.Schema({
     terms:{
         type:String
     },
-
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
 
 });
 

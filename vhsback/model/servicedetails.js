@@ -67,7 +67,16 @@ const serviceSchema = new mongoose.Schema({
   },
   closeDate:{
     type:String
+  },
+  BackofficeExecutive:{
+    type:String
+  },
+  creatAt:{
+    type:Date,
+    default:new Date(),
   }
+}, {
+  timestamps: true,
 });
 
 const servicedetailsmodel = mongoose.model("servicedetails", serviceSchema);

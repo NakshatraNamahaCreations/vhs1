@@ -130,6 +130,12 @@ const enquiryaddSchema = new mongoose.Schema({
   staffName: {
     type: String,
   },
+  creatAt:{
+    type:Date,
+    default:new Date(),
+  }
+}, {
+  timestamps: true,
 });
 
 const enquiryaddmodel = mongoose.model("enquiryadd", enquiryaddSchema);

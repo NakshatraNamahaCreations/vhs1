@@ -32,6 +32,7 @@ function Customersearchdetails() {
   const [amtFrequency, setamtFrequency] = useState("");
   const [firstDateamt, setfirstDateamt] = useState("");
   const [expiryDateamt, setexpiryDateamt] = useState("");
+  const [community, setCommunity] = useState("");
 
   useEffect(() => {
     getcustomer();
@@ -142,6 +143,7 @@ function Customersearchdetails() {
             startDate: startDate,
             expiryDate: expiryDate,
             firstserviceDate: firstserviceDate,
+            BackofficeExecutive:admin.displayname,
             date: moment().format("YYYY-MM-DD"),
             time: moment().format("LT"),
           },
@@ -224,6 +226,7 @@ function Customersearchdetails() {
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <h5>Billing Details</h5>
+               
                   <h6
                     style={{ color: "red" }}
                     onClick={() => handleRowClick(id)}
@@ -253,6 +256,8 @@ function Customersearchdetails() {
                           {item.mainContact}
                         </div>
                       </div>
+                     
+                     
                     </div>
                     <div className="row">
                       <div className="col-md-4 pt-2">
@@ -272,6 +277,12 @@ function Customersearchdetails() {
                           {item.rbhf}
                           {item.cnap}
                           {item.lnf}
+                        </div>
+                      </div>
+                      <div className="col-md-4 pt-2">
+                        
+                        <div >
+                        <Link to="/customeredit"state={{data:item}}  ><button className="btnn" >Edit Customer</button></Link>
                         </div>
                       </div>
                     </div>
@@ -298,11 +309,11 @@ function Customersearchdetails() {
                           name="material"
                         >
                           <option>--select--</option>
-                          {categorydata.map((item) => (
-                            <option value={editenable.category}>
-                              {item.category}
-                            </option>
-                          ))}
+                          {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -380,6 +391,17 @@ function Customersearchdetails() {
                               cols={10}
                               defaultValue={editenable.desc}
                             />
+                          </div>
+                          <div className="col-md-4 pt-3">
+                            <div className="vhs-input-label">1 Community</div>
+                            <select
+                             className="col-md-12 vhs-input-value"
+                             onChange={(e) => setCommunity(e.target.value)}
+                             name="material"
+                              type="text"
+                            >
+                              <option>Select All</option>
+                            </select>
                           </div>
                         </div>
                       </>

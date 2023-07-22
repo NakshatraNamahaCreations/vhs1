@@ -5,6 +5,10 @@ const citySchema=new mongoose.Schema({
         type:String,
         
     },
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
    
 });
 

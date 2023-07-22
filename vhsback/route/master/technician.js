@@ -6,6 +6,7 @@ const router = express.Router();
 //add technician
 router.route("/addtechnician").post(async (req, res) => {
   let {
+    Type,
     servicetype,
     vhsname,
     smsname,
@@ -28,6 +29,7 @@ router.route("/addtechnician").post(async (req, res) => {
     return res.status(500).json({ error: "Conatct Number already exists" });
   }
   let technician = new technicianmodel({
+    Type,
     servicetype,
     vhsname,
     smsname,
@@ -49,6 +51,7 @@ router.route("/edittechnician/:id").post(async(req,res)=>{
 
   let id = req.params.id;
   let {
+    Type,
     servicetype,
     vhsname,
     smsname,
@@ -63,6 +66,7 @@ router.route("/edittechnician/:id").post(async(req,res)=>{
   let data = await technicianmodel.findOneAndUpdate(
     { _id: id },
     {
+      Type,
       servicetype,
       vhsname,
       smsname,

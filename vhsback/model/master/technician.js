@@ -4,6 +4,9 @@ const technicianSchema = new mongoose.Schema({
   category: {
     type: String,
   },
+  Type:{
+    type:String
+  },
   city: {
     type: String,
     require: true,
@@ -36,6 +39,8 @@ const technicianSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+}, {
+  timestamps: true,
 });
 
 const technicianmodel = mongoose.model("technician", technicianSchema);

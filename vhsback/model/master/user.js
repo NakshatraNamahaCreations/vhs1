@@ -87,6 +87,8 @@ const userSchema = new mongoose.Schema({
   city: {
     type: Array, // Change to an array of strings
   },
+}, {
+  timestamps: true,
 });
 
 const usermodel = mongoose.model("masteruser", userSchema);

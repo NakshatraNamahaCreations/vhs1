@@ -13,7 +13,11 @@ const ajobSchema=new mongoose.Schema({
     },
     category:{
         type:String
-    }
+    },
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
 });
 
 const ajobmodel=mongoose.model("ajob",ajobSchema);

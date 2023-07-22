@@ -38,6 +38,8 @@ const B2BSchema = new mongoose.Schema({
   instructions: {
     type: String,
   },
+}, {
+  timestamps: true,
 });
 
 const B2Bmodel = mongoose.model("B2B", B2BSchema);

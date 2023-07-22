@@ -7,8 +7,11 @@ const qfSchema=new mongoose.Schema({
     },
     region:{
         type:String,
-    }
-});
+    },
+   
+}, {
+    timestamps: true,
+  });
 
 const qfmodel=mongoose.model("quotationformat",qfSchema);
 module.exports=qfmodel;

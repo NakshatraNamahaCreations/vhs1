@@ -20,6 +20,8 @@ const workchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'customers' // Assuming your Customer model is named 'Customer'
   }
+}, {
+  timestamps: true,
 });
 
 const Work = mongoose.model("work", workchema);

@@ -81,6 +81,8 @@ const customerSchema = new mongoose.Schema({
   treatmentdetails: {
     type: Array,
   },
+}, {
+  timestamps: true,
 });
 
 const customerModel = mongoose.model("customers", customerSchema);

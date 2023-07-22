@@ -76,6 +76,8 @@ const addCallSchema = new mongoose.Schema({
   jobType:{
     type:String
   }
+}, {
+  timestamps: true,
 });
 
 const addcallModel = mongoose.model("addcall", addCallSchema);

@@ -16,6 +16,8 @@ const active = {
 const inactive = { color: "black", backgroundColor: "white" };
 
 function Vendor() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
   const [selected, setSelected] = useState(0);
   const [vendordata, setvendordata] = useState([]);
   const [vendorname, setvendorname] = useState("");
@@ -431,9 +433,9 @@ function Vendor() {
                             onChange={(e) => setcity(e.target.value)}
                           >
                             <option>--select--</option>
-                            {citydata.map((item) => (
-                              <option value={item.city}>{item.city}</option>
-                            ))}
+                            {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
                           </select>
                         </div>
                       </div>

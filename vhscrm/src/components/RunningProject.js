@@ -21,7 +21,53 @@ function RunningProject() {
   const [dsrdata, setdsrdata] = useState([]);
   const [treatmentdata, settreatmentData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
+  const [runningDate, setRunningDate] = useState("");
+  const [catagoryData, setCatagoryData] = useState("");
+  const [projectManager, setProjectManager] = useState("");
+  const [salesExecutive, setSalesExecutive] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [contactNo, setContactNo] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [quoteNo, setQuoteNo] = useState("");
+  const [projectType, setProjectType] = useState("");
+  const [dateToComplete, setDateToComplete] = useState("");
+  const [worker, setWorker] = useState("");
+  const [vendorPayment, setVendorPayment] = useState(""); //need
+  const [charges, setCharges] = useState("");
+  const [quoteValue, setQuoteValue] = useState("");
+  const [payment, setPayment] = useState(""); //need
+  const [type, setType] = useState(""); //need
+
+  //unique select option. removing duplicates--------
+  const [catagories, setCatagories] = useState(new Set());
+  const [techName, setTechName] = useState(new Set());
+  const [addressType, setAddressType] = useState(new Set());
+
+  useEffect(() => {
+    const uniqueCatagories = new Set(
+      treatmentdata
+        .map((item) => item.customerData[0]?.category)
+        .filter(Boolean)
+    );
+    const uniqueTechName = new Set(
+      treatmentdata.map((item) => item.dsrdata[0]?.techName).filter(Boolean)
+    );
+    const uniqueAddress = new Set(
+      treatmentdata
+        .map(
+          (item) =>
+            item.customerData[0]?.lnf &&
+            item.customerData[0]?.rbhf &&
+            item.customerData[0]?.cnap
+        )
+        .filter(Boolean)
+    );
+    setCatagories(uniqueCatagories);
+    setTechName(uniqueTechName);
+    setAddressType(uniqueAddress);
+  }, [treatmentdata]);
 
   const handleClick = (divNum) => () => {
     setSelected(divNum);
@@ -55,30 +101,6 @@ function RunningProject() {
       console.log("filteredData", filteredData);
     }
   };
-  // const updatetoclose = async (id) => {
-  //   try {
-  //     const config = {
-  //       url: `/closeproject/${id}`,
-  //       method: "post",
-  //       baseURL: apiURL,
-  //       headers: { "content-type": "application/json" },
-  //       data: {
-  //         closeProject: "closed",
-  //         closeDate: moment().format("L"),
-  //       },
-  //     };
-  //     await axios(config).then(function (response) {
-  //       if (response.status === 200) {
-  //         alert("Updated");
-  //         window.location.reload();
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Not updated");
-  //   }
-  // };
-
   const updatetoclose = async (id) => {
     try {
       const config = {
@@ -94,7 +116,7 @@ function RunningProject() {
       await axios(config);
       // Remove the closed row from the state
       const updatedData = treatmentdata.filter((item) => item._id !== id);
-      console.log("updatedData",updatedData)
+      console.log("updatedData", updatedData);
       settreatmentData(updatedData);
       alert("Updated");
       // Reload the page
@@ -104,13 +126,197 @@ function RunningProject() {
       alert("Not updated");
     }
   };
-  
+
   console.log(dsrdata._id);
 
-  const redirectURL=(data)=>{
-console.log(data);
-    navigate(`/painting/${data.cardNo}`)
-  }
+  const redirectURL = (data) => {
+    console.log(data);
+    navigate(`/painting/${data.cardNo}`);
+  };
+
+  useEffect(() => {
+    const filterResults = () => {
+      let results = treatmentdata;
+      if (runningDate) {
+        results = results.filter(
+          (item) =>
+            item.date &&
+            item.date.toLowerCase().includes(runningDate.toLowerCase())
+        );
+      }
+      if (catagoryData && catagoryData !== "Show All") {
+        results = results.filter(
+          (item) =>
+            item.customerData[0]?.category &&
+            item.customerData[0]?.category
+              .toLowerCase()
+              .includes(catagoryData.toLowerCase())
+        );
+      }
+      if (projectManager && projectManager !== "Show All") {
+        results = results.filter(
+          (item) =>
+            item.dsrdata[0]?.techName &&
+            item.dsrdata[0]?.techName
+              .toLowerCase()
+              .includes(projectManager.toLowerCase())
+        );
+      }
+      if (salesExecutive) {
+        results = results.filter(
+          (item) =>
+            item.dsrdata[0]?.salesExecutive &&
+            item.dsrdata[0]?.salesExecutive
+              .toLowerCase()
+              .includes(salesExecutive.toLowerCase())
+        );
+      }
+      if (customerName) {
+        results = results.filter(
+          (item) =>
+            item.customerData[0]?.customerName &&
+            item.customerData[0]?.customerName
+              .toLowerCase()
+              .includes(customerName.toLowerCase())
+        );
+      }
+      if (contactNo) {
+        results = results.filter((item) => {
+          const mainContact = item.customerData[0]?.mainContact;
+          if (typeof mainContact === "number") {
+            // Convert contactNo to a string before comparing (assuming it's a number)
+            return mainContact.toString().includes(contactNo);
+          }
+          return false;
+        });
+      }
+
+      if (address) {
+        results = results.filter((item) => {
+          const lnf = item.customerData[0]?.lnf;
+          const cnap = item.customer[0]?.cnap;
+          const rbhf = item.customer[0]?.rbhf;
+          if (lnf && lnf.toLowerCase().includes(address.toLowerCase())) {
+            return true;
+          }
+          if (cnap && cnap.toLowerCase().includes(address.toLowerCase())) {
+            return true;
+          }
+          if (rbhf && rbhf.toLowerCase().includes(address.toLowerCase())) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      if (city) {
+        results = results.filter(
+          (item) =>
+            item.customerData[0]?.city &&
+            item.customerData[0]?.city
+              .toLowerCase()
+              .includes(city.toLowerCase())
+        );
+      }
+      // if (quoteNo) {
+      //   results = results.filter(
+      //     (item) =>
+      //       item.techName && //no technician name
+      //       item.techName.toLowerCase().includes(quoteNo.toLowerCase())
+      //   );
+      // }
+      if (projectType) {
+        results = results.filter(
+          (item) =>
+            item.desc &&
+            item.desc.toLowerCase().includes(projectType.toLowerCase())
+        );
+      }
+      if (dateToComplete) {
+        results = results.filter(
+          (item) =>
+            item.dsrdata[0]?.daytoComplete &&
+            item.dsrdata[0]?.daytoComplete
+              .toLowerCase()
+              .includes(dateToComplete.toLowerCase())
+        );
+      }
+
+      if (worker) {
+        results = results.filter(
+          (item) =>
+            item.dsrdata[0]?.workerName &&
+            item.dsrdata[0]?.workerName
+              .toLowerCase()
+              .includes(worker.toLowerCase())
+        );
+      }
+      // if (vendorPayment) {
+      //   results = results.filter(
+      //     (item) =>
+      //       item.customerFeedback &&
+      //       item.customerFeedback
+      //         .toLowerCase()
+      //         .includes(vendorPayment.toLowerCase())
+      //   );
+      // }
+      if (charges) {
+        results = results.filter(
+          (item) =>
+            item.dsrdata[0]?.workerAmount &&
+            item.dsrdata[0]?.workerAmount
+              .toLowerCase()
+              .includes(charges.toLowerCase())
+        );
+      }
+      if (quoteValue) {
+        results = results.filter(
+          (item) =>
+            item.serviceCharge &&
+            item.serviceCharge.toLowerCase().includes(quoteValue.toLowerCase())
+        );
+      }
+      // if (payment) {
+      //   results = results.filter(
+      //     (item) =>
+      //       item.customerFeedback &&
+      //       item.customerFeedback
+      //         .toLowerCase()
+      //         .includes(payment.toLowerCase())
+      //   );
+      // }
+      // if (type) {
+      //   results = results.filter(
+      //     (item) =>
+      //       item."RUNNING PROJECTS" &&
+      //       item.RUNNING PROJECTS
+      //         .toLowerCase()
+      //         .includes(RUNNING PROJECTS.toLowerCase())
+      //   );
+      // }
+      setSearchResults(results);
+    };
+    filterResults();
+  }, [
+    runningDate,
+    catagoryData,
+    projectManager,
+    salesExecutive,
+    customerName,
+    contactNo,
+    address,
+    city,
+    quoteNo,
+    projectType,
+    dateToComplete,
+    worker,
+    vendorPayment,
+    charges,
+    quoteValue,
+    payment,
+    type,
+  ]);
+
   return (
     <div className="web">
       <Header />
@@ -127,91 +333,151 @@ console.log(data);
               <table class="table table-hover table-bordered mt-1">
                 <thead className="">
                   <tr>
+                    <th scope="col"></th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        className="vhs-table-input"
+                        type="date"
+                        onChange={(e) => setRunningDate(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <select className="vhs-table-input">
-                        <option>-show all-</option>
-                        <option>10/04/2023</option>
-                        <option>11/04/2023</option>
-                        <option>12/04/2023</option>
-                        <option>13/04/2023</option>
+                      <select
+                        className="vhs-table-input"
+                        onChange={(e) => setCatagoryData(e.target.value)}
+                      >
+                        <option value="">-show all-</option>
+                        {[...catagories].map((catagories) => (
+                          <option key={catagories}>{catagories}</option>
+                        ))}
                       </select>
                     </th>
                     <th scope="col">
-                      <select className="vhs-table-input">
-                        <option>-show all-</option>
-                        <option>Sunil</option>
-                        <option>farooq</option>
-                        <option>gajanan</option>
-                        <option>mr.nandhu</option>
+                      <select
+                        className="vhs-table-input"
+                        onChange={(e) => setProjectManager(e.target.value)}
+                      >
+                        <option value="">-show all-</option>
+                        {[...techName].map((techName) => (
+                          <option key={techName}>{techName}</option>
+                        ))}
                       </select>
                     </th>
                     <th scope="col">
-                      <select className="vhs-table-input">
-                        <option>-show all-</option>
-                        <option>Abhay</option>
-                        <option>Mr.Abhay</option>
-                        <option>hemakumar</option>
-                        <option>mr.rajesh</option>
-                      </select>
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setSalesExecutive(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setCustomerName(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setContactNo(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setAddress(e.target.value)}
+                      />
+                      {/* <option>-show all-</option>
+                        {treatmentdata.map((item) => (
+                          <option>
+                            {item.customerData[0]?.lnf},
+                            {item.customerData[0]?.rbhf},
+                            {item.customerData[0]?.cnap}
+                          </option>
+                        ))}
+                      </select> */}
                     </th>
                     <th scope="col">
-                      <select className="vhs-table-input">
-                        <option>-show all-</option>
-                        <option>bangalore</option>
-                        <option>chennai</option>
-                        <option>pone</option>
-                        <option>hyderabad</option>
-                      </select>
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setCity(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setQuoteNo(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setProjectType(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="date"
+                        className="vhs-table-input"
+                        onChange={(e) => setDateToComplete(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setWorker(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      {/* <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setVendorPayment(e.target.value)}
+                      /> */}
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setCharges(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setQuoteValue(e.target.value)}
+                      />
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
-                    </th>
-                    <th scope="col">
-                      <select className="vhs-table-input">
+                      {/* <select
+                        className="vhs-table-input"
+                        onChange={(e) => setPayment(e.target.value)}
+                      >
                         <option>-show all-</option>
                         <option>Book for deep cleaning</option>
                         <option>Closed by project manager</option>
                         <option>Running Projects</option>
-                      </select>
+                      </select> */}
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      {/* <input
+                        type="text"
+                        className="vhs-table-input"
+                        onChange={(e) => setType(e.target.value)}
+                      /> */}
                     </th>
                     <th scope="col">
-                      <input type="text" className="vhs-table-input" />
+                      {/* <input type="text" className="vhs-table-input"
+                       onChange={(e) => setContactNo(e.target.value)}
+                      /> */}
                     </th>
                   </tr>
 
@@ -277,7 +543,7 @@ console.log(data);
                   </tr>
                 </thead>
                 <tbody>
-                  {treatmentdata.map((item, index) => (
+                  {searchResults.map((item, index) => (
                     <tr className="user-tbale-body">
                       <td>{index + 1}</td>
                       <td>{item.date}</td>
@@ -287,7 +553,7 @@ console.log(data);
                       <td>{item.customerData[0]?.customerName}</td>
                       <td>{item.customerData[0]?.mainContact}</td>
                       <td>
-                        {item.customerData[0]?.lnf} {" "} {item.customerData[0]?.rbhf} {" "}
+                        {item.customerData[0]?.lnf} {item.customerData[0]?.rbhf}{" "}
                         {item.customerData[0]?.cnap}
                       </td>
                       <td>{item.customerData[0]?.city}</td>
@@ -306,15 +572,16 @@ console.log(data);
                       <td>
                         <div>
                           <span>
-                            <a onClick={()=>redirectURL(item)}  
-                            style={{cursor:"pointer"}}
+                            <a
+                              onClick={() => redirectURL(item)}
+                              style={{ cursor: "pointer" }}
                             >
                               Details
                             </a>
                           </span>{" "}
                           /{" "}
                           <span
-                            style={{ color: "orange", cursor:"pointer" }}
+                            style={{ color: "orange", cursor: "pointer" }}
                             onClick={() => updatetoclose(item._id)}
                           >
                             Close

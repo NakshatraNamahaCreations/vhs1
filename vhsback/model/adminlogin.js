@@ -13,6 +13,8 @@ const adminloginschema = new mongoose.Schema({
   password: {
     type: String,
   },
+}, {
+  timestamps: true,
 });
 
 const adminloginmodel = mongoose.model("admin", adminloginschema);

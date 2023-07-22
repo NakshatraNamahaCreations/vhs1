@@ -58,6 +58,18 @@ class addenquiry {
       return res.status(500).json({ error: "Something went wrong" });
     }
   }
+
+   //Get new data
+   async getnewdata(req, res) {
+    let data = (await enquiryfollowupModel.find({})).filter(
+      (i) => i.response === "New"
+    );
+    if (data) {
+      return res.status(200).json({ enquiryfollowup: data });
+    } else {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
   //post category
 
   async postsurveycat(req, res) {
@@ -72,6 +84,8 @@ class addenquiry {
       return res.json({ error: "something went wrong" });
     }
   }
+
+  
   async cancelsurvey(req, res) {
     try {
       let id = req.params.id;

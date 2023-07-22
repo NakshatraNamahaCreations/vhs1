@@ -54,6 +54,8 @@ const enquiryfollowSchema = new mongoose.Schema({
   sendSms:{
     type:String
   }
+}, {
+  timestamps: true,
 });
 
 const enquiryfollowupModel = mongoose.model("enquiryfollowup", enquiryfollowSchema);

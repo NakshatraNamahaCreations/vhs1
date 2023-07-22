@@ -26,7 +26,7 @@ function BasicExample() {
           </li>
           <li>
             <NavLink to="/technisian" activeClassName="active">
-              Technician
+              Team
             </NavLink>
           </li>
           <li>

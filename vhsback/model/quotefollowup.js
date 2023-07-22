@@ -33,6 +33,8 @@ const quotefollowSchema = new mongoose.Schema({
   staffName: {
     type: String,
   },
+}, {
+  timestamps: true,
 });
 
 const quotefollowupModel = mongoose.model("quotefollowup", quotefollowSchema);

@@ -8,6 +8,8 @@ const termsSchema = new mongoose.Schema({
   content: {
     type: String,
   },
+}, {
+  timestamps: true,
 });
 
 const termsmodel = mongoose.model("terms", termsSchema);

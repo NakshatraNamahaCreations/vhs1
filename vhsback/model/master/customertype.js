@@ -5,6 +5,10 @@ const customertypeSchema=new mongoose.Schema({
         type:String,
         require:true
     },
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
    
 });
 

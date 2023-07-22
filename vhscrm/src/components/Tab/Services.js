@@ -7,6 +7,8 @@ import DataTable from "react-data-table-component";
 import Modal from "react-bootstrap/Modal";
 
 function Services() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
   const [data1, setdata1] = useState([]);
   const [category, setcategory] = useState("");
   const [subcategory, setsubcategory] = useState("");
@@ -182,8 +184,13 @@ function Services() {
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setcategory(e.target.value)}
                       >
-                        {data1.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                         <option >
+                           ---SELECT---
+                          </option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>

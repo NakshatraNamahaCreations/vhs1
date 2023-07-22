@@ -19,6 +19,10 @@ const bankSchema = new mongoose.Schema({
   upinumber: {
     type: String,
   },
+  creatAt:{
+    type:Date,
+    default:new Date(),
+  }
 });
 
 const bankmodel = mongoose.model("bankacct", bankSchema);

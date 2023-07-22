@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
 import Header from "../layout/Header";
-import Enquirynav from "../Enquirynav";
+import Enquiryfollowupnav from "../Enquiryfollowupnav";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import "react-date-range/dist/styles.css"; // main style file
-import "react-date-range/dist/theme/default.css"; // theme css file
-import { DateRangePicker } from "react-date-range";
+import { Link, useNavigate } from "react-router-dom";
+import Enquirynav from "../Enquirynav";
 
-function Enquirynew(props) {
-  const navigate = useNavigate();
-  const [enquiryadddata, setenquiryadddata] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
+function Enquirynew() {
+  const navigate=useNavigate();
+  const [filterdata, setfilterdata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
+  const [searchResults, setSearchResults] = useState([]);
   const [searchCatagory, setSearchCatagory] = useState("");
   const [searchDateTime, setSearchDateTime] = useState("");
   const [searchName, setSearchName] = useState("");
@@ -20,38 +18,43 @@ function Enquirynew(props) {
   const [searchAddress, setSearchAddress] = useState("");
   const [searchReference, setSearchReference] = useState("");
   const [searchReference2, setSearchReference2] = useState("");
+
   const [searchCity, setSearchCity] = useState("");
   const [searchInterest, setSearchInterest] = useState("");
-  const [searchExecutive, setSearchExecutive] = useState("");
-  const [searchAppoDateTime, setSearchAppoDateTime] = useState("");
-  const [searchNote, setSearchNote] = useState("");
-  const [searchTechnician, setSearchTechnician] = useState("");
-  const [SearchTime, setSearchTime] = useState("");
+  const [searchFolldate, setSearchFolldate] = useState("");
+  const [searchStaff, setSearchStaff] = useState("");
+  const [searchResponse, setSearchResponse] = useState("");
+  const [searchDesc, setSearchDesc] = useState("");
+  const [searchNxtfoll, setSearchNxtfoll] = useState("")
+
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
-    getenquiryadd();
+    getenquiry();
   }, []);
 
-  const getenquiryadd = async () => {
-    let res = await axios.get(apiURL + "/getenquiry");
-    if (res.status === 200) {
-      setenquiryadddata(res.data?.enquiryadd);
-      setSearchResults(res.data?.enquiryadd);
+  let i = 0;
+  const getenquiry = async () => {
+    let res = await axios.get(apiURL + "/getallflwdata");
+    if ((res.status = 200)) {
+      setfilterdata(
+        res.data?.enquiryfollowup.filter((i)=>i.response === "New"));
+        setSearchResults(
+          res.data?.enquiryfollowup.filter((i)=>i.response === "New")
+        );
     }
   };
-
-  let i = 1;
-
   const enquirydetail = (data) => {
     console.log(data.EnquiryId);
     navigate(`/enquirydetail/${data.EnquiryId}`);
   };
 
+
   useEffect(() => {
     const filterResults = () => {
-      let results = enquiryadddata;
+      let results = filterdata;
       if (searchCatagory) {
         results = results.filter(
           (item) =>
@@ -62,94 +65,113 @@ function Enquirynew(props) {
       if (searchDateTime) {
         results = results.filter(
           (item) =>
-            item.enquirydate &&
-            item.enquirydate.toLowerCase().includes(searchDateTime.toLowerCase())
+            (item.enquirydata[0]?.enquirydate &&
+              item.enquirydate
+                .toLowerCase()
+                .includes(searchDateTime.toLowerCase())) 
         );
       }
-      if (SearchTime) {
-        results = results.filter(
-          (item) =>
-            item.time && item.time.toLowerCase().includes(SearchTime.toLowerCase())
-        );
-      }
+     
       if (searchName) {
         results = results.filter(
           (item) =>
-            item.name && item.name.toLowerCase().includes(searchName.toLowerCase())
+            item.enquirydata[0]?.name &&
+            item.enquirydata[0]?.name.toLowerCase().includes(searchName.toLowerCase())
         );
       }
       if (searchContact) {
         results = results.filter(
           (item) =>
-            item.contact1 &&
-            item.contact1.toLowerCase().includes(searchContact.toLowerCase())
+            item.enquirydata[0]?.contact1 &&
+            item.enquirydata[0]?.contact1.toLowerCase().includes(searchContact.toLowerCase())
         );
       }
       if (searchAddress) {
         results = results.filter(
           (item) =>
-            item.address &&
-            item.address.toLowerCase().includes(searchAddress.toLowerCase())
+            item.enquirydata[0]?.address &&
+            item.enquirydata[0]?.address.toLowerCase().includes(searchAddress.toLowerCase())
         );
       }
       if (searchReference) {
         results = results.filter(
           (item) =>
-            item.reference1 &&
-            item.reference1.toLowerCase().includes(searchReference.toLowerCase())
+            item.enquirydata[0]?.reference1 &&
+            item.enquirydata[0]?.reference1
+              .toLowerCase()
+              .includes(searchReference.toLowerCase())
         );
-      }
+      } //
       if (searchReference2) {
         results = results.filter(
           (item) =>
-            item.reference2 &&
-            item.reference2.toLowerCase().includes(searchReference2.toLowerCase())
+            item.enquirydata[0]?.reference2 &&
+            item.enquirydata[0]?.reference2
+              .toLowerCase()
+              .includes(searchReference2.toLowerCase())
         );
-      }
+      } //
       if (searchCity) {
         results = results.filter(
           (item) =>
-            item.city && item.city.toLowerCase().includes(searchCity.toLowerCase())
+            item.enquirydata[0]?.city &&
+            item.enquirydata[0]?.city.toLowerCase().includes(searchCity.toLowerCase())
         );
       }
       if (searchInterest) {
         results = results.filter(
           (item) =>
-            item.intrestedfor &&
-            item.intrestedfor.toLowerCase().includes(searchInterest.toLowerCase())
-        );
-      }
-      if (searchExecutive) {
-        results = results.filter(
-          (item) =>
-            item.executive &&
-            item.executive.toLowerCase().includes(searchExecutive.toLowerCase())
-        );
-      }
-      if (searchAppoDateTime) {
-        results = results.filter(
-          (item) =>
-            item.appoDate &&
-            item.appoDate.toLowerCase().includes(searchAppoDateTime.toLowerCase())
-        );
-      }
-      if (searchNote) {
-        results = results.filter(
-          (item) =>
-            item.comment &&
-            item.comment.toLowerCase().includes(searchNote.toLowerCase())
-        );
-      }
-      if (searchTechnician) {
-        results = results.filter(
-          (item) =>
-            item.technicianname &&
-            item.technicianname
+            item.enquirydata[0]?.intrestedfor &&
+            item.enquirydata[0]?.intrestedfor
               .toLowerCase()
-              .includes(searchTechnician.toLowerCase())
+              .includes(searchInterest.toLowerCase())
         );
       }
-
+      if (searchFolldate) {
+        results = results.filter(
+          (item) =>
+            item.folldate &&
+            item.folldate.toLowerCase().includes(searchFolldate.toLowerCase())
+        );
+      }
+      if (searchStaff) {
+        results = results.filter(
+          (item) =>
+            item.staffname &&
+            item.staffname
+              .toLowerCase()
+              .includes(searchStaff.toLowerCase())
+        );
+      }
+      if (searchResponse) {
+        results = results.filter(
+          (item) =>
+            item.response &&
+            item.response.toLowerCase().includes(searchResponse.toLowerCase())
+        );
+      }
+      if (searchDesc) {
+        results = results.filter(
+          (item) =>
+            item.desc &&
+            item.desc
+              .toLowerCase()
+              .includes(searchDesc.toLowerCase())
+        );
+      }
+      if (searchNxtfoll) {
+        results = results.filter(
+          (item) =>
+            (item.nxtfoll &&
+              item.nxtfoll
+                .toLowerCase()
+                .includes(searchNxtfoll.toLowerCase())) 
+        );
+      }
+      // results = results.map((item) => ({
+      //   ...item,
+      //   category: getUniqueCategories()[item.category],
+      // }));
       setSearchResults(results);
     };
     filterResults();
@@ -162,53 +184,69 @@ function Enquirynew(props) {
     searchReference,
     searchCity,
     searchInterest,
-    searchExecutive,
-    searchAppoDateTime,
-    searchNote,
-    searchTechnician,
+    searchFolldate,
+    searchStaff,
+    searchResponse,
+    searchDesc,
+    searchNxtfoll
   ]);
 
-  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const renderPagination = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(i);
+  function getColor(colorcode) {
+    if (colorcode === "easy") {
+      return "#ffb9798f";
+    } else if (colorcode === "medium") {
+      return "#0080002e";
+    } else if (colorcode === "hard") {
+      return '#ffb9798f"';
+    } else {
+      return "transparent";
     }
+  }
+// Pagination logic
+const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+const pageOptions = Array.from(
+  { length: totalPages },
+  (_, index) => index + 1
+);
 
-    return (
-      <ul className="pagination">
-        {pageNumbers.map((number) => (
-          <li
-            key={number}
-            className={currentPage === number ? "active" : ""}
-            onClick={() => handlePageChange(number)}
-          >
-            {number}
-          </li>
-        ))}
-      </ul>
-    );
-  };
+// Get current items for the current page
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
-
+// Change page
+const handlePageChange = (selectedPage) => {
+  setCurrentPage(selectedPage);
+};
   return (
-    <div className="web">
+    <div>
       <Header />
+    
       <Enquirynav />
 
       <div className="row m-auto">
         <div className="col-md-12">
-          <Table striped bordered hover>
+
+           {/* Pagination */}
+           <div className="pagination">
+            <span>Page </span>
+            <select
+            className="m-1"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
+            </select>
+            <span> of {totalPages}</span>
+          </div>
+        <table>
             <thead>
-            <tr className="tr ">
+              <tr className="tr ">
                 <th scope="col">
                   <input className="vhs-table-input" />{" "}
                 </th>
@@ -235,15 +273,7 @@ function Enquirynew(props) {
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
-                  {" "}
-                  <input
-                    className="vhs-table-input"
-                    placeholder="Enq Time"
-                    value={SearchTime}
-                    onChange={(e) => setSearchTime(e.target.value)}
-                  />{" "}
-                </th>
+
                 <th scope="col">
                   {" "}
                   <input
@@ -272,23 +302,6 @@ function Enquirynew(props) {
                   />{" "}
                 </th>
                 <th scope="col">
-                <input
-                    placeholder="Reference"
-                    className="vhs-table-input"
-                    value={searchReference}
-                    onChange={(e) => setSearchReference(e.target.value)}
-                  />{" "}
-                 
-                </th>
-                <th scope="col">
-                <input
-                    placeholder="Reference"
-                    className="vhs-table-input"
-                    value={searchReference2}
-                    onChange={(e) => setSearchReference2(e.target.value)}
-                  />{" "}
-                </th>
-                <th scope="col">
                   {" "}
                   <select
                     value={searchCity}
@@ -296,12 +309,25 @@ function Enquirynew(props) {
                   >
                     <option value="">Select </option>
                     {searchResults.map((e) => (
-                      <option value={e.city} key={e.city}>
-                        {e.city}{" "}
+                      <option
+                        value={e.enquirydata[0]?.city}
+                        key={e.enquirydata[0]?.city}
+                      >
+                        {e.enquirydata[0]?.city}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
+
+                <th scope="col">
+                  <input
+                    placeholder="Reference"
+                    className="vhs-table-input"
+                    value={searchReference2}
+                    onChange={(e) => setSearchReference2(e.target.value)}
+                  />{" "}
+                </th>
+
                 <th scope="col">
                   {" "}
                   <input
@@ -314,56 +340,105 @@ function Enquirynew(props) {
                 <th scope="col">
                   {" "}
                   <input
-                    placeholder="Executive"
+                    placeholder="foll date"
                     className="vhs-table-input"
-                    value={searchExecutive}
-                    onChange={(e) => setSearchExecutive(e.target.value)}
+                    value={searchFolldate}
+                    onChange={(e) => setSearchFolldate(e.target.value)}
                   />{" "}
                 </th>
-                </tr>
-              <tr className="tr clr">
-                <th>#</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Reference1</th>
-                <th>Reference2</th>
-                <th>City</th>
-                <th>Interested for</th>
-                <th>Executive</th>
+
+                <th scope="col">
+                  <input
+                    placeholder="Staff"
+                    className="vhs-table-input"
+                    value={searchStaff}
+                    onChange={(e) => setSearchStaff(e.target.value)}
+                  />{" "}
+                </th>
+                <th scope="col">
+                  <input
+                    placeholder="Response"
+                    className="vhs-table-input"
+                    value={searchResponse}
+                    onChange={(e) => setSearchResponse(e.target.value)}
+                  />{" "}
+                </th>
+                <th scope="col">
+                  <input
+                    placeholder="Desc"
+                    className="vhs-table-input"
+                    value={searchDesc}
+                    onChange={(e) => setSearchDesc(e.target.value)}
+                  />{" "}
+                </th>
+                <th scope="col">
+                  <input
+                    placeholder="Nxt foll"
+                    className="vhs-table-input"
+                    value={searchNxtfoll}
+                    onChange={(e) => setSearchNxtfoll(e.target.value)}
+                  />{" "}
+                </th>
+              </tr>
+              <tr className="bg">
+                <th className="bor">#</th>
+                <th className="bor">Category</th>
+                <th className="bor">Date</th>
+
+                <th className="bor">Name</th>
+                <th className="bor">Contact</th>
+                <th className="bor">Address</th>
+                <th className="bor">City</th>
+                <th className="bor">Reference2</th>
+
+                <th className="bor">Interested for</th>
+                <th className="bor">Foll Date</th>
+                <th className="bor">Staff</th>
+                <th className="bor">Response</th>
+                <th className="bor">Desc</th>
+                <th className="bor">Nxt Foll</th>
               </tr>
             </thead>
             <tbody>
-              {/* {currentItems.map((item) => (
-
+              {currentItems.map((item, index) => (
                 <a onClick={() => enquirydetail(item)} className="tbl">
-                  <tr className="trnew" key={searchResults["id"]}>
-                    <td>{i++}</td>
+                  <tr
+                    key={item.id}
+                    className="user-tbale-body tbl1 trnew"
+                    style={{
+                      backgroundColor: getColor(item.colorcode),
+                      color: "black",
+                    }}
+                  >
+                    <td>{index + 1}</td>
                     <td>{item.category}</td>
-                    <td>{item.enquirydate}</td>
-                    <td>{item.time}</td>
-                    <td>{item.name}</td>
-                    <td>{item.contact1}</td>
-                    <td>{item.address}</td>
-                    <td>{item.reference1}</td>
-                    <td>{item.reference2}</td>
-                    <td>{item.city}</td>
-                    <td>{item.intrestedfor}</td>
-                    <td>{item.executive}</td>
+                    <td>{item.enquirydata[0]?.enquirydate}</td>
+
+                    <td>{item.enquirydata[0]?.name}</td>
+                    <td>{item.enquirydata[0]?.contact1}</td>
+                    <td>{item.enquirydata[0]?.address}</td>
+                    <td>{item.enquirydata[0]?.city}</td>
+
+                    <td>{item.enquirydata[0]?.reference2}</td>
+                    <td>{item.enquirydata[0]?.intrestedfor}</td>
+                    <td>{item.folldate}</td>
+                    <td>{item.staffname}</td>
+                    <td>{item.response}</td>
+                    <td>{item.desc}</td>
+                    <td>{item.nxtfoll}</td>
                   </tr>
                 </a>
-              ))} */}
+              ))}
             </tbody>
-          </Table>
-
-          {renderPagination()} {/* Add pagination component */}
+          </table>
         </div>
       </div>
+
+     
     </div>
   );
 }
 
 export default Enquirynew;
+
+

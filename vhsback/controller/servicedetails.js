@@ -22,6 +22,7 @@ class servicedetails {
       dividedCharges,
       dividedamtDates,
       dividedamtCharges,
+      BackofficeExecutive
     } = req.body;
 
     if (!category) {
@@ -47,6 +48,7 @@ class servicedetails {
         dividedCharges,
         dividedamtDates,
         dividedamtCharges,
+        BackofficeExecutive
       });
       let save = add.save();
       if (save) {
@@ -58,24 +60,7 @@ class servicedetails {
   async editservicedetails(req, res) {
     let id = req.params.id;
     let {
-      // customerName,
-      // contactPerson,
-      // mainContact,
-      // alternateContact,
-      // email,
-      // gstinid,
-      // rbhf,
-      // cnap,
-      // lnf,
-      // mainArea,
-      // city,
-      // pinCode,
-      // customerType,
-      // size,
-      // color,
-      // instructions,
-      // approach,
-      // serviceExecute,
+  
       customerData,
       cardNo,
       dCategory,
@@ -91,29 +76,13 @@ class servicedetails {
       expiryDate,
       dividedDates,
       dividedCharges,
+      BackofficeExecutive
     } = req.body;
 
     let data = await servicedetailsmodel.findOneAndUpdate(
       { _id: id },
       {
-        // customerName,
-        // contactPerson,
-        // mainContact,
-        // alternateContact,
-        // email,
-        // gstinid,
-        // rbhf,
-        // cnap,
-        // lnf,
-        // mainArea,
-        // city,
-        // pinCode,
-        // customerType,
-        // size,
-        // color,
-        // instructions,
-        // approach,
-        // serviceExecute,
+       
         customerData,
         cardNo,
         dCategory,
@@ -129,6 +98,7 @@ class servicedetails {
         expiryDate,
         dividedDates,
         dividedCharges,
+        BackofficeExecutive
       }
     );
     if (data) {

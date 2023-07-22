@@ -47,6 +47,8 @@ function Quotelist() {
   };
   let i = 0;
 
+  console.log("quotelist",enquiryflwdata)
+
   useEffect(() => {
     const filterResults = () => {
       let results = enquiryflwdata;

@@ -10,7 +10,11 @@ const amaterialSchema=new mongoose.Schema({
     },
     benefits:{
         type:String,
-    }
+    },
+    creatAt:{
+        type:Date,
+        default:new Date(),
+      }
 });
 
 const amaterialmodel=mongoose.model("amaterial",amaterialSchema);

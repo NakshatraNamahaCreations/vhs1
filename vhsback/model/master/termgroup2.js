@@ -20,6 +20,8 @@ const termsgroupSchema = new mongoose.Schema({
   content:{
     type:String
   }
+}, {
+  timestamps: true,
 });
 
 const termsgroup2model = mongoose.model("termsgroup2", termsgroupSchema);

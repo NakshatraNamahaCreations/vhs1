@@ -75,6 +75,8 @@ const communitySchema = new mongoose.Schema({
   reports: {
     type: Boolean,
   },
+}, {
+  timestamps: true,
 });
 
 const communitymodel = mongoose.model("community", communitySchema);

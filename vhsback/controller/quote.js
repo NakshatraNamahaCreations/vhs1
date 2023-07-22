@@ -122,6 +122,14 @@ class addequote {
             as: "quotefollowup",
           },
         },
+        {
+          $lookup: {
+            from: "enquiryfollowups",
+            localField: "EnquiryId",
+            foreignField: "EnquiryId",
+            as: "enquiryfollowups",
+          },
+        },
       ]);
 
       return res.json({ quote: result });
