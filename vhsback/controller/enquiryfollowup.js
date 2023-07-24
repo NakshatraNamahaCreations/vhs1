@@ -186,10 +186,18 @@ class addenquiry {
             as: "enquirydata",
           },
         },
-      
+        {
+          $lookup: {
+            from: "treatments",
+            localField: "EnquiryId",
+            foreignField: "EnquiryId",
+            as: "treatmentData",
+          },
+        },
       ]);
       const data1=data.filter((i)=>i.response === "Survey")
       if (data1) {
+        console.log("data1",data1)
         return res.json({ enquiryfollowup: data });
       }
     } catch (error) {

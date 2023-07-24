@@ -15,6 +15,7 @@ class addequote {
       date,
       time,
       Bookedby,
+      salesExecutive
     } = req.body;
 
     if (!total) {
@@ -44,6 +45,7 @@ class addequote {
           date,
           time,
           Bookedby,
+          salesExecutive
         });
 
         let save = quote.save();
@@ -72,6 +74,7 @@ class addequote {
         date,
         time,
         Bookedby,
+        salesExecutive
       } = req.body;
       if (typeof GST !== "undefined") {
         GST = GST;
@@ -91,6 +94,7 @@ class addequote {
           date,
           time,
           Bookedby,
+          salesExecutive
         }
       );
       if (newData) {

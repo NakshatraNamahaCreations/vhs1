@@ -28,6 +28,7 @@ function Quotelist() {
   const [searchResponse, setSearchResponse] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("");
+  const [Type, setType] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +48,7 @@ function Quotelist() {
   };
   let i = 0;
 
-  console.log("quotelist",enquiryflwdata)
+  console.log("quotelist", enquiryflwdata);
 
   useEffect(() => {
     const filterResults = () => {
@@ -149,7 +150,9 @@ function Quotelist() {
         results = results.filter(
           (item) =>
             item.quotefollowup[0]?.desc &&
-            item.quotefollowup[0]?.desctoLowerCase().includes(searchDesc.toLowerCase())
+            item.quotefollowup[0]
+              ?.desctoLowerCase()
+              .includes(searchDesc.toLowerCase())
         );
       }
       if (searchNxtfoll) {
@@ -186,20 +189,19 @@ function Quotelist() {
     navigate(`/quotedetails/${data.EnquiryId}`);
   };
 
-   // Pagination logic
-   const totalPages = Math.ceil(searchResults.length / itemsPerPage);
-   const pageOptions = Array.from(
-     { length: totalPages },
-     (_, index) => index + 1
-   );
- 
-   // Get current items for the current page
-   const indexOfLastItem = currentPage * itemsPerPage;
-   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-   const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
- 
+  // Pagination logic
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+  const pageOptions = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
 
-   // Change page
+  // Get current items for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage);
   };
@@ -207,15 +209,42 @@ function Quotelist() {
     <div className="web">
       <Header />
       <Quotenav />
-
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="shadow-sm" style={{ border: "1px #cccccc solid" }}>
+          <div
+            className="ps-1 pe-1"
+            style={{ borderBottom: "1px #cccccc solid" }}
+          >
+            NOT SHARED
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#0080002e",
+            }}
+          >
+            QUOTE SHARED
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#ffb9798f",
+            }}
+          >
+            CONFIRMED
+          </div>
+         
+        </div>
+      </div>
       <div className="row m-auto">
         <div className="col-md-12">
-
-           {/* Pagination */}
-           <div className="pagination">
+          {/* Pagination */}
+          <div className="pagination">
             <span>Page </span>
             <select
-            className="m-1"
+              className="m-1"
               value={currentPage}
               onChange={(e) => handlePageChange(Number(e.target.value))}
             >
@@ -228,13 +257,13 @@ function Quotelist() {
             <span> of {totalPages}</span>
           </div>
 
-          <table >
+          <table>
             <thead>
-              <tr className="tr ">
-                <th scope="col">
+              <tr className="bg ">
+                <th scope="col" className="bor">
                   <input className="vhs-table-input" />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <select
                     value={searchCatagory}
@@ -251,7 +280,7 @@ function Quotelist() {
                     ))}
                   </select>{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -259,7 +288,7 @@ function Quotelist() {
                     // onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -267,7 +296,7 @@ function Quotelist() {
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -275,7 +304,7 @@ function Quotelist() {
                     onChange={(e) => setSearchName(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -283,7 +312,7 @@ function Quotelist() {
                     onChange={(e) => setSearchContact(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -291,7 +320,7 @@ function Quotelist() {
                     onChange={(e) => setSearchAddress(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <select
                     value={searchCity}
@@ -309,7 +338,7 @@ function Quotelist() {
                   </select>{" "}
                 </th>
 
-                <th scope="col">
+                <th scope="col" className="bor">
                   <input
                     className="vhs-table-input"
                     value={searchServices}
@@ -317,7 +346,7 @@ function Quotelist() {
                   />{" "}
                 </th>
 
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -325,7 +354,7 @@ function Quotelist() {
                     onChange={(e) => setsearchTotal(e.target.value)}
                   />
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -333,7 +362,7 @@ function Quotelist() {
                     onChange={(e) => setsearchExecutive(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   <input
                     className="vhs-table-input"
                     value={searchResponse}
@@ -341,7 +370,7 @@ function Quotelist() {
                   />{" "}
                 </th>
 
-                <th scope="col">
+                <th scope="col" className="bor">
                   <input
                     className="vhs-table-input"
                     value={searchenquirydate}
@@ -349,32 +378,34 @@ function Quotelist() {
                   />{" "}
                 </th>
 
-                <th scope="col">
+               
+                <th scope="col" className="bor">
                   <input
-                    className="vhs-table-input"
-                    value={searchDesc}
-                    onChange={(e) => setSearchDesc(e.target.value)}
-                  />{" "}
-                </th>
-                <th scope="col">
-                  <input
-         
                     className="vhs-table-input"
                     value={searchNxtfoll}
                     onChange={(e) => setSearchNxtfoll(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th scope="col" className="bor">
                   <input
-         
                     className="vhs-table-input"
                     value={searchDesc}
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
-                 
+                <th scope="col" className="bor">
+                <select
+                    
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option>Select </option>
+                    <option value="NOT SHARED">NOT SHARED </option>
+                    <option value="QUOTE SHARED">QUOTE SHARED </option>
+                    <option value="CONFIRMED">CONFIRMED </option>
+                   
+                  </select>{" "}
                 </th>
+              
               </tr>
               <tr className="bg">
                 <th className="bor">#</th>
@@ -398,7 +429,13 @@ function Quotelist() {
             <tbody>
               {currentItems.map((item) => (
                 <a onClick={() => click(item)} className="tbl">
-                  <tr className="trnew">
+                  <tr className="trnew"  style={{
+                  backgroundColor: item.quotefollowup[0]?.response === "Confirmed"
+                    ? "#ffb9798f"
+                    : item.quotefollowup[0]?.response ===""
+                      ? "#ffb9798f"
+                      : "white",
+                }}>
                     <td>{i++}</td>
                     <td>{item?.enquirydata[0]?.category}</td>
                     <td>{item?.quoteId}</td>
@@ -419,7 +456,11 @@ function Quotelist() {
                     <td>{item?.enquirydata[0]?.enquirydate}</td>
                     <td>{item?.quotefollowup[0]?.nxtfoll}</td>
                     <td>{item?.quotefollowup[0]?.desc}</td>
-                    <td></td>
+                    {item?.quotefollowup[0]?.response === "Confirmed" ?
+                    <td>CONFIRMED</td>: <td>NOT SHARED</td>
+                    
+                  }
+
                   </tr>
                 </a>
                 // </Link>

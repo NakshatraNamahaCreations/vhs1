@@ -124,7 +124,7 @@ function Closeproject() {
                   <td>{index + 1}</td>
                   <td>{item.closeDate}</td>
                   <td>{item.dsrdata[0]?.techName}</td>
-                  <td>{item.dsrdata[0]?.salesExecutive}</td>
+                  <td>{item.quotedata[0]?.salesExecutive}</td>
                   <td> {item.customerData[0]?.customerName}</td>
                   <td> {item.customerData[0]?.mainContact}</td>
                   <td>

@@ -298,7 +298,7 @@ function Dsrcallist() {
                   <Link
                     to="/dsrdetails "
                     className="tbl"
-                    state={{ data: selectedData }}
+                    state={{ data: selectedData,data1:date }}
                   >
                     <td>{i++}</td>
                     <td>{selectedData.category}</td>

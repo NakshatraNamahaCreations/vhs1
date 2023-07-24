@@ -26,6 +26,7 @@ class addcall {
       jobComplete,
       category,
       amount,
+      type,
       jobType
     } = req.body;
     try {
@@ -60,6 +61,7 @@ class addcall {
         techName,
         showinApp,
         sendSms,
+        type,
         inSignDateTime,
         outSignDateTime,
         jobComplete,
@@ -101,6 +103,7 @@ class addcall {
       techName,
       showinApp,
       sendSms,
+      type,
       inSignDateTime,
       outSignDateTime,
       jobComplete,
@@ -129,6 +132,7 @@ class addcall {
         techName,
         showinApp,
         sendSms,
+        type,
         inSignDateTime,
         outSignDateTime,
         jobComplete,

@@ -42,7 +42,7 @@ function Quotedetails() {
   const [projecttype, setprojecttype] = useState(
     quotepagedata[0]?.quotedata[0]?.projectType
   );
-  const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby)
+  const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby);
   const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
 
   const nearte = parseInt(ajobdatarate.map((i) => i.rate));
@@ -94,6 +94,7 @@ function Quotedetails() {
           response: response1,
           nxtfoll: quotenxtfoll,
           desc: descrption,
+          
         },
       };
       await axios(config).then(function (response) {
@@ -200,7 +201,6 @@ function Quotedetails() {
       category: category,
     });
     if ((res.status = 200)) {
-     
       setmaterialdata(res.data?.amaterial);
     }
   };
@@ -266,12 +266,13 @@ function Quotedetails() {
 
   const total = calculateTotalPrice(treatmentdata);
   const GSTAmount = total * 0.05;
-  const totalWithGST = Gst?(total + GSTAmount):total;
+  const totalWithGST = Gst ? total + GSTAmount : total;
 
   const adjustedTotal = total - parseFloat(adjustments);
-  const adjustedNetTotal = Gst ? totalWithGST - parseFloat(adjustments): adjustedTotal;
-  const net=adjustedNetTotal?adjustedNetTotal:totalWithGST
-
+  const adjustedNetTotal = Gst
+    ? totalWithGST - parseFloat(adjustments)
+    : adjustedTotal;
+  const net = adjustedNetTotal ? adjustedNetTotal : totalWithGST;
 
   const savequote = async (e) => {
     e.preventDefault();
@@ -281,7 +282,6 @@ function Quotedetails() {
     } else {
       try {
         // Calculate adjusted total and net total
-     
 
         const config = {
           url: "/addquote",
@@ -293,13 +293,14 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: adjustedNetTotal?adjustedNetTotal:total,
+            qamt: adjustedNetTotal ? adjustedNetTotal : total,
             adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal:adjustedNetTotal?adjustedNetTotal:total ,
-            Bookedby:admin.displayname,
-            
+            netTotal: adjustedNetTotal ? adjustedNetTotal : total,
+            Bookedby: admin.displayname,
+            salesExecutive:admin.displayname,
+
             date: moment().format("L"),
             time: moment().format("LT"),
           },
@@ -335,14 +336,15 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: adjustedNetTotal?adjustedNetTotal:total,
+            qamt: adjustedNetTotal ? adjustedNetTotal : totalWithGST,
             adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: adjustedNetTotal?adjustedNetTotal:total,
+            netTotal: adjustedNetTotal ? adjustedNetTotal : totalWithGST,
             date: quotedata[0]?.date,
             time: quotedata[0]?.time,
-            Bookedby:admin.displayname,
+            salesExecutive:admin.displayname,
+            Bookedby: admin.displayname,
           },
         };
         await axios(config).then(function (response) {
@@ -446,10 +448,10 @@ function Quotedetails() {
                     >
                       <option>--select--</option>
                       {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
+                        <option key={index} value={category.name}>
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
                   </div>{" "}
                   <div className="col-md-4">
@@ -685,17 +687,20 @@ function Quotedetails() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={adjustedNetTotal?adjustedNetTotal:quotedata[0]?.netTotal}
-                    
-                      onChange={(e)=>setnetTotal(e.target.value)}
-                      // value={adjustedNetTotal?adjustedNetTotal:totalWithGST}
+                      // value={
+                      //   adjustedNetTotal
+                      //     ? adjustedNetTotal
+                      //     : quotedata[0]?.netTotal
+                      // }
+                      onChange={(e) => setnetTotal(e.target.value)}
+                      value={adjustedNetTotal?adjustedNetTotal:totalWithGST}
                       // defaultValue={ netTotal? quotedata[0]?.netTotal?quotedata[0]?.netTotal: net}
                     />
                   </div>
                 </div>{" "}
               </div>
 
-              <div className="row pt-3 justify-content-center">
+              <div className="row pt-3 justify-content-center mt-3">
                 <div className="col-md-2 ">
                   {quotepagedata[0]?.quotedata.length <= 0 ? (
                     <button
@@ -721,6 +726,16 @@ function Quotedetails() {
                       Print Quote
                     </button>
                   </Link>
+                </div>
+                <div className="col-md-2 ">
+                  <button className="vhs-button " style={{ width: "150px" }}>
+                    Send Quote by SMS
+                  </button>
+                </div>
+                <div className="col-md-2 ">
+                  <button className="vhs-button " style={{ width: "150px" }}>
+                    Send Quote by Whatsapp
+                  </button>
                 </div>
               </div>
             </div>

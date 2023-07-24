@@ -33,10 +33,15 @@ function Login() {
 
           window.location.assign("/home");
         }
+        else{
+          // alert(data.response);
+       alert(response.data.error)
+        }
       });
     } catch (error) {
-      console.error(error);
-      alert("Invalid email and password");
+    //  alert(error.error) ;
+      // alert("Invalid email and password");
+      // alert(response.data.error)
     }
   };
 

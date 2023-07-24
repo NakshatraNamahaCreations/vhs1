@@ -22,7 +22,6 @@ class servicedetails {
       dividedCharges,
       dividedamtDates,
       dividedamtCharges,
-      BackofficeExecutive
     } = req.body;
 
     if (!category) {
@@ -48,7 +47,6 @@ class servicedetails {
         dividedCharges,
         dividedamtDates,
         dividedamtCharges,
-        BackofficeExecutive
       });
       let save = add.save();
       if (save) {
@@ -60,7 +58,7 @@ class servicedetails {
   async editservicedetails(req, res) {
     let id = req.params.id;
     let {
-  
+    
       customerData,
       cardNo,
       dCategory,
@@ -76,13 +74,12 @@ class servicedetails {
       expiryDate,
       dividedDates,
       dividedCharges,
-      BackofficeExecutive
     } = req.body;
 
     let data = await servicedetailsmodel.findOneAndUpdate(
       { _id: id },
       {
-       
+
         customerData,
         cardNo,
         dCategory,
@@ -98,7 +95,6 @@ class servicedetails {
         expiryDate,
         dividedDates,
         dividedCharges,
-        BackofficeExecutive
       }
     );
     if (data) {
@@ -147,37 +143,31 @@ class servicedetails {
         {
           $lookup: {
             from: "payments",
-            localField: "customer.customerData._id",
-            foreignField: "customerId",
+            localField: "customer._id",
+            foreignField: "customer",
             as: "paymentData",
           },
         },
-        // {
-        //   $match: {
-        //     "paymentData.customer": customerId
-        //   }
-        // },
-        // {
-        //   $lookup: {
-        //     from: "payments",
-        //     let: { customerId: "$customer.customerData._id" },
-        //     pipeline: [
-        //       {
-        //         $match: {
-        //           $expr: {
-        //             $and: [
-        //               { $eq: ["$customerId", "$$customerId"] },
-        //               { $eq: ["$customerId", userId] }
-        //             ]
-        //           }
-        //         }
-        //       }
-        //     ],
-        //     as: "paymentData",
-        //   },
-        // },
+        {
+          $lookup: {
+            from: "treatments",
+            localField: "customer.EnquiryId",
+            foreignField: "EnquiryId",
+            as: "treatmentData",
+          },
+        },
+        {
+          $lookup: {
+            from: "quotes",
+            localField: "customer.EnquiryId",
+            foreignField: "EnquiryId",
+            as: "quotedata",
+          },
+        },
+       
       ]);
       if (data) {
+        console.log("data===", data);
         return res.json({ runningdata: data });
       }
     } catch (error) {

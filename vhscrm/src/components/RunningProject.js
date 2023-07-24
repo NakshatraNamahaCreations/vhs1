@@ -94,7 +94,7 @@ function RunningProject() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const filteredData = res.data?.runningdata.filter(
-        (i) => i.contractType === "AMC"
+        (i) => i.contractType === "AMC" && !i.closeProject
       );
       settreatmentData(filteredData);
       setSearchResults(filteredData);
@@ -317,6 +317,40 @@ function RunningProject() {
     type,
   ]);
 
+  // Function to calculate the total amount from the paymentData array
+  function calculateTotalPaymentAmount(paymentData) {
+    let totalAmount = 0;
+    for (const payment of paymentData) {
+      const amountString = payment.amount;
+      const cleanedAmountString = amountString.replace(/[^\d.-]/g, "");
+      const amount = parseFloat(cleanedAmountString);
+      if (!isNaN(amount)) {
+        totalAmount += amount;
+      }
+    }
+    return totalAmount.toFixed(2); // Format the total amount with two decimal places
+  }
+
+ // Function to calculate the total vendor payment amount
+function calculateTotalvendorAmount(paymentData) {
+  let totalAmount = 0;
+
+  // Loop through the payment data and sum up the amounts where the payment type is "Vendor"
+  paymentData.forEach((payment) => {
+    if (payment.paymentType === "Vendor") {
+      totalAmount += parseFloat(payment.amount); // Assuming the amount is a string representing a number
+    }
+  });
+
+  return totalAmount.toFixed(2); // You can adjust the number of decimal places as needed
+}
+
+  // Function to calculate the pending amount (assuming the total amount is constant)
+  function calculatePendingPaymentAmount(paymentData, serviceCharge) {
+    const totalAmount = calculateTotalPaymentAmount(paymentData);
+    const pendingAmount = totalAmount - parseFloat(serviceCharge);
+    return pendingAmount.toFixed(2); // Format the pending amount with two decimal places
+  }
   return (
     <div className="web">
       <Header />
@@ -524,13 +558,13 @@ function RunningProject() {
                     <th scope="col" className="table-head">
                       Vendor Payment
                     </th>
-                    <th scope="col" className="table-head">
+                    <th scope="col" className="table-head" style={{minWidth:"160px"}}>
                       Charges
                     </th>
                     <th scope="col" className="table-head">
                       Quote Value
                     </th>
-                    <th scope="col" className="table-head">
+                    <th scope="col" className="table-head" style={{minWidth:"160px"}}>
                       Payment
                     </th>
                     <th scope="col" className="table-head">
@@ -549,7 +583,7 @@ function RunningProject() {
                       <td>{item.date}</td>
                       <td>{item.customerData[0]?.category}</td>
                       <td>{item.dsrdata[0]?.techName}</td>
-                      <td>{item.dsrdata[0]?.salesExecutive}</td>
+                      <td>{item.quotedata[0]?.salesExecutive}</td>
                       <td>{item.customerData[0]?.customerName}</td>
                       <td>{item.customerData[0]?.mainContact}</td>
                       <td>
@@ -557,14 +591,102 @@ function RunningProject() {
                         {item.customerData[0]?.cnap}
                       </td>
                       <td>{item.customerData[0]?.city}</td>
-                      <td></td>
+                      <td>{item.quotedata[0]?.quoteId}</td>
                       <td>{item.desc}</td>
                       <td>{item.dsrdata[0]?.daytoComplete}</td>
                       <td>{item.dsrdata[0]?.workerName}</td>
-                      <td>0.00</td>
-                      <td>{item.dsrdata[0]?.workerAmount}</td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Vendor"
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Vendor")
+                              .map((i) => (
+                                <p key={i._id}>
+                                 {i.amount}
+                                </p>
+                              ))}
+                           
+                          </div>
+                        ) : (
+                          <p>0.0</p>
+                        )}
+                      </td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Vendor"
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Vendor")
+                              .map((i) => (
+                                <p key={i._id} className="mb-0 text-right">
+                                  ({i.paymentDate}) {i.amount}
+                                </p>
+                              ))}
+                            <div >
+                              <hr className="mb-0 mt-0"/>
+                              <p className="mb-0 text-right">
+                                <b> Total:{" "}
+                                {calculateTotalvendorAmount(item.paymentData)}</b>
+                               
+                              </p>
+                              {/* <p>
+                                Pending:{" "}
+                                {calculatePendingPaymentAmount(
+                                  item.paymentData.filter(
+                                    (i) => i.paymentType === "Vendor"
+                                  ),
+                                  item.serviceCharge
+                                )}
+                              </p> */}
+                            </div>
+                          </div>
+                        ) : (
+                          <p></p>
+                        )}
+                      </td>
                       <td>{item.serviceCharge}</td>
-                      <td></td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Customer"
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Customer")
+                              .map((i) => (
+                                <p key={i._id} className="mb-0 text-right" >
+                                  ({i.paymentDate}) {i.amount}
+                                </p>
+                              ))}
+                            <div>
+                              <hr className="mb-0 mt-0"/>
+                              <p className="mb-0 text-right">
+                                <b>
+                                Total:{" "}
+                                {calculateTotalPaymentAmount(item.paymentData)}
+                                </b>
+                              
+                              </p>
+                              <p className="text-right">
+                              <b>
+                              Pending:{" "}
+                                {calculatePendingPaymentAmount(
+                                  item.paymentData.filter(
+                                    (i) => i.paymentType === "Customer"
+                                  ),
+                                  item.serviceCharge
+                                )}
+                                </b>  
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p></p>
+                        )}
+                      </td>
+
                       <td>
                         <div>RUNNING PROJECTS</div>
                       </td>

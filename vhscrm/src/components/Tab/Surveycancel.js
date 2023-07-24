@@ -34,6 +34,29 @@ function Surveydatatable() {
   // const handleShow = () => setShow(true);
   const [showPopup, setShowPopup] = useState({});
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [catagories, setCatagories] = useState(new Set());
+  const [reference, setReference] = useState(new Set());
+  const [cities, setCities] = useState(new Set());
+
+  useEffect(() => {
+    const uniqueCatagories = new Set(
+      searchResults.map((item) => item.category).filter(Boolean)
+    );
+    const uniquereference = new Set(
+      searchResults
+        .map((item) => item.enquirydata[0]?.reference1)
+        .filter(Boolean)
+    );
+    const uniqueCities = new Set(
+      searchResults.map((item) => item.enquirydata[0]?.city).filter(Boolean)
+    );
+    setCatagories(uniqueCatagories);
+    setReference(uniquereference);
+    setCities(uniqueCities);
+  }, [searchResults]);
   useEffect(() => {
     getenquiry();
   }, []);
@@ -44,12 +67,11 @@ function Surveydatatable() {
       const fd = res.data?.enquiryfollowup.filter(
         (i) => i.response === "Survey"
       );
-      console.log(fd);
-
       const filteredData = fd.filter(
         (entry) =>  entry.cancelStatus === "true"
       );
-      console.log("filteredData", filteredData);
+
+    
       setFilteredData(filteredData);
       setSearchResults(filteredData);
     }
@@ -92,12 +114,6 @@ function Surveydatatable() {
     }
   };
 
-  // const getUniqueCategories = () => {
-  //   const uniqueCategories = new Set();
-  //   searchResults.map((item) => uniqueCategories.add(item.category));
-  //   return Array.from(uniqueCategories);
-  // };
-
   useEffect(() => {
     const filterResults = () => {
       let results = filteredData;
@@ -111,8 +127,8 @@ function Surveydatatable() {
       if (searchDateTime) {
         results = results.filter(
           (item) =>
-            (item.enquirydate &&
-              item.enquirydate
+            (item.enquirydata[0]?.enquirydate &&
+              item.enquirydata[0]?.enquirydate
                 .toLowerCase()
                 .includes(searchDateTime.toLowerCase())) ||
             (item.appoTime &&
@@ -124,29 +140,35 @@ function Surveydatatable() {
       if (searchName) {
         results = results.filter(
           (item) =>
-            item.name &&
-            item.name.toLowerCase().includes(searchName.toLowerCase())
+            item.enquirydata[0]?.name &&
+            item.enquirydata[0]?.name
+              .toLowerCase()
+              .includes(searchName.toLowerCase())
         );
       }
       if (searchContact) {
         results = results.filter(
           (item) =>
-            item.contact1 &&
-            item.contact1.toLowerCase().includes(searchContact.toLowerCase())
+            item.enquirydata[0]?.contact1 &&
+            item.enquirydata[0]?.contact1
+              .toLowerCase()
+              .includes(searchContact.toLowerCase())
         );
       }
       if (searchAddress) {
         results = results.filter(
           (item) =>
-            item.address &&
-            item.address.toLowerCase().includes(searchAddress.toLowerCase())
+            item.enquirydata[0]?.address &&
+            item.enquirydata[0]?.address
+              .toLowerCase()
+              .includes(searchAddress.toLowerCase())
         );
       }
       if (searchReference) {
         results = results.filter(
           (item) =>
-            item.reference1 &&
-            item.reference1
+            item.enquirydata[0]?.reference1 &&
+            item.enquirydata[0]?.reference1
               .toLowerCase()
               .includes(searchReference.toLowerCase())
         );
@@ -154,15 +176,17 @@ function Surveydatatable() {
       if (searchCity) {
         results = results.filter(
           (item) =>
-            item.city &&
-            item.city.toLowerCase().includes(searchCity.toLowerCase())
+            item.enquirydata[0]?.city &&
+            item.enquirydata[0]?.city
+              .toLowerCase()
+              .includes(searchCity.toLowerCase())
         );
       }
       if (searchInterest) {
         results = results.filter(
           (item) =>
-            item.intrestedfor &&
-            item.intrestedfor
+            item.enquirydata[0]?.intrestedfor &&
+            item.enquirydata[0]?.intrestedfor
               .toLowerCase()
               .includes(searchInterest.toLowerCase())
         );
@@ -170,8 +194,10 @@ function Surveydatatable() {
       if (searchExecutive) {
         results = results.filter(
           (item) =>
-            item.executive &&
-            item.executive.toLowerCase().includes(searchExecutive.toLowerCase())
+            item.enquirydata[0]?.executive &&
+            item.enquirydata[0]?.executive
+              .toLowerCase()
+              .includes(searchExecutive.toLowerCase())
         );
       }
       if (searchAppoDateTime) {
@@ -200,8 +226,8 @@ function Surveydatatable() {
         );
       }
       // results = results.map((item) => ({
-      //   ...item,
-      //   category: getUniqueCategories()[item.category],
+      // ...item,
+      // category: getUniqueCategories()[item.category],
       // }));
       setSearchResults(results);
     };
@@ -223,34 +249,98 @@ function Surveydatatable() {
 
   let i = 1;
 
+  // Pagination logic
+  const totalPages = Math.ceil(searchResults.length / itemsPerPage);
+  const pageOptions = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1
+  );
+
+  // Get current items for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = searchResults.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Change page
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage);
+  };
+
   return (
     <div className="web">
       <Header />
       <Surveynav />
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="shadow-sm" style={{ border: "1px #cccccc solid" }}>
+          <div
+            className="ps-1 pe-1"
+            style={{ borderBottom: "1px #cccccc solid" }}
+          >
+            NOT ASSIGNED
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#ffb9798f",
+            }}
+          >
+            ASSIGNED FOR SURVEY
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#dde9fd",
+            }}
+          >
+            QUOTE GENERATED
+          </div>
+          <div className="ps-1 pe-1" style={{ backgroundColor: "#d1e8d1" }}>
+            QUOTE SHARED
+          </div>
+        </div>
+      </div>
 
       <div className="">
         <div className="col-md-12">
-          <Table className="m-2" striped bordered hover>
+          {/* Pagination */}
+          <div className="pagination p-2">
+            <span>Page </span>
+            <select
+              className="m-1"
+              value={currentPage}
+              onChange={(e) => handlePageChange(Number(e.target.value))}
+            >
+              {pageOptions.map((page) => (
+                <option value={page} key={page}>
+                  {page}
+                </option>
+              ))}
+            </select>
+            <span> of {totalPages}</span>
+          </div>
+          <table className="m-2">
             <thead>
-            <tr className="tr ">
-                <th scope="col">
+              <tr className="bg ">
+                <th className="bor">
                   <input className="vhs-table-input" />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <select
                     value={searchCatagory}
                     onChange={(e) => setSearchCatagory(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {searchResults.map((e) => (
-                      <option value={e.category} key={e.category}>
-                        {e.category}{" "}
+                    {[...catagories].map((catagories) => (
+                      <option value={catagories} key={catagories}>
+                        {catagories}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     className="vhs-table-input"
@@ -259,7 +349,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchDateTime(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Name"
@@ -268,7 +358,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchName(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Contact"
@@ -277,7 +367,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchContact(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Address"
@@ -286,34 +376,34 @@ function Surveydatatable() {
                     onChange={(e) => setSearchAddress(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   <select
                     value={searchReference}
                     onChange={(e) => setSearchReference(e.target.value)}
                   >
                     <option value="">Select</option>
-                    {searchResults.map((e) => (
-                      <option value={e.enquirydata[0]?.reference1} key={e.enquirydata[0]?.reference1}>
-                        {e.enquirydata[0]?.reference1}{" "}
+                    {[...reference].map((refere) => (
+                      <option value={refere} key={refere}>
+                        {refere}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <select
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
                   >
                     <option value="">Select </option>
-                    {searchResults.map((e) => (
-                      <option value={e.enquirydata[0]?.city} key={e.enquirydata[0]?.city}>
-                        {e.enquirydata[0]?.city}{" "}
+                    {[...cities].map((city) => (
+                      <option value={city} key={city}>
+                        {city}{" "}
                       </option>
                     ))}
                   </select>{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Interested For"
@@ -322,7 +412,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchInterest(e.target.value)}
                   />
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Executive"
@@ -331,7 +421,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchExecutive(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Appo. Date Time"
@@ -340,7 +430,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchAppoDateTime(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <input
                     placeholder="Note"
@@ -349,7 +439,7 @@ function Surveydatatable() {
                     onChange={(e) => setSearchNote(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   <select
                     value={searchTechnician}
                     onChange={(e) => setSearchTechnician(e.target.value)}
@@ -362,7 +452,7 @@ function Surveydatatable() {
                     ))}
                   </select>{" "}
                 </th>
-                <th scope="col">
+                <th className="bor">
                   {" "}
                   <select
                   // value={filters.Type} onChange={handleInputChange}
@@ -370,31 +460,44 @@ function Surveydatatable() {
                     <option>Select</option>
                   </select>{" "}
                 </th>
-                <th scope="col"></th>
-                <th scope="col">Action</th>
+                <th className="bor"></th>
+                <th className="bor"></th>
+                <th className="bor">Action</th>
               </tr>
-              <tr className="tr clr">
-                <th>#</th>
-                <th>Category</th>
-                <th>Enq Date Time</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Reference</th>
-                <th>City</th>
-                <th>Interested For</th>
-                <th>Executive</th>
-                <th>Appo. Date Time</th>
-                <th>Note</th>
-                <th>Technician</th>
-                <th>Type</th>
-                <th>Reason for cancel</th>
-                <th>Action</th>
+              <tr className="bg">
+                <th className="bor">#</th>
+                <th className="bor">Category</th>
+                <th className="bor">Enq Date Time</th>
+                <th className="bor">Name</th>
+                <th className="bor">Contact</th>
+                <th className="bor">Address</th>
+                <th className="bor">Reference</th>
+                <th className="bor">City</th>
+                <th className="bor">Interested For</th>
+                <th className="bor">Executive</th>
+
+                <th className="bor">Appo. Date Time</th>
+                <th className="bor">Note</th>
+                <th className="bor">Technician</th>
+                <th className="bor">Comment</th>
+                <th className="bor">Type</th>
+                <th className="bor">Reason for cancel</th>
+                <th className="bor">Action</th>
               </tr>
             </thead>
             <tbody>
-              {searchResults.map((item) => (
-                <tr className="trnew">
+              {currentItems.map((item) => (
+                <tr
+                  className="trnew"
+                  style={{
+                    backgroundColor:
+                      item.treatmentData.length > 0
+                        ? "#dde9fd"
+                        : item.technicianname
+                        ? "#ffb9798f"
+                        : "white",
+                  }}
+                >
                   <Link
                     to="/surveydetails"
                     state={{ data: item }}
@@ -419,29 +522,36 @@ function Surveydatatable() {
                     <td>{item.enquirydata[0]?.city}</td>
                     <td>{item.enquirydata[0]?.intrestedfor}</td>
                     <td>{item.enquirydata[0]?.executive}</td>
-                    <td>{item.nxtfoll}</td>
+                    <td>
+                      {item.appoDate}
+                      <br />
+                      {item.appoTime}
+                    </td>
                     <td>{item.enquirydata[0]?.comment}</td>
                     <td>{item.technicianname}</td>
-                    <td></td>
+                    <td>{item.enquirydata[0]?.comment}</td>
+
+                    <td>
+                      {item.treatmentData.length > 0
+                        ? "QUOTE GENERATED"
+                        : item.technicianname
+                        ? "ASSIGNED FOR SURVEY"
+                        : "NOT ASSIGNED"}
+                    </td>
                     <td>{item.reasonForCancel}</td>
                   </Link>
-               
+
                   <td>
                     {item?.cancelStatus ? (
                       <p style={{ color: "#a9042e" }}>Survey Cancelled</p>
                     ) : (
-                      <button
-                      
-                        onClick={() => openPop(item)}
-                      >
-                        Cancel
-                      </button>
+                      <button onClick={() => openPop(item)}>Cancel</button>
                     )}
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
+          </table>
         </div>
         <Modal show={show} onHide={handleClose}>
           <Modal.Header>

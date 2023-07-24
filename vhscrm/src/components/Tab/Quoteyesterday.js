@@ -232,6 +232,35 @@ return (
     <Header />
     <Quotefollowupnav />
 
+    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="shadow-sm" style={{ border: "1px #cccccc solid" }}>
+          <div
+            className="ps-1 pe-1"
+            style={{ borderBottom: "1px #cccccc solid" }}
+          >
+            NOT SHARED
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#0080002e",
+            }}
+          >
+            QUOTE SHARED
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "#ffb9798f",
+            }}
+          >
+            CONFIRMED
+          </div>
+         
+        </div>
+      </div>
     <div className="row m-auto">
       <div className="col-md-12">
 
@@ -382,13 +411,7 @@ return (
                   />{" "}
                 </th>
 
-                <th scope="col" className="bor">
-                  <input
-                    className="vhs-table-input"
-                    value={searchDesc}
-                    onChange={(e) => setSearchDesc(e.target.value)}
-                  />{" "}
-                </th>
+              
                 <th scope="col" className="bor">
                   <input
                     className="vhs-table-input"
@@ -396,7 +419,25 @@ return (
                     onChange={(e) => setSearchNxtfoll(e.target.value)}
                   />{" "}
                 </th>
-               
+                {/* <th scope="col" className="bor">
+                  <input
+                    className="vhs-table-input"
+                    value={searchDesc}
+                    onChange={(e) => setSearchDesc(e.target.value)}
+                  />{" "}
+                </th> */}
+                <th scope="col" className="bor">
+                <select
+                    
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option>Select </option>
+                    <option value="NOT SHARED">NOT SHARED </option>
+                    <option value="QUOTE SHARED">QUOTE SHARED </option>
+                    <option value="CONFIRMED">CONFIRMED </option>
+                   
+                  </select>{" "}
+                </th>
                
               </tr>
             <tr className="bg">
@@ -421,7 +462,13 @@ return (
           <tbody>
             {currentItems.map((item) => (
               <a onClick={() => click(item)} className="tbl">
-                <tr className="trnew">
+                <tr className="trnew" style={{
+                  backgroundColor: item.response === "Confirmed"
+                    ? "#ffb9798f"
+                    : item.response ===""
+                      ? "#ffb9798f"
+                      : "white",
+                }}>
                   <td>{i++}</td>
                   <td>{item?.enquirydata[0]?.category}</td>
                   <td>{item?.quotedata[0]?.quoteId}</td>
@@ -442,7 +489,10 @@ return (
                   <td>{item?.enquiryfollowupdata[0]?.folldate}</td>
                   <td>{item?.nxtfoll}</td>
                   <td>{item?.desc}</td>
-                  <td></td>
+                  {item?.response === "Confirmed" ?
+                    <td>CONFIRMED</td>: <td>NOT SHARED</td>
+                    
+                  }
                 </tr>
               </a>
               // </Link>

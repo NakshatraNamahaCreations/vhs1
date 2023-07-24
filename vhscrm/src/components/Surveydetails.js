@@ -49,7 +49,7 @@ function Createquote() {
       await axios(config).then(function (response) {
         if (response.status === 200) {
           alert("Successfully Added");
-          window.location.assign("/surveydetails");
+         navigate(`/quotedetails/${data.EnquiryId}`);
         }
       });
     } catch (error) {

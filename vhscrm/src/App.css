@@ -673,3 +673,7 @@ background-color: #a9042e;
   border: none;
   font-size: 16px;
   padding-left: 10px;}
+
+  .text-right{
+    text-align: end;
+  }

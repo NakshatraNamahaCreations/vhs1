@@ -4,7 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { da } from "date-fns/locale";
-import numberToWords from 'number-to-words';
+import numberToWords from "number-to-words";
 
 function Quotationterm() {
   const [tcdata, settcdata] = useState([]);
@@ -13,14 +13,13 @@ function Quotationterm() {
   const [bankdata, setbankdata] = useState([]);
   const [treatmentdata, settreatmentdata] = useState([]);
   const location = useLocation();
-  const { data } = location.state ||null;
-  console.log(data)
+  const { data } = location.state || null;
+  console.log(data);
   const apiURL = process.env.REACT_APP_API_URL;
   const imgURL = process.env.REACT_APP_IMAGE_API_URL;
 
   const [section2data, setsection2data] = useState([]);
 
-  
   useEffect(() => {
     gettermsgroup();
   }, []);
@@ -68,21 +67,26 @@ function Quotationterm() {
       setbankdata(res.data?.bankacct);
     }
   };
-  function calculateTotalPrice(data) {
-    let totalPrice = 0;
-    for (let i = 0; i < data.length; i++) {
-      totalPrice += parseInt(data);
-    }
-    return totalPrice;
-  }
+  // function calculateTotalPrice(data) {
+  //   let totalPrice = 0;
+  //   if (data?.treatmentData) {
+  //     for (let i = 0; i < data.treatmentData.length; i++) {
+  //       // Make sure to access the 'subtotal' property from the item object
+  //       totalPrice += parseInt(data.treatmentData[i]?.subtotal || 0);
+  //     }
+  //   }
+  //   return totalPrice;
+  // }
 
-  const total = calculateTotalPrice(data);
- 
+  // const total = calculateTotalPrice(data);
   return (
     <div className="row">
       <Header />
 
-      <div className="row justify-content-center mt-3">
+{!data.treatmentData?"": 
+<div>
+
+<div className="row justify-content-center mt-3">
         <div className="col-md-11">
           <div
             className="card shadow  bg-white rounded"
@@ -90,9 +94,7 @@ function Quotationterm() {
           >
             {headerimgdata.map((item) => (
               <img
-                src={
-                  imgURL+"/quotationheaderimg/" + item.headerimg
-                }
+                src={imgURL + "/quotationheaderimg/" + item.headerimg}
                 height="200px"
                 width="100%"
               />
@@ -108,18 +110,25 @@ function Quotationterm() {
                 <div className="" style={{ fontWeight: "bold" }}>
                   {data?.customer[0]?.customerName}
                 </div>
-                <p>                  {data?.customer[0]?.address}</p>
-                {/* <div className="" style={{ fontWeight: "bold" }}>
+                <p>
+                  {" "}
+                  {data?.customer[0]?.rbhf} ,{data?.customer[0]?.cnap},{" "}
+                  {data?.customer[0]?.lnf}
+                </p>
+                <div className="" style={{ fontWeight: "bold" }}>
                   City :{" "}
                   <span style={{ color: "black", fontWeight: 400 }}>
-                    Bangalore
+                    {data?.customer[0]?.city}
                   </span>
-                </div> */}
+                </div>
               </div>
               <div className="col-md-6 b-col" style={{ marginLeft: "9px" }}>
                 <div className="" style={{ fontWeight: "bold" }}>
                   Quote#{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}> {data.cardNo}</span>
+                  <span style={{ color: "black", fontWeight: 400 }}>
+                    {" "}
+                    {data.cardNo}
+                  </span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
@@ -135,14 +144,16 @@ function Quotationterm() {
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
-                  Salse Manager :{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}>{}</span>
+                  Sales Manager :{" "}
+                  <span style={{ color: "black", fontWeight: 400 }}>
+                    {data.quotedata[0]?.salesExecutive}
+                  </span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
                   Contact :{" "}
                   <span style={{ color: "black", fontWeight: 400 }}>
-                 {data?.customer[0]?.mainContact}
+                    {data?.customer[0]?.mainContact}
                   </span>
                 </div>
               </div>
@@ -150,6 +161,7 @@ function Quotationterm() {
 
             <div className="row m-auto mt-2 w-100">
               <div className="col-md-12">
+              {data?.treatmentData && data?.treatmentData.length > 0 ? (
                 <table class="table table-bordered border-danger">
                   <thead
                     style={{
@@ -159,7 +171,7 @@ function Quotationterm() {
                       textAlign: "center",
                     }}
                   >
-                   <tr className="table-secondary">
+                    <tr className="table-secondary">
                       <th className="table-head" scope="col">
                         Sr
                       </th>
@@ -167,47 +179,74 @@ function Quotationterm() {
                         Category
                       </th>
                       <th className="table-head" scope="col">
-                        Cont.Type
+                        Region
                       </th>
                       <th className="table-head" scope="col">
-                        Treatment
+                        Material
                       </th>
                       <th className="table-head" scope="col">
-                        Service Freq.
-                      </th>
-                      {/* <th className="table-head" scope="col">
-                        Contract Period
-                      </th> */}
-                      <th className="table-head" scope="col">
-                        Service Date
+                        Job
                       </th>
                       <th className="table-head" scope="col">
-                        Description
+                        Qty
                       </th>
                       <th className="table-head" scope="col">
-                        Charges
+                        Rate
                       </th>
-                    
+                      <th className="table-head" scope="col">
+                        Amount
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                 
+                    <div></div>
+                    {data?.treatmentData.map((item) => (
                       <tr>
                         <td>{i++}</td>
-                        <td>{data.category}</td>
-                        <td>{data.contractType}</td>
-                        <td>{data.service}</td>
-                        <td>{data.serviceFrequency}</td>
-                        <td>{data.dividedDates}</td>
-                        <td>{data.desc}</td>
-                        <td>{data.serviceCharge}</td>
+                        <td>{item.category}</td>
+                        <td>{item.region}</td>
+                        <td>{item.material}</td>
+                        <td>{item.job}</td>
+                        <td>{item.qty}</td>
+                        <td>{item.rate}</td>
+                        <td style={{ textAlign: "center" }}>{item.subtotal}</td>
                       </tr>
-       
+                    ))}
+
+                    <tr style={{ background: "lightgray" }}>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td style={{ textAlign: "center" }}>
+                        {" "}
+                        {data?.quotedata[0]?.total}
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
+                 ) : (
+                  <div className="text-center">No data available</div>
+                )}
                 <div className="float-end">
-                 
-                  <h5>Total :{data.serviceCharge}</h5>
+                  <div className="d-flex">
+                    <h6>
+                      <b>Total</b>
+                    </h6>
+                    <h6> :{data?.quotedata[0]?.total}</h6>
+                  </div>
+                  <div className="d-flex">
+                    <h6>
+                      <b>Adjustments</b>
+                    </h6>
+                    <h6> :{data?.quotedata[0]?.adjustments}</h6>
+                  </div>
+                  <h6>
+                    <b>Net Total</b> :{data?.quotedata[0]?.total}
+                  </h6>
                 </div>
 
                 <div
@@ -216,12 +255,12 @@ function Quotationterm() {
                 >
                   In Words :{" "}
                   <span style={{ fontWeight: 400 }}>
-                 {numberToWords.toWords(data.serviceCharge)} 
+                    {numberToWords.toWords(data?.quotedata[0]?.netTotal)}
                   </span>
                 </div>
 
                 <div
-                  className="row m-auto mt-3"
+                  className="row  mt-3"
                   style={{
                     backgroundColor: "#a9042e",
                     color: "white",
@@ -268,9 +307,7 @@ function Quotationterm() {
                   <tbody>
                     {section2data.map((item) => (
                       <tr>
-                        <td scope="row">
-                         {item.content}
-                        </td>
+                        <td scope="row">{item.content}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -370,11 +407,7 @@ function Quotationterm() {
               {footerimgdata.map((item) => (
                 <div className="col-md-12">
                   <img
-                    src={
-                      imgURL+
-                      "/quotationfooterimg/" +
-                      item.footerimg
-                    }
+                    src={imgURL + "/quotationfooterimg/" + item.footerimg}
                     height="700px"
                     width="100%"
                   />
@@ -382,7 +415,6 @@ function Quotationterm() {
               ))}
             </div>
 
-        
             <div className="row m-auto">
               <div className="mt-3 text-center" style={{ color: "#a9042e" }}>
                 website : www.vijayhomeservices | mail :
@@ -404,7 +436,8 @@ function Quotationterm() {
             </div>
           </div>
         </div>
-      </div>
+      </div> </div>}
+     
     </div>
   );
 }

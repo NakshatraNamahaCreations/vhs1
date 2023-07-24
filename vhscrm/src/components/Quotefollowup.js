@@ -12,6 +12,8 @@ function Quotefollowup() {
   const apiURL = process.env.REACT_APP_API_URL;
   const [categorydata, setcategorydata] = useState([]);
   const [category, setcategory] = useState([]);
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
 
 
   useEffect(() => {
@@ -101,8 +103,10 @@ function Quotefollowup() {
                         onChange={(e) => setcategory(e.target.value)}
                       >
                         <option>-select-</option>
-                        {categorydata.map((item) => (
-                          <option value={item.category}>{item.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
                         ))}
                       </select>
                     </div>

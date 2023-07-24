@@ -38,7 +38,7 @@ function Painting() {
   };
 
   const treatmentURL = () => {
-    navigate(`/customersearchdetails/${cardNo}`);
+    navigate(`/treatmentdetails/${cardNo}`);
   };
   const customerAddURL = () => {
     navigate(`/customeradd/${cardNo}`);

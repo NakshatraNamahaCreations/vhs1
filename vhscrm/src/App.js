@@ -151,6 +151,7 @@ import Report_Enquiry from "./components/Report/Report_Enquiry";
 import Report_Quotation from "./components/Report/Report_Quotation";
 import Report_RunningProjects from "./components/Report/Report_RunningProjects";
 import Report_Survey from "./components/Report/Report_Survey";
+import Treatment from "./components/Treatment";
 
 
 
@@ -284,6 +285,8 @@ function App() {
           <Route path="/qfooter" element={<Qfooter />} />
           <Route path="/dsrdetails" element={<Dsrdetails />} />
           <Route path="/customersearchdetails/:id" element={<Customersearchdetails />} />
+          <Route path="/treatmentdetails/:id" element={<Treatment />} />
+
           <Route path="/painting/:cardNo" element={<Painting />} />
           <Route path="/customeredit" element={<Customeredit />} />
 
