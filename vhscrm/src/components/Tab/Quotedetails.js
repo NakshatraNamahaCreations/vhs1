@@ -35,7 +35,7 @@ function Quotedetails() {
   const [categorydata, setcategorydata] = useState([]);
   const [Gst, setGST] = useState(false);
 
-  const [adjustments, setadjustment] = useState("");
+  const [adjustments, setadjustment] = useState(quotedata[0]?.adjustments);
   const [SUM, setSUM] = useState("");
   const [quotepagedata, setquotepagedata] = useState([]);
   const [enquirydata, setenquirydata] = useState([]);
@@ -44,6 +44,22 @@ function Quotedetails() {
   );
   const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby);
   const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
+
+
+  const getquote = async () => {
+    let res = await axios.get(apiURL + "/getquote");
+    if ((res.status = 200)) {
+      setquotedata(res.data?.quote.filter((i) => i.EnquiryId == EnquiryId));
+    }
+  };
+  // useEffect to update netTotal when quotedata changes
+  useEffect(() => {
+    console.log("quotedata:", quotedata); // Add this line to check the value of quotedata
+    if (quotedata.length > 0) {
+      const initialNetTotal = quotedata[0]?.netTotal;
+      setnetTotal(Number.isNaN(initialNetTotal) ? quotedata[0]?.netTotal: initialNetTotal);
+    }
+  }, [quotedata]);
 
   const nearte = parseInt(ajobdatarate.map((i) => i.rate));
 
@@ -166,12 +182,7 @@ function Quotedetails() {
     }
   };
 
-  const getquote = async () => {
-    let res = await axios.get(apiURL + "/getquote");
-    if ((res.status = 200)) {
-      setquotedata(res.data?.quote.filter((i) => i.EnquiryId == EnquiryId));
-    }
-  };
+ 
 
   useEffect(() => {
     // getmaterial();
@@ -265,14 +276,21 @@ function Quotedetails() {
   }
 
   const total = calculateTotalPrice(treatmentdata);
-  const GSTAmount = total * 0.05;
-  const totalWithGST = Gst ? total + GSTAmount : total;
+  // const GSTAmount = total * 0.05;
+  // const totalWithGST = Gst ? total + GSTAmount : total;
 
-  const adjustedTotal = total - parseFloat(adjustments);
-  const adjustedNetTotal = Gst
-    ? totalWithGST - parseFloat(adjustments)
-    : adjustedTotal;
-  const net = adjustedNetTotal ? adjustedNetTotal : totalWithGST;
+  // const adjustedTotal = total - parseFloat(adjustments)?total - parseFloat(adjustments):quotedata[0]?.netTotal;
+
+  // console.log(adjustedTotal)
+  // const adjustedNetTotal = Gst
+  //   ? totalWithGST - parseFloat(adjustments)
+  //   : adjustedTotal;
+
+  //   console.log(adjustedNetTotal)
+  // const net = adjustedNetTotal ? adjustedNetTotal : totalWithGST;
+
+  // console.log(net)
+
 
   const savequote = async (e) => {
     e.preventDefault();
@@ -293,11 +311,11 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: adjustedNetTotal ? adjustedNetTotal : total,
+            qamt: netTotal,
             adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: adjustedNetTotal ? adjustedNetTotal : total,
+            netTotal: netTotal,
             Bookedby: admin.displayname,
             salesExecutive:admin.displayname,
 
@@ -336,11 +354,11 @@ function Quotedetails() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: adjustedNetTotal ? adjustedNetTotal : totalWithGST,
+            qamt: netTotal,
             adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: adjustedNetTotal ? adjustedNetTotal : totalWithGST,
+            netTotal: netTotal,
             date: quotedata[0]?.date,
             time: quotedata[0]?.time,
             salesExecutive:admin.displayname,
@@ -365,8 +383,19 @@ function Quotedetails() {
     navigate(`/editenquiry/${EnquiryId}`);
   };
 
-  console.log("arrayLenght", quotedata.length);
-  return (
+  useEffect(() => {
+    // Calculate adjusted netTotal based on Gst and adjustments
+    const total = calculateTotalPrice(treatmentdata);
+    const GSTAmount = total * 0.05;
+    const totalWithGST = Gst ? total + GSTAmount : total;
+  
+    const adjustedNetTotal = Gst
+    ? totalWithGST - parseFloat(adjustments)||totalWithGST
+    : totalWithGST - parseFloat(adjustments) ||totalWithGST;
+    // Update the netTotal state
+    setnetTotal(adjustedNetTotal);
+  }, [adjustments, Gst]);
+return(
     <div className="web">
       <Header />
       <Quotenav />
@@ -684,7 +713,16 @@ function Quotedetails() {
                 <div className="col-md-4 pt-3">
                   <div className="vhs-input-label">Net Total </div>
                   <div className="group pt-1">
-                    <input
+                  <input
+  type="text"
+  className="col-md-12 vhs-input-value"
+  // value={netTotal}
+  defaultValue={netTotal}
+  // placeholder={netTotal}
+  onChange={(e) => setnetTotal(e.target.value)}
+/>
+
+                    {/* <input
                       type="text"
                       className="col-md-12 vhs-input-value"
                       // value={
@@ -695,7 +733,7 @@ function Quotedetails() {
                       onChange={(e) => setnetTotal(e.target.value)}
                       value={adjustedNetTotal?adjustedNetTotal:totalWithGST}
                       // defaultValue={ netTotal? quotedata[0]?.netTotal?quotedata[0]?.netTotal: net}
-                    />
+                    /> */}
                   </div>
                 </div>{" "}
               </div>

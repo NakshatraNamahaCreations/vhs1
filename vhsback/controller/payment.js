@@ -49,6 +49,38 @@ class Payment {
       return res.status(500).json({ error: 'An error occurred' });
     }
   }
+  async updatePayment(req, res) {
+    try {
+      const paymentId = req.params.id;
+      const { paymentDate, paymentType, paymentMode, amount, Comment } =
+        req.body;
+
+      // Find the payment by ID and update its data
+      const updatedPayment = await PaymentModal.findByIdAndUpdate(
+        paymentId,
+        {
+          paymentDate,
+          paymentType,
+          paymentMode,
+          amount,
+          Comment,
+        },
+        { new: true } // Set {new: true} to return the updated document
+      );
+      if (!updatedPayment) {
+        return res.status(404).json({ error: "Payment not found" });
+      }
+      return res.status(200).json({
+        success: "Payment updated successfully",
+        payment: updatedPayment,
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: "An error occurred while updating payment" });
+    }
+  }
+
 }
 
 const paymentController = new Payment();

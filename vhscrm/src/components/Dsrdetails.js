@@ -9,6 +9,7 @@ function Dsrdetails() {
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const location = useLocation();
   const { data, data1 } = location.state || {};
+  const [dsrdata, setdsrdata] = useState([]);
 
   const [servicedata, setservicedata] = useState([]);
   const [techniciandata, settechniciandata] = useState([]);
@@ -20,14 +21,14 @@ function Dsrdetails() {
   const [priorityLevel, setpriorityLevel] = useState(
     data.dsrdata[0]?.priorityLevel
   );
-  const [appoDate, setappoDate] = useState(data.dsrdata[0]?.appoDate);
-  const [appoTime, setappoTime] = useState(data.dsrdata[0]?.appoTime);
+  const [appoDate, setappoDate] = useState(dsrdata[0]?.appoDate);
+  const [appoTime, setappoTime] = useState(dsrdata[0]?.appoTime);
   const [customerFeedback, setcustomerFeedback] = useState(
-    data.dsrdata[0]?.customerFeedback
+  dsrdata[0]?.customerFeedback
   );
   const [jobType, setjobType] = useState(data.jobType);
-  const [techComment, settechComment] = useState(data.dsrdata[0]?.techComment);
-  const [techName, settechName] = useState(data.dsrdata[0]?.techName);
+  const [techComment, settechComment] = useState(dsrdata[0]?.techComment);
+  const [techName, settechName] = useState(dsrdata[0]?.techName);
   const [complaintRef, setcomplaintRefo] = useState([]);
   // const [Showinapp, setShowinapp] = useState(
   //   data.dsrdata[0]?.showinApp  ? data.dsrdata[0]?.showinApp : true
@@ -36,19 +37,19 @@ function Dsrdetails() {
     data.dsrdata[0]?.showinApp || "YES"
   );
   const [jobComplete, setjobComplete] = useState(
-    data.dsrdata[0]?.jobComplete || "NO"
+    dsrdata[0]?.jobComplete || "NO"
   );
-  const [sendSms, setsendSms] = useState(data.dsrdata[0]?.sendSms);
+  const [sendSms, setsendSms] = useState(dsrdata[0]?.sendSms);
   const [workerAmount, setworkerAmount] = useState(
-    data.dsrdata[0]?.workerAmount
+    dsrdata[0]?.workerAmount
   );
-  const [workerName, setworkerName] = useState(data.dsrdata[0]?.workerName);
+  const [workerName, setworkerName] = useState(dsrdata[0]?.workerName);
   const [daytoComplete, setdaytoComplete] = useState(
-    data.dsrdata[0]?.daytoComplete
+    dsrdata[0]?.daytoComplete
   );
-  const [type, settype] = useState( data.dsrdata[0]?.type || "PM");
+  console.log("type--",dsrdata[0]?.type)
+  const [type, settype] = useState( dsrdata[0]?.type || "PM");
 
-  const [dsrdata, setdsrdata] = useState([]);
   const [LatestCardNo, setLatestCardNo] = useState(0);
 
   console.log("new", data);
@@ -111,6 +112,7 @@ function Dsrdetails() {
         // data: formdata,
         headers: { "content-type": "application/json" },
         data: {
+          serviceDate:data1,
           cardNo: data.cardNo,
           category: data.category,
           bookingDate: moment().format("DD-MM-YYYY"),
@@ -151,13 +153,14 @@ function Dsrdetails() {
 
     try {
       const config = {
-        url: `/updatedsrdata/${data.dsrdata[0]?._id}`,
+        url: `/updatedsrdata/${dsrdata[0]?._id}`,
         method: "post",
         baseURL: apiURL,
         // data: formdata,
         headers: { "content-type": "application/json" },
         data: {
           bookingDate: bookingDate,
+      
           jobCategory: jobCategory,
           complaintRef: data.complaintRef,
           priorityLevel: priorityLevel,
@@ -194,16 +197,18 @@ function Dsrdetails() {
   const getaddcall = async () => {
     let res = await axios.get(apiURL + "/getalldsrlist");
     if (res.status === 200) {
-      console.log("allCustomer----", res);
+     
 
       setLatestCardNo(res.data?.addcall[0]?.complaintRef);
+      // console.log("allCustomer----", res.data?.addcall[0]?.complaintRef);
     }
   };
   console.log("latestCardNo==", LatestCardNo + 1);
   const getAlldata = async () => {
     let res = await axios.get(apiURL + "/getaggredsrdata");
     if (res.status === 200) {
-      setdsrdata(res.data.addcall);
+      setdsrdata(res.data.addcall.filter((i)=>i.serviceDate === data1 && i.cardNo == data.cardNo));
+      console.log(res.data.addcall.filter((i)=>i.serviceDate === data1 && i.cardNo == data.cardNo))
       setcomplaintRefo(
         res.data?.addcall.filter((i) => i.cardNo === data.cardNo)
       );
@@ -295,7 +300,7 @@ function Dsrdetails() {
                     <input
                       type="time"
                       className="col-md-12 vhs-input-value"
-                      defaultValue={data.appoTime}
+                      defaultValue={dsrdata[0]?.appoTime}
                       onChange={(e) => setappoTime(e.target.value)}
                     />
                     <p>Time Given</p>
@@ -414,6 +419,9 @@ function Dsrdetails() {
                         Service Date
                       </th>
                       <th className="table-head" scope="col">
+                       Payment Date
+                      </th>
+                      <th className="table-head" scope="col">
                         Description
                       </th>
                       <th className="table-head" scope="col">
@@ -432,17 +440,9 @@ function Dsrdetails() {
                       <td>
                         {data?.dateofService}/{data?.expiryDate}
                       </td>
-                      {data.contractType === "AMC" ? (
-                        <td>
-                          {data.dividedDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{data.dateofService}</td>
-                      )}
+                    
+                        <td>{data1}</td>
+                    
                        {data.contractType === "AMC" ? (
                         <td>
                           {data.dividedamtDates.map((a) => (
@@ -479,7 +479,7 @@ function Dsrdetails() {
                   cols={20}
                   className="col-md-12 vhs-input-label"
                   onChange={(e) => setcustomerFeedback(e.target.value)}
-                  defaultValue={data.dsrdata[0]?.customerFeedback}
+                  defaultValue={dsrdata[0]?.customerFeedback}
                 />
               </div>
             </div>
@@ -493,7 +493,7 @@ function Dsrdetails() {
                   rows={2}
                   cols={40}
                   className="col-md-12 vhs-input-label"
-                  defaultValue={data.dsrdata[0]?.techComment}
+                  defaultValue={dsrdata[0]?.techComment}
                   onChange={(e) => settechComment(e.target.value)}
                 />
               </div>
@@ -511,7 +511,7 @@ function Dsrdetails() {
                   rows={4}
                   cols={40}
                   className="col-md-12 vhs-input-label"
-                  defaultValue={data.dsrdata[0]?.workerName}
+                  defaultValue={dsrdata[0]?.workerName}
                   onChange={(e) => setworkerName(e.target.value)}
                 />
               </div>
@@ -526,7 +526,7 @@ function Dsrdetails() {
                   rows={4}
                   cols={40}
                   className="col-md-12 vhs-input-label"
-                  defaultValue={data.dsrdata[0]?.workerAmount}
+                  defaultValue={dsrdata[0]?.workerAmount}
                   onChange={(e) => setworkerAmount(e.target.value)}
                 />
               </div>
@@ -542,7 +542,7 @@ function Dsrdetails() {
                 <input
                   type="date"
                   className="col-md-12 vhs-input-value"
-                  defaultValue={data.dsrdata[0]?.daytoComplete}
+                  defaultValue={dsrdata[0]?.daytoComplete}
                   onChange={(e) => setdaytoComplete(e.target.value)}
                 />
               </div>
@@ -611,8 +611,8 @@ function Dsrdetails() {
                   className="col-md-12 vhs-input-value"
                   onChange={(e) => settechName(e.target.value)}
                 >
-                  {data.dsrdata[0]?.techName ? (
-                    <option>{data.dsrdata[0]?.techName}</option>
+                  {dsrdata[0]?.techName ? (
+                    <option>{dsrdata[0]?.techName}</option>
                   ) : (
                     <option>--select--</option>
                   )}
@@ -625,8 +625,8 @@ function Dsrdetails() {
                   className="col-md-12 vhs-input-value"
                   onChange={(e) => settechName(e.target.value)}
                 >
-                  {data.dsrdata[0]?.techName ? (
-                    <option>{data.dsrdata[0]?.techName}</option>
+                  {dsrdata[0]?.techName ? (
+                    <option>{dsrdata[0]?.techName}</option>
                   ) : (
                     <option>--select--</option>
                   )}
@@ -680,8 +680,8 @@ function Dsrdetails() {
                   className="col-md-12 vhs-input-value"
                   onChange={(e) => setsendSms(e.target.value)}
                 >
-                  {data.dsrdata[0]?.sendSms ? (
-                    <option>{data.dsrdata[0]?.sendSms}</option>
+                  {dsrdata[0]?.sendSms ? (
+                    <option>{dsrdata[0]?.sendSms}</option>
                   ) : (
                     <option>--select--</option>
                   )}
@@ -754,13 +754,13 @@ function Dsrdetails() {
       </div>
       <div className="row pt-3 justify-content-center pb-5 mt-4">
         <div className="col-md-1">
-          {!data?.dsrdata[0] ? (
+          {!dsrdata[0] ? (
             <button className="vhs-button" onClick={newdata}>
               Save
             </button>
           ) : (
             <button className="vhs-button" onClick={save}>
-              Save
+              Update
             </button>
           )}
         </div>

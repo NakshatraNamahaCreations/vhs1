@@ -502,7 +502,7 @@ a {
 }
 
 .nav-tab-ul li a {
-  color: black;
+
   font-size: 14px;
   border: 1px solid #a9042e;
   padding: 0px 10px;
@@ -633,7 +633,7 @@ background-color: #a9042e;
 }
 .currentTab{
   background-color: #a9042e;
-  color: white ;
+  color: white !important;
 }
 .table-header-row {
   background-color: #a32d2d; /* Set your desired background color here */

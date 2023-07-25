@@ -152,6 +152,7 @@ import ReportQuotation from "./components/Report/ReportQuotation";
 import ReportRunningProjects from "./components/Report/ReportRunningProjects";
 import ReportSurvey from "./components/Report/ReportSurvey";
 import Treatment from "./components/Treatment";
+import Payment_Reports from "./components/Payment_Reports";
 
 function App() {
   return (
@@ -315,7 +316,7 @@ function App() {
 
           <Route path="/customerservnav" element={<Customersernav />} />
       
-
+          <Route path="/paymentreports" element={<Payment_Reports />} />
         
           <Route
             path="/enquirydatatable/:date"

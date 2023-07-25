@@ -7,6 +7,9 @@ const addCallSchema = new mongoose.Schema(
       //collections
       type: Number,
     },
+    serviceDate:{
+      type:String
+    },
     bookingDate: {
       // collections
       type: String,

@@ -9,6 +9,7 @@ import moment from "moment";
 function Dsrcallist() {
   const [treatmentData, settreatmentData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [dsrdata, setdsrdata] = useState([]);
   const [searchJobCatagory, setSearchJobCatagory] = useState("");
   const [searchCustomerName, setSearchCustomerName] = useState("");
   const [searchCity, setSearchCity] = useState("");
@@ -50,7 +51,23 @@ function Dsrcallist() {
       console.log(filteredData);
     }
   };
+console.log(treatmentData[0]?.cardNo)
+ 
+useEffect(() => {
+    getAlldata();
+   
+  }, [])
+  
+  const getAlldata = async () => {
+    let res = await axios.get(apiURL + "/getaggredsrdata");
+    if (res.status === 200) {
+      setdsrdata(res.data.addcall.filter((i)=>i.serviceDate === date && i.cardNo == treatmentData[0]?.cardNo));
+      console.log(res.data.addcall.filter((i)=>i.serviceDate === date && i.cardNo == treatmentData[0]?.cardNo));
+      
+    }
+  };
 
+  console.log("dsrdata-----",dsrdata);
   // filter and search
   useEffect(() => {
     const filterResults = () => {
@@ -274,9 +291,12 @@ function Dsrcallist() {
                 <th scope="col" className="table-head">
                   Contact No.
                 </th>
-                <th scope="col" className="table-head">
+                {dsrdata[0]?.techName === "PM" ? <th scope="col" className="table-head">
                   Project manager
-                </th>
+                </th>: <th scope="col" className="table-head">
+                  Technician
+                </th>}
+               
                 <th scope="col" className="table-head">
                   Worker Name
                 </th>
@@ -313,9 +333,9 @@ function Dsrcallist() {
                       {selectedData.customer[0]?.lnf}
                     </td>
                     <td>{selectedData.customer[0]?.mainContact}</td>
-                    <td>{selectedData.dsrdata[0]?.techName}</td>
+                    <td>{dsrdata[0]?.techName}</td>
 
-                    <td>{selectedData.dsrdata[0]?.workerName}</td>
+                    <td>{dsrdata[0]?.workerName}</td>
                     <td>{selectedData.service}</td>
 
                     <td>{selectedData.desc}</td>

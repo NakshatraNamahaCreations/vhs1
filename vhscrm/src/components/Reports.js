@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "./layout/Header";
+import { Link } from "react-router-dom";
 
 function Reports() {
   return (
@@ -17,73 +18,73 @@ function Reports() {
       </div> */}
       <div className="row m-auto mt-3">
         <div className="col-md-3">
-          <a href="/report/catagory">
+          <Link to="/report/catagory">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Category</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
 
         <div className="col-md-3">
-          <a href="/report/dsr">
+          <Link to="/report/dsr">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">DSR</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
 
         <div className="col-md-3">
-          <a href="/report/enquiry">
+          <Link to="/report/enquiry">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Enquiry Report</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
         <div className="col-md-3 ">
-          <a href="/report/survey">
+          <Link to="/report/survey">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Survey</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
       </div>
       <div className="row m-auto pt-3">
         <div className="col-md-3">
-          <a href="/report/quotation">
+          <Link to="/report/quotation">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Quotation</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
 
         <div className="col-md-3">
-          <a href="/report/runningprojects">
+          <Link to="/report/runningprojects">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Running Projects</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
 
         <div className="col-md-3">
-          <a href="/report/enquiry">
+          <Link to="/report/enquiry">
             <div className="card home-col">
               <div className="card-body">
                 <div className="home-content">Closed Projects</div>
               </div>
             </div>
-          </a>
+          </Link>
         </div>
         <div className="col-md-3 "></div>
       </div>

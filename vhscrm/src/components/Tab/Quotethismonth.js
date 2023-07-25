@@ -44,7 +44,7 @@ function Quotethismonth() {
   const [searchDesc, setSearchDesc] = useState("");
   const [searchNxtfoll, setSearchNxtfoll] = useState("");
   const [searchBookedby,setsearchBookedby] = useState("");
-  const [Type, setType] = useState("")
+  const [Type, setType] = useState("");
 
 
 

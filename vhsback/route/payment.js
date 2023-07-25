@@ -11,6 +11,6 @@ router.post("/addPayment",paymentController.addPayment);
 // router.post("/postservicecat",servicedetailscontroller.postservicecategory);
 
 router.get("/getPaymentByCustomerId/:customerId",paymentController.getPaymentByCustomerId);
-
+router.put("/updatepayment/:id", paymentController.updatePayment);
 
 module.exports=router;

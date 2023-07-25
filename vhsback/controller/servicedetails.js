@@ -22,6 +22,7 @@ class servicedetails {
       dividedCharges,
       dividedamtDates,
       dividedamtCharges,
+      BackofficeExecutive,
     } = req.body;
 
     if (!category) {
@@ -47,6 +48,7 @@ class servicedetails {
         dividedCharges,
         dividedamtDates,
         dividedamtCharges,
+        BackofficeExecutive,
       });
       let save = add.save();
       if (save) {
@@ -58,7 +60,6 @@ class servicedetails {
   async editservicedetails(req, res) {
     let id = req.params.id;
     let {
-    
       customerData,
       cardNo,
       dCategory,
@@ -74,12 +75,12 @@ class servicedetails {
       expiryDate,
       dividedDates,
       dividedCharges,
+      BackofficeExecutive,
     } = req.body;
 
     let data = await servicedetailsmodel.findOneAndUpdate(
       { _id: id },
       {
-
         customerData,
         cardNo,
         dCategory,
@@ -95,6 +96,7 @@ class servicedetails {
         expiryDate,
         dividedDates,
         dividedCharges,
+        BackofficeExecutive,
       }
     );
     if (data) {
@@ -164,7 +166,6 @@ class servicedetails {
             as: "quotedata",
           },
         },
-       
       ]);
       if (data) {
         console.log("data===", data);

@@ -41,6 +41,7 @@ const [searchResponse, setSearchResponse] = useState("");
 const [searchDesc, setSearchDesc] = useState("");
 const [searchNxtfoll, setSearchNxtfoll] = useState("");
 const [searchBookedby,setsearchBookedby] = useState("");
+const [Type, setType] = useState("");
 
 
 console.log("enquiryflwdata--",enquiryflwdata)

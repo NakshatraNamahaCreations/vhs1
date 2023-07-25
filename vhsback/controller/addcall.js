@@ -5,6 +5,7 @@ class addcall {
   async save(req, res) {
     let {
       cardNo,
+      serviceDate,
       bookingDate,
       jobCategory,
       priorityLevel,
@@ -43,6 +44,7 @@ class addcall {
       // Create a new customer instance with the generated card number
       const customer = new addcallModel({
         cardNo,
+        serviceDate,
         category,
         bookingDate,
         jobCategory,
@@ -85,6 +87,7 @@ class addcall {
 
     let {
       cardNo,
+      serviceDate,
       category,
       bookingDate,
       jobCategory,
@@ -114,6 +117,7 @@ class addcall {
       { _id: id },
       {
         cardNo,
+        serviceDate,
         category,
         bookingDate,
         jobCategory,

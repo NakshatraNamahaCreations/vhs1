@@ -94,6 +94,37 @@ function Painting() {
 
   var i = 1;
   // var index = 1;
+  const treatmentData = data[0]?.treatmentData;
+  // Function to calculate subtotal for each item in the treatmentData array
+  const calculateSubtotal = (item) => {
+    const qty = parseInt(item.qty);
+    const rate = parseInt(item.rate);
+    return qty * rate;
+  };
+
+  // Calculate subtotal for each item and store in an array
+  const subtotals = treatmentData?.map(calculateSubtotal) || [];
+
+  // Calculate the total subtotal by summing up all the subtotals
+  const totalSubtotal = subtotals.reduce(
+    (total, subtotal) => total + subtotal,
+    0
+  );
+
+
+ 
+
+  function GST() {
+    const findGSTPresents = data[0]?.quotedata[0]?.GST;
+    if (findGSTPresents) {
+      const calculateGST = totalSubtotal * 0.05;
+      return calculateGST;
+    } else {
+      return "0.0";
+    }
+  }
+
+  const getGST = GST();
   return (
     <div>
       <Header />
@@ -102,7 +133,7 @@ function Painting() {
           <a
             onClick={() => customerAddURL()}
             className="hover-tabs"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer",color:"white" }}
           >
             Customeradd
           </a>
@@ -311,7 +342,7 @@ function Painting() {
               </tbody>
             </table>
           </div>
-          {/* <div className="mt-2 p-3">
+          <div className="mt-2 ps-3 pe-3">
             <h5>Quote Details</h5>
 
             <table class="table table-hover table-bordered mt-1">
@@ -327,19 +358,109 @@ function Painting() {
                 </tr>
               </thead>
               <tbody>
+                {data?.map((quote, index) =>
+                  quote.treatmentData.map((item, itemIndex) => (
+                    <tr key={index + "-" + itemIndex}>
+                      <td>{itemIndex + 1}</td>
+                      <td>{item.region}</td>
+                      <td>{item.material}</td>
+                      <td>{item.job}</td>
+                      <td>{item.qty}</td>
+                      <td className="text-end">{item.rate}.00</td>
+                      <td className="text-end">{item.subtotal}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+              <tbody>
+                <tr>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td style={{ backgroundColor: "#ededed" }}></td>
+                  <td
+                    className="text-end"
+                    style={{ backgroundColor: "#ededed" }}
+                  >
+                    <b> {totalSubtotal}</b>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr className="pt-1 ps-3">
+                  <td colspan="7">
+                    <div>
+                      <span>
+                        <b>Project Type: </b>
+                      </span>
+                      <span>2bhk Vc </span>
+                    </div>
+                    <div>
+                      <span>
+                        <b>Sales Manager:</b>
+                      </span>
+                      <span> {data[0]?.quotedata[0]?.salesExecutive}</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
                 <tr>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
+                  <td>GST (5%)</td>
+
+                  <td className="text-end">{getGST}</td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
                   <td></td>
                   <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>TOTAL</td>
+                  <td className="text-end">
+                    {data[0]?.quotedata[0]?.total}.00{" "}
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td> Adjustments</td>
+                  <td className="text-end">
+                    {data[0]?.quotedata[0]?.adjustments}.00{" "}
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    <b>NET TOTAL</b>{" "}
+                  </td>
+                  <td className="text-end">
+                    {data[0]?.quotedata[0]?.netTotal}.00{" "}
+                  </td>
                 </tr>
               </tbody>
             </table>
-          </div> */}
-
+          </div>
           <div className="mt-2 p-3">
             <h5>Work Details</h5>
 

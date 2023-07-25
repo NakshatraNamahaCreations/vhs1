@@ -98,6 +98,10 @@ const Sidebar = ({ children }) => {
       // icon: <FaThList />,
     });
   }
+  menuItem.push({
+    path: "/paymentreports",
+    name: "Payment Reports",
+  });
 
   if (admin && admin.b2b === true) {
     menuItem.push({
