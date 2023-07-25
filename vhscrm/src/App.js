@@ -145,15 +145,13 @@ import Quotedatatable from "./components/Quotedatatable";
 import Communityrights from "./components/Communityrights";
 import Customeredit from "./components/Customeredit";
 import Quotecalldatatable from "./components/Quotecalldatatable";
-import Report_Catagory from "./components/Report/Report_Catagory";
-import Report_DSR from "./components/Report/Report_DSR";
-import Report_Enquiry from "./components/Report/Report_Enquiry";
-import Report_Quotation from "./components/Report/Report_Quotation";
-import Report_RunningProjects from "./components/Report/Report_RunningProjects";
-import Report_Survey from "./components/Report/Report_Survey";
+import ReportCatagory from "./components/Report/ReportCatagory";
+import ReportDSR from "./components/Report/ReportDSR";
+import ReportEnquiry from "./components/Report/ReportEnquiry";
+import ReportQuotation from "./components/Report/ReportQuotation";
+import ReportRunningProjects from "./components/Report/ReportRunningProjects";
+import ReportSurvey from "./components/Report/ReportSurvey";
 import Treatment from "./components/Treatment";
-
-
 
 function App() {
   return (
@@ -194,7 +192,10 @@ function App() {
           <Route path="/community" element={<Community />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/technician" element={<Technician />} />
-          <Route path="/enquirydetail/:EnquiryId" element={<Enquirynewdetail />} />
+          <Route
+            path="/enquirydetail/:EnquiryId"
+            element={<Enquirynewdetail />}
+          />
           <Route path="/customer" element={<Customer />} />
           <Route path="/calender" element={<Calender />} />
           <Route path="/vendordetail" element={<Vendordetails />} />
@@ -277,14 +278,32 @@ function App() {
           <Route path="/section2" element={<Termsgroup2 />} />
           <Route path="/context" element={<Contextdata />} />
           <Route path="/dsrcallist/:date/:category" element={<Dsrcallist />} />
-          <Route path="/quotedatatable/:date/:category" element={<Quotedatatable />} />
-          <Route path="/quotecalldatatable/:date" element={<Quotecalldatatable />} />
+          <Route
+            path="/quotedatatable/:date/:category"
+            element={<Quotedatatable />}
+          />
+          <Route
+            path="/quotecalldatatable/:date"
+            element={<Quotecalldatatable />}
+          />
 
           <Route path="/addcall/:id" element={<Addcall />} />
           <Route path="/qheader" element={<Qheader />} />
           <Route path="/qfooter" element={<Qfooter />} />
           <Route path="/dsrdetails" element={<Dsrdetails />} />
-          <Route path="/customersearchdetails/:id" element={<Customersearchdetails />} />
+          <Route path="/report/catagory" element={<ReportCatagory />} />
+          <Route path="/report/dsr" element={<ReportDSR />} />
+          <Route path="/report/enquiry" element={<ReportEnquiry />} />
+          <Route path="/report/survey" element={<ReportSurvey />} />
+          <Route path="/report/quotation" element={<ReportQuotation />} />
+          <Route
+            path="/report/runningprojects"
+            element={<ReportRunningProjects />}
+          />
+          <Route
+            path="/customersearchdetails/:id"
+            element={<Customersearchdetails />}
+          />
           <Route path="/treatmentdetails/:id" element={<Treatment />} />
 
           <Route path="/painting/:cardNo" element={<Painting />} />
@@ -295,34 +314,22 @@ function App() {
           <Route path="/payment/:cardNo" element={<Payment />} />
 
           <Route path="/customerservnav" element={<Customersernav />} />
-          {/* <Route path="/cservices" element={<Cservices />} /> */}
+      
 
-          <Route path="/report/catagory" element={<Report_Catagory />} />
-        <Route path="/report/dsr" element={<Report_DSR />} />
-        <Route path="/report/enquiry" element={<Report_Enquiry />} />
-        <Route path="/report/survey" element={<Report_Survey />} />
-        <Route path="/report/quotation" element={<Report_Quotation />} />
-        <Route
-          path="/report/runningprojects"
-          element={<Report_RunningProjects />}
-        />
+        
           <Route
             path="/enquirydatatable/:date"
             element={<Enquirydatatable />}
           />
-            <Route
+          <Route
             path="/surveydatatable/:date/:category"
             element={<Surveydatatable />}
-
           />
         </Route>
         <Route path="/" element={<Login />} />
         <Route path="/quotationterm" element={<Quotationterm />} />
         <Route path="/servicebill" element={<Servicebill />} />
         <Route path="/dsrquote" element={<Dsrquote />} />
-
-
-
       </Routes>
     </BrowserRouter>
   );

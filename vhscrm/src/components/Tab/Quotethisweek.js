@@ -432,7 +432,7 @@ const handlePageChange = (selectedPage) => {
                 <th scope="col" className="bor">
                 <select
                     
-                    onChange={(e) => setType(e.target.value)}
+      
                   >
                     <option>Select </option>
                     <option value="NOT SHARED">NOT SHARED </option>
