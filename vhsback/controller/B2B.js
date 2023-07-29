@@ -2,23 +2,43 @@ const B2Bmodel = require("../model/B2B");
 
 class B2B {
   //add
-  async addB2B(req, res) {
-    let {
-      b2bname,
-      contactperson,
-      maincontact,
-      alternateno,
-      gst,
-      email,
-      address,
-      city,
-      b2btype,
-      instructions,
-      approach,
-    } = req.body;
 
+  async addB2B(req, res) {
     try {
-      let customer = new B2Bmodel({
+      let {
+        b2bname,
+        contactperson,
+        maincontact,
+        alternateno,
+        gst,
+        email,
+        address,
+        city,
+        b2btype,
+        instructions,
+        executiveName,
+        executivenumber,
+        approach,
+      } = req.body;
+      const latestCustomer = await B2Bmodel.findOne()
+        .sort({ B2BId: -1 })
+        .exec();
+      const latestEquiry = latestCustomer ? latestCustomer.B2BId : 0;
+      const newId = latestEquiry + 1;
+
+      // firstname = toTitleCase(firstname);
+      const Email = await B2Bmodel.findOne({ email: email });
+      if (Email) {
+        return res.status(500).json({ error: "Email already exits" });
+      }
+
+      const phone = await B2Bmodel.findOne({ maincontact: maincontact });
+      if (phone) {
+        return res.status(500).json({ error: "mobile number already exits" });
+      }
+
+      let b2b = new B2Bmodel({
+        B2BId: newId,
         b2bname,
         contactperson,
         maincontact,
@@ -30,33 +50,38 @@ class B2B {
         b2btype,
         instructions,
         approach,
+        executiveName,
+        executivenumber,
       });
 
-      let save = customer.save();
-      if (save) {
-        return res.json({ success: "B2B added successfully" });
-      }
+      b2b.save().then((data) => {
+        return res
+          .status(200)
+          .json({ Success: "Account created. Please login" });
+      });
     } catch (error) {
-      console.log(error);
+      console.error("Error enquiry add:", error);
     }
   }
 
   //edit
-  async editB2B(req, res) {
-    let id = req.params.id;
+  async editBuisness(req, res) {
+    let id   = req.params.id;
 
     let {
-        b2bname,
-        contactperson,
-        maincontact,
-        alternateno,
-        gstinid,
-        email,
-        address,
-        city,
-        b2btype,
-        instructions,
-        approach,
+      b2bname,
+      contactperson,
+      maincontact,
+      alternateno,
+      gstinid,
+      email,
+      address,
+      city,
+      b2btype,
+      instructions,
+      approach,
+      executiveName,
+      executivenumber,
     } = req.body;
     let data = await B2Bmodel.findOneAndUpdate(
       { _id: id },
@@ -72,6 +97,8 @@ class B2B {
         b2btype,
         instructions,
         approach,
+        executiveName,
+        executivenumber,
       }
     );
     if (data) {

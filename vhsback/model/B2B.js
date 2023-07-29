@@ -1,46 +1,59 @@
 const mongoose = require("mongoose");
 
-const B2BSchema = new mongoose.Schema({
-  b2bname: {
-    type: String,
-  },
-  contactperson: {
-    type: String,
-  },
-  maincontact: {
-    type: String,
-  },
-  alternateno: {
-    type: String,
-  },
-  email: {
-    type: String,
-  },
-  gst: {
-    type: String,
-  },
+const B2BSchema = new mongoose.Schema(
+  {
+    b2bname: {
+      type: String,
+    },
+    B2BId: {
+      type: Number,
+    },
+    contactperson: {
+      type: String,
+    },
+    maincontact: {
+      type: String,
+    },
+    alternateno: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    gst: {
+      type: String,
+    },
 
-  address: {
-    type: String,
-  },
+    address: {
+      type: String,
+    },
 
-  city: {
-    type: String,
-  },
+    city: {
+      type: String,
+    },
 
-  b2btype: {
-    type: String,
-  },
+    b2btype: {
+      type: String,
+    },
 
-  approach: {
-    type: String,
+    approach: {
+      type: String,
+    },
+    executiveName: {
+      type: String,
+    },
+    executivenumber: {
+      type: String,
+    },
+
+    instructions: {
+      type: String,
+    },
   },
-  instructions: {
-    type: String,
-  },
-}, {
-  timestamps: true,
-});
+  {
+    timestamps: true,
+  }
+);
 
 const B2Bmodel = mongoose.model("B2B", B2BSchema);
 module.exports = B2Bmodel;

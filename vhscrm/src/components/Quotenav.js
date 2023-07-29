@@ -11,11 +11,11 @@ function Quotenav() {
            Quote List
             </NavLink>
           </li>
-          {/* <li>
-            <NavLink to="/quotelist" activeClassName="active">
-              Quote Details
+          <li>
+            <NavLink to="/quoteappconfirmed" activeClassName="active">
+             Confirmed
             </NavLink>
-          </li> */}
+          </li>
         </ul>
       </div>
     </div>

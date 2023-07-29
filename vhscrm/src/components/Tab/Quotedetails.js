@@ -45,7 +45,6 @@ function Quotedetails() {
   const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby);
   const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
 
-
   const getquote = async () => {
     let res = await axios.get(apiURL + "/getquote");
     if ((res.status = 200)) {
@@ -57,7 +56,9 @@ function Quotedetails() {
     console.log("quotedata:", quotedata); // Add this line to check the value of quotedata
     if (quotedata.length > 0) {
       const initialNetTotal = quotedata[0]?.netTotal;
-      setnetTotal(Number.isNaN(initialNetTotal) ? quotedata[0]?.netTotal: initialNetTotal);
+      setnetTotal(
+        Number.isNaN(initialNetTotal) ? quotedata[0]?.netTotal : initialNetTotal
+      );
     }
   }, [quotedata]);
 
@@ -110,7 +111,6 @@ function Quotedetails() {
           response: response1,
           nxtfoll: quotenxtfoll,
           desc: descrption,
-          
         },
       };
       await axios(config).then(function (response) {
@@ -181,8 +181,6 @@ function Quotedetails() {
       );
     }
   };
-
- 
 
   useEffect(() => {
     // getmaterial();
@@ -276,20 +274,6 @@ function Quotedetails() {
   }
 
   const total = calculateTotalPrice(treatmentdata);
-  // const GSTAmount = total * 0.05;
-  // const totalWithGST = Gst ? total + GSTAmount : total;
-
-  // const adjustedTotal = total - parseFloat(adjustments)?total - parseFloat(adjustments):quotedata[0]?.netTotal;
-
-  // console.log(adjustedTotal)
-  // const adjustedNetTotal = Gst
-  //   ? totalWithGST - parseFloat(adjustments)
-  //   : adjustedTotal;
-
-  //   console.log(adjustedNetTotal)
-  // const net = adjustedNetTotal ? adjustedNetTotal : totalWithGST;
-
-  // console.log(net)
 
 
   const savequote = async (e) => {
@@ -317,7 +301,7 @@ function Quotedetails() {
             total: total,
             netTotal: netTotal,
             Bookedby: admin.displayname,
-            salesExecutive:admin.displayname,
+            salesExecutive: admin.displayname,
 
             date: moment().format("L"),
             time: moment().format("LT"),
@@ -361,7 +345,7 @@ function Quotedetails() {
             netTotal: netTotal,
             date: quotedata[0]?.date,
             time: quotedata[0]?.time,
-            salesExecutive:admin.displayname,
+            salesExecutive: admin.displayname,
             Bookedby: admin.displayname,
           },
         };
@@ -388,14 +372,25 @@ function Quotedetails() {
     const total = calculateTotalPrice(treatmentdata);
     const GSTAmount = total * 0.05;
     const totalWithGST = Gst ? total + GSTAmount : total;
-  
+
     const adjustedNetTotal = Gst
-    ? totalWithGST - parseFloat(adjustments)||totalWithGST
-    : totalWithGST - parseFloat(adjustments) ||totalWithGST;
+      ? totalWithGST - parseFloat(adjustments) || totalWithGST
+      : totalWithGST - parseFloat(adjustments) || totalWithGST;
     // Update the netTotal state
     setnetTotal(adjustedNetTotal);
   }, [adjustments, Gst]);
-return(
+
+  const postconvertcustomer = () => {
+    navigate(`/convertcustomer/${EnquiryId}`);
+  };
+
+  console.log(quotepagedata)
+  // Assuming quotepagedata is an array of objects with quotefollowup property
+const confirmedResponses = quotepagedata[0]?.quotefollowup.filter(item => item.response === 'Confirmed');
+
+console.log(confirmedResponses)
+
+  return (
     <div className="web">
       <Header />
       <Quotenav />
@@ -406,7 +401,31 @@ return(
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <form>
-                <h5>Billing Details</h5>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginRight: "100px",
+                  }}
+                >
+                  <div>
+                    <h5>Billing Details</h5>
+                  </div>
+                  {confirmedResponses?.length>0
+                   ? (
+                    <div className="col-md-1 mt-2">
+                      <button
+                        className="vhs-button mx-5"
+                        style={{ width: "150px" }}
+                        onClick={postconvertcustomer}
+                      >
+                        Convert to Customer{" "}
+                      </button>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
                 <hr />
                 <div className="row">
                   <div className="col-md-4">
@@ -713,14 +732,14 @@ return(
                 <div className="col-md-4 pt-3">
                   <div className="vhs-input-label">Net Total </div>
                   <div className="group pt-1">
-                  <input
-  type="text"
-  className="col-md-12 vhs-input-value"
-  // value={netTotal}
-  defaultValue={netTotal}
-  // placeholder={netTotal}
-  onChange={(e) => setnetTotal(e.target.value)}
-/>
+                    <input
+                      type="text"
+                      className="col-md-12 vhs-input-value"
+                      // value={netTotal}
+                      defaultValue={netTotal}
+                      // placeholder={netTotal}
+                      onChange={(e) => setnetTotal(e.target.value)}
+                    />
 
                     {/* <input
                       type="text"

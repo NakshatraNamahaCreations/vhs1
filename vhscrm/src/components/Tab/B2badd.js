@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import Header from "../layout/Header";
 import B2Bnav from "../B2Bnav";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function B2badd() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [citydata, setcitydata] = useState([]);
   const [b2btypedata, setb2btypedata] = useState([]);
   const [b2bname, setb2bname] = useState("1234");
@@ -18,43 +20,74 @@ function B2badd() {
   const [instructions, setinstructions] = useState("");
   const [approach, setapproach] = useState("");
   const [referecetypedata, setreferecetypedata] = useState([]);
+  const [latestEnquiryId, setLatestEnquiryId] = useState(0);
+  const navigate=useNavigate();
 
   const apiURL = process.env.REACT_APP_API_URL;
+  useEffect(() => {
+    getb2b();
+  }, []);
+
+  const getb2b = async () => {
+    let res = await axios.get(apiURL + "/getB2B");
+    if (res.status === 200) {
+      setLatestEnquiryId(res.data?.B2B[0]?.B2BId);
+    }
+  };
 
   const addb2b = async (e) => {
     e.preventDefault();
 
-    try {
-      const config = {
-        url: "/addB2B",
-        method: "post",
-        baseURL: apiURL,
-        // data: formdata,
-        headers: { "content-type": "application/json" },
-        data: {
-          b2bname: b2bname,
-          contactperson: contactperson,
-          maincontact: maincontact,
-          alternateno: alternateno,
-          email: email,
-          gst: gst,
-          address: address,
-          b2btype: b2btype,
-          city: city,
-          instructions: instructions,
-          approach: approach,
-        },
-      };
-      await axios(config).then(function (response) {
-        if (response.status === 200) {
-          console.log("success");
-          alert(" Added");
-          window.location.assign("/b2badd");
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      alert(" Not Added");
+    if (
+      !b2bname ||
+      !contactperson ||
+      !maincontact ||
+      !email ||
+      !address ||
+      !city ||
+      !b2btype ||
+      !approach
+    ) {
+      alert("Please fill all fields");
+    } else {
+      try {
+        const config = {
+          url: "/addB2B",
+          method: "post",
+          baseURL: apiURL,
+          // data: formdata,
+          headers: { "content-type": "application/json" },
+          data: {
+            b2bname: b2bname,
+            contactperson: contactperson,
+            maincontact: maincontact,
+            alternateno: alternateno,
+            email: email,
+            gst: gst,
+            address: address,
+            b2btype: b2btype,
+            city: city,
+            instructions: instructions,
+            approach: approach,
+            executiveName: admin.displayname,
+            executivenumber: admin.contactno,
+          },
+        };
+        await axios(config).then(function (response) {
+          if (response.status === 200) {
+            // console.log("success");
+            // alert(" Added");
+            navigate(
+              `/b2bdetails/${latestEnquiryId ? latestEnquiryId + 1 : 1}`
+            );
+
+            // window.location.assign("/b2bdetails");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        alert(" Not Added");
+      }
     }
   };
 
@@ -135,10 +168,7 @@ function B2badd() {
                   </div>
 
                   <div className="col-md-4 pt-2">
-                    <div className="vhs-input-label">
-                      {" "}
-                      Alternate Contact<span className="text-danger"> *</span>
-                    </div>
+                    <div className="vhs-input-label"> Alternate Contact</div>
                     <div className="group pt-1">
                       <input
                         type="text"
@@ -163,10 +193,7 @@ function B2badd() {
                   </div>
 
                   <div className="col-md-4 pt-2">
-                    <div className="vhs-input-label">
-                      {" "}
-                      GSTIN Id.<span className="text-danger"> *</span>
-                    </div>
+                    <div className="vhs-input-label"> GSTIN Id.</div>
                     <div className="group pt-1">
                       <input
                         type="text"
@@ -202,8 +229,8 @@ function B2badd() {
                         onChange={(e) => setcity(e.target.value)}
                       >
                         <option>--select--</option>
-                        {citydata.map((item) => (
-                          <option value={item.city}>{item.city}</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
                         ))}
                       </select>
                     </div>
@@ -251,10 +278,7 @@ function B2badd() {
                     </div>
                   </div>
                   <div className="col-md-4 pt-3">
-                    <div className="vhs-input-label">
-                      Instructions
-                      <span className="text-danger">*</span>
-                    </div>
+                    <div className="vhs-input-label">Instructions</div>
                     <div className="group pt-1">
                       <textarea
                         rows={4}

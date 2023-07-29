@@ -3,8 +3,11 @@ import Header from "../layout/Header";
 import B2Bnav from "../B2Bnav";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { useNavigate } from "react-router-dom";
 
 function B2bsearch() {
+  const navigate = useNavigate();
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [b2bname, setname] = useState("");
   const [contactperson, setcontactperson] = useState("");
   const [city, setcity] = useState("");
@@ -106,6 +109,10 @@ function B2bsearch() {
       selector: (row) => row.approach,
     },
   ];
+
+  const handleRowClick = (row) => {
+    navigate(`/b2bdetails/${row.B2BId}`);
+  };
   return (
     <div>
       <Header />
@@ -153,21 +160,36 @@ function B2bsearch() {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4 pt-2">
-                  <div className="vhs-input-label">City</div>
-                  <div className="group pt-1">
-                    <select
-                      className="col-md-12 vhs-input-value"
-                      onChange={(e) => setcity(e.target.value)}
-                    >
-                      <option>-select-</option>
-                      {citydata.map((item) => (
-                        <option value={item.city}>{item.city}</option>
-                      ))}
-                    </select>
+                <div className="row">
+                  <div className="col-md-4 pt-2">
+                    <div className="vhs-input-label">City</div>
+                    <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcity(e.target.value)}
+                      >
+                        <option>-select-</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-4 pt-2">
+                    <div className="vhs-input-label">B2B Type</div>
+                    <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcity(e.target.value)}
+                      >
+                        <option>-select-</option>
+                        {admin?.city.map((item) => (
+                          <option value={item.name}>{item.name}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
-              
 
                 <div
                   className="text-center pt-2"
@@ -199,6 +221,7 @@ function B2bsearch() {
             selectableRowsHighlight
             subHeaderAlign="left"
             highlightOnHover
+            onRowClicked={handleRowClick}
           />
         </div>
       </div>

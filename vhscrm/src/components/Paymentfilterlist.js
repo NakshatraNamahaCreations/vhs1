@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import Header from "../components/layout/Header";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, useParams, Link, NavLink } from "react-router-dom";
 import DSRnav from "./DSRnav";
 import moment from "moment";
+import { Button } from "react-bootstrap";
 
-function Dsrcallist() {
+function Paymentfilterlist() {
   const [treatmentData, settreatmentData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [dsrdata, setdsrdata] = useState([]);
@@ -20,13 +21,12 @@ function Dsrcallist() {
   const [searchDesc, setSearchDesc] = useState("");
 
   const apiURL = process.env.REACT_APP_API_URL;
-  const { date, category } = useParams();
-  console.log("selectedData", date, category);
+  const { date } = useParams();
+  console.log("selectedData", date);
 
-  const today = new Date();
   useEffect(() => {
     getservicedata();
-  }, [category]);
+  }, []);
 
   useEffect(() => {}, [treatmentData]);
 
@@ -34,12 +34,13 @@ function Dsrcallist() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const data = res.data?.runningdata;
+      console.log(data);
 
       const filteredData = data.filter((item) => {
-        const formattedDates = item.dividedDates.map((date) =>
+        const formattedDates = item.dividedamtDates.map((date) =>
           moment(date).format("YYYY-MM-DD")
         );
-        return formattedDates.includes(date) && item.category === category;
+        return formattedDates.includes(date);
       });
 
       console.log("mydata", filteredData);
@@ -162,11 +163,65 @@ function Dsrcallist() {
   ]);
 
   let i = 1;
+  // const targetDate=date;
+
+  const findAmountForDate = (searchResults, date) => {
+    const formattedTargetDate = moment(date).toISOString();
+    console.log(searchResults);
+    console.log(formattedTargetDate);
+
+
+    const matchedData = (searchResults, formattedTargetDate) => {
+      try {
+        const matchedItem = searchResults.find((item) =>
+          item.dividedDates.includes(formattedTargetDate)
+        );
+
+        if (matchedItem) {
+          console.log("Match found:", matchedItem);
+          return matchedItem;
+        } else {
+          console.log("No match found for", formattedTargetDate);
+          return null; // or any other value to indicate no match
+        }
+      } catch (error) {
+        console.error("Error occurred:", error);
+        return null; // or throw an error based on your error handling strategy
+      }
+    };
+
+    const result = matchedData(searchResults, formattedTargetDate);
+    console.log(result)
+
+    console.log(matchedData);
+    if (matchedData) {
+      const targetDateIndex =
+        matchedData.dividedDates.indexOf(formattedTargetDate);
+      return matchedData.dividedamtCharges[targetDateIndex];
+    }
+
+    return "N/A";
+  };
+
   return (
     <div className="web">
       <Header />
-      <DSRnav />
-
+      <div className="navbar">
+        <ul className="nav-tab-ul">
+          <li>
+            <NavLink to="/paymentcalender" activeClassName="active">
+              Payment calendar view
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+      <div>
+        {/* {amtCharges !== null ? (
+        <p>The amount for {targetDate} is {amtCharges}.</p>
+      ) : (
+        <p>No amount found for {targetDate}.</p> */}
+        {/* )} */}
+      </div>
       <div className="row m-auto">
         <div className="col-md-12">
           <table
@@ -175,7 +230,6 @@ function Dsrcallist() {
           >
             <thead className="">
               <tr className="table-secondary">
-                <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
 
                 <th
@@ -229,20 +283,7 @@ function Dsrcallist() {
                     onChange={(e) => setSearchContact(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col" className="table-head">
-                  <select
-                    className="vhs-table-input" //no Technician name
-                    value={searchTechName}
-                    onChange={(e) => setSearchTechName(e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    {treatmentData.map((e) => (
-                      <option value={e.techName} key={e.techName}>
-                        {e.techName}{" "}
-                      </option>
-                    ))}
-                  </select>{" "}
-                </th>
+
                 <th scope="col" className="table-head">
                   <input
                     className="vhs-table-input"
@@ -257,13 +298,10 @@ function Dsrcallist() {
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
                 </th>
-                <th scope="col" className="table-head">
-                  <input
-                    className="vhs-table-input"
-                    value={searchDesc}
-                    onChange={(e) => setSearchDesc(e.target.value)}
-                  />{" "}
-                </th>
+                <th className="table-head" scope="col"></th>
+                <th className="table-head" scope="col"></th>
+                <th className="table-head" scope="col"></th>
+
                 {/* 
                 // <th scope="col" className="table-head"></th>
                 <th scope="col" className="table-head"></th> */}
@@ -276,10 +314,7 @@ function Dsrcallist() {
                   Category
                 </th>
                 <th className="table-head" scope="col">
-                  Date
-                </th>
-                <th className="table-head" style={{ width: "13%" }} scope="col">
-                  Time
+                  Payment Date
                 </th>
 
                 <th scope="col" className="table-head">
@@ -294,19 +329,7 @@ function Dsrcallist() {
                 <th scope="col" className="table-head">
                   Contact No.
                 </th>
-                {dsrdata[0]?.techName === "PM" ? (
-                  <th scope="col" className="table-head">
-                    Project manager
-                  </th>
-                ) : (
-                  <th scope="col" className="table-head">
-                    Technician
-                  </th>
-                )}
 
-                <th scope="col" className="table-head">
-                  Worker Name
-                </th>
                 <th scope="col" className="table-head">
                   Job Type
                 </th>
@@ -317,20 +340,25 @@ function Dsrcallist() {
                 <th scope="col" className="table-head">
                   Amount
                 </th>
+                <th scope="col" className="table-head">
+                  Status
+                </th>
+                <th scope="col" className="table-head">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {searchResults.map((selectedData) => (
                 <tr className="user-tbale-body">
                   <Link
-                    to="/dsrdetails "
+                    to="/paymentfulldetails"
                     className="tbl"
                     state={{ data: selectedData, data1: date }}
                   >
                     <td>{i++}</td>
                     <td>{selectedData.category}</td>
                     <td>{date}</td>
-                    <td>{selectedData.time}</td>
 
                     <td>{selectedData.customer[0]?.customerName}</td>
                     <td>{selectedData.customer[0]?.city}</td>
@@ -340,13 +368,17 @@ function Dsrcallist() {
                       {selectedData.customer[0]?.lnf}
                     </td>
                     <td>{selectedData.customer[0]?.mainContact}</td>
-                    <td>{dsrdata[0]?.techName}</td>
+                    {/* <td>{dsrdata[0]?.techName}</td>
 
-                    <td>{dsrdata[0]?.workerName}</td>
+                    <td>{dsrdata[0]?.workerName}</td> */}
                     <td>{selectedData.service}</td>
 
                     <td>{selectedData.desc}</td>
-                    <td>{selectedData.serviceCharge}</td>
+                    <td>{findAmountForDate(searchResults, date)}</td>
+                    <td>Payment collected</td>
+                    <td>
+                      <button> Raise Invoice</button>
+                    </td>
                   </Link>
                 </tr>
               ))}
@@ -358,4 +390,4 @@ function Dsrcallist() {
   );
 }
 
-export default Dsrcallist;
+export default Paymentfilterlist;

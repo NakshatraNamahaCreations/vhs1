@@ -63,6 +63,7 @@ const enquiryfollow = require("./route/enquiryfollowup");
 const quotefollowup=require("./route/quotefollowup");
 const payment=require("./route/payment");
 const work=require("./route/work");
+const b2bfollowup=require("./route/B2Bfollowup");
 
 
 app.use("/api", admin);
@@ -103,6 +104,7 @@ app.use("/api",enquiryfollow);
 app.use("/api",quotefollowup);
 app.use("/api",payment);
 app.use("/api",work);
+app.use("/api",b2bfollowup);
 
 
 const PORT = process.env.PORT || 8080;

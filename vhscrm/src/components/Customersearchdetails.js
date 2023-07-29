@@ -23,16 +23,17 @@ function Customersearchdetails() {
   const [firstserviceDate, setfirstserviceDate] = useState("00-00-0000");
   const [contractType, setcontractType] = useState("");
   const [treatment, settreatment] = useState("");
+  const [oneCommunity, setOneCommunity] = useState("");
   const [treatmentdata, settreatmentdata] = useState([]);
   const [customerdata, setcustomerdata] = useState([]);
   const [servicedata, setservicedata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
   const [editenable, seteditEnable] = useState(false);
-  const [onetime, setonetime] = useState([]);
   const [amtFrequency, setamtFrequency] = useState("");
   const [firstDateamt, setfirstDateamt] = useState("");
   const [expiryDateamt, setexpiryDateamt] = useState("");
-  const [community, setCommunity] = useState("");
+  const [communityData, setCommunityData] = useState([]);
+  const [newCharge, setnewCharge] = useState("");
 
   useEffect(() => {
     getcustomer();
@@ -65,12 +66,73 @@ function Customersearchdetails() {
       setcategorydata(res.data?.category);
     }
   };
+  // const gettreatment = async () => {
+  //   let res = await axios.get(apiURL + "/getservicedetails");
+  //   if (res.status === 200) {
+  //     console.log("treatmentdata", res);
+  //     settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
+
+  //   }
+  // };
+
   const gettreatment = async () => {
-    let res = await axios.get(apiURL + "/getservicedetails");
-    if ((res.status = 200)) {
-      settreatmentdata(res.data?.servicedetails.filter((i) => i.cardNo == id));
+    try {
+      let res = await axios.get(apiURL + "/getservicedetails");
+      if (res.status === 200) {
+        console.log("treatmentdata", res);
+        const filteredData = res.data?.servicedetails.filter(
+          (i) => i.cardNo == id
+        );
+
+        // Calculate totalCharge for each item in the array
+        filteredData.forEach((item) => {
+          const oneCommunity = parseInt(item.oneCommunity);
+          const serviceCharge = parseInt(item.serviceCharge);
+
+          if (!isNaN(oneCommunity) && !isNaN(serviceCharge)) {
+            const totalCharge = serviceCharge - oneCommunity;
+            console.log(
+              "Total Charge for item with cardNo " +
+                item.cardNo +
+                ": " +
+                totalCharge
+            );
+            // You can choose to store the totalCharge value back to the item if needed.
+            // Store the difference (divided charges) in the item object
+            item.dividedCharges = totalCharge;
+            setnewCharge(item.dividedCharges);
+
+            console.log("hey", totalCharge);
+
+          
+          } else {
+            console.log(
+              "One or both values are not valid numbers for item with cardNo " +
+                item.cardNo
+            );
+          }
+        });
+
+        // Update the state with the filtered data containing the calculated totalCharge
+        settreatmentdata(filteredData);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  //community details
+  const getCommunityDetails = async () => {
+    let res = await axios.get(apiURL + "/getcommunity");
+    if (res.status === 200) {
+      console.log("CommunitDetails", res);
+      setCommunityData(res.data?.community);
+    }
+  };
+console.log()
+  useEffect(() => {
+    getCommunityDetails();
+  }, []);
 
   const sDate = moment(dateofService, "YYYY-MM-DD");
   const eDate = moment(expiryDate, "YYYY-MM-DD");
@@ -92,13 +154,15 @@ function Customersearchdetails() {
     //     : dividedServiceCharge;
     // dividedCharges.push(charge);
   }
-
+  const communityPercentage = (serviceCharge * oneCommunity) / 100;
+  const remainingAmt = serviceCharge - communityPercentage;
+  console.log("newCharge", newCharge);
   const sAmtDate = moment(firstDateamt, "YYYY-MM-DD");
   const eamtDate = moment(expiryDateamt, "YYYY-MM-DD");
 
   const totalamtDays = Math.ceil(eamtDate.diff(sAmtDate, "days"));
   const intervalamt = Math.ceil(totalamtDays / amtFrequency);
-  const dividedamtCharge = Math.ceil(serviceCharge / amtFrequency);
+  const dividedamtCharge = Math.ceil(remainingAmt / amtFrequency);
 
   const dividedamtDates = [];
   const dividedamtCharges = [];
@@ -109,14 +173,13 @@ function Customersearchdetails() {
 
     const charge =
       i === amtFrequency - 1
-        ? serviceCharge - dividedamtCharge * (amtFrequency - 1)
+        ? remainingAmt - dividedamtCharge * (amtFrequency - 1)
         : dividedamtCharge;
     dividedamtCharges.push(charge);
   }
   const addtreatmentdetails = async (e) => {
     e.preventDefault();
-
-    if (!contractType || !treatment || !serviceCharge) {
+    if (!contractType || !treatment || !remainingAmt ) {
       alert("Fill all feilds");
     } else {
       try {
@@ -143,9 +206,10 @@ function Customersearchdetails() {
             startDate: startDate,
             expiryDate: expiryDate,
             firstserviceDate: firstserviceDate,
-            BackofficeExecutive:admin.displayname,
             date: moment().format("YYYY-MM-DD"),
             time: moment().format("LT"),
+            oneCommunity: communityPercentage,
+            // communityId: communityData._id,
           },
         };
         await axios(config).then(function (response) {
@@ -208,8 +272,6 @@ function Customersearchdetails() {
     navigate(`/addcall/${id}`);
   };
 
-  console.log("dividedamtDates-===", dividedamtDates);
-  console.log("dividedamtCharges-===", dividedamtCharges);
 
   return (
     <div className="web">
@@ -226,7 +288,6 @@ function Customersearchdetails() {
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <h5>Billing Details</h5>
-               
                   <h6
                     style={{ color: "red" }}
                     onClick={() => handleRowClick(id)}
@@ -256,8 +317,6 @@ function Customersearchdetails() {
                           {item.mainContact}
                         </div>
                       </div>
-                     
-                     
                     </div>
                     <div className="row">
                       <div className="col-md-4 pt-2">
@@ -277,12 +336,6 @@ function Customersearchdetails() {
                           {item.rbhf}
                           {item.cnap}
                           {item.lnf}
-                        </div>
-                      </div>
-                      <div className="col-md-4 pt-2">
-                        
-                        <div >
-                        <Link to="/customeredit"state={{data:item}}  ><button className="btnn" >Edit Customer</button></Link>
                         </div>
                       </div>
                     </div>
@@ -392,17 +445,6 @@ function Customersearchdetails() {
                               defaultValue={editenable.desc}
                             />
                           </div>
-                          <div className="col-md-4 pt-3">
-                            <div className="vhs-input-label">1 Community</div>
-                            <select
-                             className="col-md-12 vhs-input-value"
-                             onChange={(e) => setCommunity(e.target.value)}
-                             name="material"
-                              type="text"
-                            >
-                              <option>Select All</option>
-                            </select>
-                          </div>
                         </div>
                       </>
                     ) : (
@@ -410,7 +452,7 @@ function Customersearchdetails() {
                         <div className="row mt-2">
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
-                              Service Frequency
+                              Service Frequency <span className="text-danger">*</span>
                             </div>
 
                             <input
@@ -461,6 +503,23 @@ function Customersearchdetails() {
                             />
                           </div>
                           <div className="col-md-4 pt-3">
+                            <div className="vhs-input-label">1 Community</div>
+                            <select
+                              className="col-md-12 vhs-input-value"
+                              onChange={(e) => setOneCommunity(e.target.value)}
+                            >
+                              <option value="">--Select--</option>
+                              {communityData.map((community) => (
+                                <option
+                                  key={community._id}
+                                  value={community.percentage}
+                                >
+                                  {community.communityn}{" "}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               Amount Frequency
                             </div>
@@ -477,7 +536,10 @@ function Customersearchdetails() {
                             </span> */}
                           </div>
 
-                          <div className="col-md-4 pt-3">
+                        
+                        </div>
+                        <div className="row mt-2">
+                        <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               1st Service Amt Date
                             </div>
@@ -488,8 +550,6 @@ function Customersearchdetails() {
                               onChange={(e) => setfirstDateamt(e.target.value)}
                             />
                           </div>
-                        </div>
-                        <div className="row mt-2">
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               Amt Expiry Date
@@ -512,6 +572,7 @@ function Customersearchdetails() {
                               cols={10}
                             />
                           </div>
+                         
                         </div>
                       </>
                     )}
@@ -544,10 +605,10 @@ function Customersearchdetails() {
                         >
                           <option>{editenable.category}</option>
                           {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
+                            <option key={index} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -758,10 +819,10 @@ function Customersearchdetails() {
                     Service Date
                   </th>
                   <th className="table-head" scope="col">
-                   Amount paid Date
+                    Amount paid Date
                   </th>
                   <th className="table-head" scope="col">
-                   Total Charges
+                    Total Charges
                   </th>
                   <th className="table-head" scope="col">
                     Description
@@ -784,28 +845,28 @@ function Customersearchdetails() {
                       {item.dateofService}/{item.expiryDate}
                     </td>
                     {item.contractType === "AMC" ? (
-                        <td>
-                          {item.dividedDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{item.dateofService}</td>
-                      )}
-                       {item.contractType === "AMC" ? (
-                        <td>
-                          {item.dividedamtDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{item.dateofService}</td>
-                      )}
-                    <td>{item.serviceCharge}</td>
+                      <td>
+                        {item.dividedDates.map((a) => (
+                          <div>
+                            <p>{new Date(a).toLocaleDateString()}</p>
+                          </div>
+                        ))}
+                      </td>
+                    ) : (
+                      <td>{item.dateofService}</td>
+                    )}
+                    {item.contractType === "AMC" ? (
+                      <td>
+                        {item.dividedamtDates.map((a) => (
+                          <div>
+                            <p>{new Date(a).toLocaleDateString()}</p>
+                          </div>
+                        ))}
+                      </td>
+                    ) : (
+                      <td>{item.dateofService}</td>
+                    )}
+                    <td>{item.dividedCharges}</td>
 
                     <td>{item.desc}</td>
 
@@ -961,9 +1022,9 @@ function Customersearchdetails() {
                       )}
                       {item.contractType === "AMC" ? (
                         <td>
-                          {item.dividedamtCharges.map((a) => (
-                            <div>
-                              <p>{a}</p>
+                          {item.dividedamtCharges.map((charge, index) => (
+                            <div key={index}>
+                              <p>{charge}</p>
                             </div>
                           ))}
                         </td>

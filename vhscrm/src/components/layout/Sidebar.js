@@ -99,7 +99,7 @@ const Sidebar = ({ children }) => {
     });
   }
   menuItem.push({
-    path: "/paymentreports",
+    path: "/paymentcalender",
     name: "Payment Reports",
   });
 

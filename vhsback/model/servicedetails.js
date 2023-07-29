@@ -71,6 +71,9 @@ const serviceSchema = new mongoose.Schema({
   BackofficeExecutive:{
     type:String
   },
+  oneCommunity: {
+    type: String,
+  },
   creatAt:{
     type:Date,
     default:new Date(),

@@ -2,58 +2,64 @@ const servicedetailsmodel = require("../model/servicedetails");
 
 class servicedetails {
   async addservicedetails(req, res) {
-    let {
-      customerData,
-      dCategory,
-      cardNo,
-      contractType,
-      service,
-      serviceCharge,
-      dateofService,
-      desc,
-      firstserviceDate,
-      serviceFrequency,
-      startDate,
-      category,
-      expiryDate,
-      date,
-      time,
-      dividedDates,
-      dividedCharges,
-      dividedamtDates,
-      dividedamtCharges,
-      BackofficeExecutive,
-    } = req.body;
-
-    if (!category) {
-      return res.status(500).json({ error: "Field must not be empty" });
-    } else {
-      let add = new servicedetailsmodel({
+    try {
+      let {
         customerData,
-        cardNo: cardNo,
         dCategory,
-        category: category,
-        contractType: contractType,
-        service: service,
-        serviceCharge: serviceCharge,
-        dateofService: dateofService,
-        desc: desc,
-        serviceFrequency: serviceFrequency,
-        startDate: startDate,
-        expiryDate: expiryDate,
-        firstserviceDate: firstserviceDate,
-        date: date,
-        time: time,
+        cardNo,
+        contractType,
+        service,
+        serviceCharge,
+        dateofService,
+        desc,
+        firstserviceDate,
+        serviceFrequency,
+        startDate,
+        category,
+        expiryDate,
+        date,
+        time,
         dividedDates,
         dividedCharges,
         dividedamtDates,
         dividedamtCharges,
-        BackofficeExecutive,
-      });
-      let save = add.save();
-      if (save) {
-        return res.json({ sucess: "Added successfully" });
+        oneCommunity,
+        communityId,
+      } = req.body;
+      if (!category) {
+        return res.status(500).json({ error: "Field must not be empty" });
+      } else {
+        let add = new servicedetailsmodel({
+          customerData,
+          cardNo: cardNo,
+          dCategory,
+          category: category,
+          contractType: contractType,
+          service: service,
+          serviceCharge: serviceCharge,
+          dateofService: dateofService,
+          desc: desc,
+          serviceFrequency: serviceFrequency,
+          startDate: startDate,
+          expiryDate: expiryDate,
+          firstserviceDate: firstserviceDate,
+          date: date,
+          time: time,
+          dividedDates,
+          dividedCharges,
+          dividedamtDates,
+          dividedamtCharges,
+          oneCommunity,
+          communityId,
+        });
+        let save = add.save();
+        if (save) {
+          return res.json({ sucess: "Added successfully" });
+        }
       }
+    } catch (error) {
+      console.log("error", error);
+      alert(error, "the error you are getting...");
     }
   }
   //edit
@@ -168,7 +174,7 @@ class servicedetails {
         },
       ]);
       if (data) {
-        console.log("data===", data);
+        
         return res.json({ runningdata: data });
       }
     } catch (error) {

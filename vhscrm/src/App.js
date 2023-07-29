@@ -153,6 +153,12 @@ import ReportRunningProjects from "./components/Report/ReportRunningProjects";
 import ReportSurvey from "./components/Report/ReportSurvey";
 import Treatment from "./components/Treatment";
 import Payment_Reports from "./components/Payment_Reports";
+import B2Bdetails from "./components/B2Bdetails";
+import B2Bedit from "./components/B2Bedit";
+import Paymentcalender from "./components/Paymentcalender";
+import Paymentfilterlist from "./components/Paymentfilterlist";
+import Quoteappconfirmed from "./components/Quoteappconfirmed";
+import Paymentfulldetails from "./components/Paymentfulldetails";
 
 function App() {
   return (
@@ -278,17 +284,27 @@ function App() {
           <Route path="/quotesearch" element={<Quotesearch />} />
           <Route path="/section2" element={<Termsgroup2 />} />
           <Route path="/context" element={<Contextdata />} />
+          <Route path="/quoteappconfirmed" element={<Quoteappconfirmed />} />
+
           <Route path="/dsrcallist/:date/:category" element={<Dsrcallist />} />
+          <Route path="/paymentcalender" element={<Paymentcalender />} />
+          <Route path="/paymentfilterlist/:date" element={<Paymentfilterlist />} />
+
           <Route
             path="/quotedatatable/:date/:category"
             element={<Quotedatatable />}
           />
+          <Route path="/B2Bdetails/:b2bid" element={<B2Bdetails />} />
+          <Route path="/b2bedit/:b2bid" element={<B2Bedit />} />
+
           <Route
             path="/quotecalldatatable/:date"
             element={<Quotecalldatatable />}
           />
 
           <Route path="/addcall/:id" element={<Addcall />} />
+          <Route path="/paymentfulldetails" element={<Paymentfulldetails />} />
+
           <Route path="/qheader" element={<Qheader />} />
           <Route path="/qfooter" element={<Qfooter />} />
           <Route path="/dsrdetails" element={<Dsrdetails />} />

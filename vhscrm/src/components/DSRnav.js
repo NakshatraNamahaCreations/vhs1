@@ -14,26 +14,7 @@ function DSRnav() {
               DSR calendar view
             </NavLink>
           </li>
-          {/* <li>
-            <NavLink to="/dsrtoday" activeClassName="active">
-              Today
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dsrtommorow" activeClassName="active">
-              Tomorrow
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dsryesterday" activeClassName="active">
-              Yesterday
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dsrsearch" activeClassName="active">
-              Search
-            </NavLink>
-          </li> */}
+         
         </ul>
       </div>
     </div>
