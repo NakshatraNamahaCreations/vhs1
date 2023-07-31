@@ -64,6 +64,7 @@ const quotefollowup=require("./route/quotefollowup");
 const payment=require("./route/payment");
 const work=require("./route/work");
 const b2bfollowup=require("./route/B2Bfollowup");
+const communitPayments = require("./route/communityPayment");
 
 
 app.use("/api", admin);
@@ -105,9 +106,11 @@ app.use("/api",quotefollowup);
 app.use("/api",payment);
 app.use("/api",work);
 app.use("/api",b2bfollowup);
+app.use("/api", communitPayments);
+app.use("/api", communitPayments);
 
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log("Server is running on", PORT);
 });

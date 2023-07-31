@@ -193,6 +193,30 @@ class community {
     }
   }
 
+
+  async getServicesByIdInCummunity(req, res) {
+    try {
+      // const customerId = req.query.customerId;
+      // const userId = req.query.userId;
+      let data = await communitymodel.aggregate([
+        {
+          $lookup: {
+            from: "servicedetails",
+            localField: "_id",
+            foreignField: "communityId",
+            as: "communityData",
+          },
+        },
+      ]);
+      if (data) {
+        // console.log("data===", data);
+        return res.json({ communityDetails: data });
+      }
+    } catch (error) {
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  }
+  
   //Delete
   async deletecommunity(req, res) {
     let id = req.params.id;

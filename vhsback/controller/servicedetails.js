@@ -23,8 +23,8 @@ class servicedetails {
         dividedCharges,
         dividedamtDates,
         dividedamtCharges,
-        oneCommunity,
-        communityId,
+        oneCommunity, 
+        communityId, 
       } = req.body;
       if (!category) {
         return res.status(500).json({ error: "Field must not be empty" });
@@ -49,8 +49,8 @@ class servicedetails {
           dividedCharges,
           dividedamtDates,
           dividedamtCharges,
-          oneCommunity,
-          communityId,
+          oneCommunity, //store only the communityPercentage
+          communityId, //store the communityId
         });
         let save = add.save();
         if (save) {
