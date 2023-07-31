@@ -23,7 +23,7 @@ function Customersearchdetails() {
   const [firstserviceDate, setfirstserviceDate] = useState("00-00-0000");
   const [contractType, setcontractType] = useState("");
   const [treatment, settreatment] = useState("");
-  const [oneCommunity, setOneCommunity] = useState("");
+  const [oneCommunity, setOneCommunity] = useState({}); //string to obj
   const [treatmentdata, settreatmentdata] = useState([]);
   const [customerdata, setcustomerdata] = useState([]);
   const [servicedata, setservicedata] = useState([]);
@@ -103,8 +103,6 @@ function Customersearchdetails() {
             setnewCharge(item.dividedCharges);
 
             console.log("hey", totalCharge);
-
-          
           } else {
             console.log(
               "One or both values are not valid numbers for item with cardNo " +
@@ -129,7 +127,7 @@ function Customersearchdetails() {
       setCommunityData(res.data?.community);
     }
   };
-console.log()
+  console.log();
   useEffect(() => {
     getCommunityDetails();
   }, []);
@@ -154,7 +152,7 @@ console.log()
     //     : dividedServiceCharge;
     // dividedCharges.push(charge);
   }
-  const communityPercentage = (serviceCharge * oneCommunity) / 100;
+  const communityPercentage = (serviceCharge * oneCommunity.percentage) / 100; //this line
   const remainingAmt = serviceCharge - communityPercentage;
   console.log("newCharge", newCharge);
   const sAmtDate = moment(firstDateamt, "YYYY-MM-DD");
@@ -179,7 +177,8 @@ console.log()
   }
   const addtreatmentdetails = async (e) => {
     e.preventDefault();
-    if (!contractType || !treatment || !remainingAmt ) {
+    if (!contractType || !treatment || !remainingAmt) {
+
       alert("Fill all feilds");
     } else {
       try {
@@ -208,8 +207,8 @@ console.log()
             firstserviceDate: firstserviceDate,
             date: moment().format("YYYY-MM-DD"),
             time: moment().format("LT"),
-            oneCommunity: communityPercentage,
-            // communityId: communityData._id,
+            communityId: oneCommunity._id, //this line
+            oneCommunity: communityPercentage, //thi line
           },
         };
         await axios(config).then(function (response) {
@@ -272,7 +271,7 @@ console.log()
     navigate(`/addcall/${id}`);
   };
 
-
+  console.log("on", oneCommunity, communityPercentage) //this line
   return (
     <div className="web">
       <Header />
@@ -363,10 +362,10 @@ console.log()
                         >
                           <option>--select--</option>
                           {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
+                            <option key={index} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -452,7 +451,8 @@ console.log()
                         <div className="row mt-2">
                           <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
-                              Service Frequency <span className="text-danger">*</span>
+                              Service Frequency{" "}
+                              <span className="text-danger">*</span>
                             </div>
 
                             <input
@@ -506,13 +506,19 @@ console.log()
                             <div className="vhs-input-label">1 Community</div>
                             <select
                               className="col-md-12 vhs-input-value"
-                              onChange={(e) => setOneCommunity(e.target.value)}
+                              onChange={(e) =>
+                                setOneCommunity( //find function
+                                  communityData.find(
+                                    (i) => i._id === e.target.value
+                                  )
+                                )
+                              }
                             >
                               <option value="">--Select--</option>
                               {communityData.map((community) => (
                                 <option
                                   key={community._id}
-                                  value={community.percentage}
+                                  value={community._id}
                                 >
                                   {community.communityn}{" "}
                                 </option>
@@ -535,11 +541,9 @@ console.log()
                               (Total No. Of Services In Given Contract Period)
                             </span> */}
                           </div>
-
-                        
                         </div>
                         <div className="row mt-2">
-                        <div className="col-md-4 pt-3">
+                          <div className="col-md-4 pt-3">
                             <div className="vhs-input-label">
                               1st Service Amt Date
                             </div>
@@ -572,7 +576,6 @@ console.log()
                               cols={10}
                             />
                           </div>
-                         
                         </div>
                       </>
                     )}

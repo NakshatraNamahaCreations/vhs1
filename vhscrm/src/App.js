@@ -159,6 +159,7 @@ import Paymentcalender from "./components/Paymentcalender";
 import Paymentfilterlist from "./components/Paymentfilterlist";
 import Quoteappconfirmed from "./components/Quoteappconfirmed";
 import Paymentfulldetails from "./components/Paymentfulldetails";
+import OneCommunityReports from "./components/OneCommunityReports";
 
 function App() {
   return (
@@ -347,6 +348,7 @@ function App() {
         <Route path="/quotationterm" element={<Quotationterm />} />
         <Route path="/servicebill" element={<Servicebill />} />
         <Route path="/dsrquote" element={<Dsrquote />} />
+        <Route path="/onecommnityreport" element={<OneCommunityReports />} />
       </Routes>
     </BrowserRouter>
   );
