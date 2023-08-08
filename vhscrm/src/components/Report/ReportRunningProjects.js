@@ -9,7 +9,7 @@ function Report_RunningProjects() {
   const apiURL = process.env.REACT_APP_API_URL;
   const [runningProjectData, setRunningProject] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [type, setType] = useState("");
+  const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
   const [projectManager, setProjectManager] = useState("");
   const [daysToComplete, setDaysToComplete] = useState("");
@@ -20,7 +20,70 @@ function Report_RunningProjects() {
   const [buttonClicked, setButtonClicked] = useState(false);
   const [closeWindow, setCloseWindow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
-  const [worker, setWorker] = useState("");
+  const [backOfficeExe, setBackOfficeExe] = useState("");
+  const [closedProjects, setClosedProjects] = useState("");
+  const [services, setServices] = useState("");
+  const [paymentType, setPaymentType] = useState("");
+  const [pendingPayment, setPendingPayment] = useState("");
+
+  // removing duplicate value from the select option
+  const [duplicateSaleExecutive, setDuplicateSaleExecutive] = useState(
+    new Set()
+  );
+  const [duplicateCity, setDuplicateCity] = useState(new Set());
+  const [duplicatePaymentType, setDuplicatePaymentType] = useState(new Set());
+  const [duplicateProjectManager, setDuplicateProjectManager] = useState(
+    new Set()
+  );
+  const [duplicateCategory, setDuplicateCategory] = useState(new Set());
+  const [duplicateServices, setDuplicateServices] = useState(new Set());
+  const [duplicateBackOfficeExe, setDuplicateBackOfficeExe] = useState(
+    new Set()
+  );
+
+  useEffect(() => {
+    const uniqueSalesExecutive = new Set(
+      runningProjectData
+        .map((item) => item.customer[0]?.serviceExecute)
+        .filter(Boolean)
+    );
+
+    const uniqueCity = new Set(
+      runningProjectData.map((item) => item.customer[0]?.city).filter(Boolean)
+    );
+
+    const uniquePaymentType = new Set(
+      runningProjectData
+        .map((item) => item.paymentData[0]?.paymentType)
+        .filter(Boolean)
+    );
+
+    const uniqueProjectManager = new Set(
+      runningProjectData
+        .map((item) => item.dsrdata[0]?.techName)
+        .filter(Boolean)
+    );
+
+    const uniqueBackOfficeExe = new Set(
+      runningProjectData.map((item) => item.BackofficeExecutive).filter(Boolean)
+    );
+
+    const uniqueService = new Set(
+      runningProjectData.map((item) => item.service).filter(Boolean)
+    );
+
+    const uniqueCategory = new Set(
+      runningProjectData.map((item) => item.category).filter(Boolean)
+    );
+
+    setDuplicateSaleExecutive(uniqueSalesExecutive);
+    setDuplicateCity(uniqueCity);
+    setDuplicatePaymentType(uniquePaymentType);
+    setDuplicateProjectManager(uniqueProjectManager);
+    setDuplicateBackOfficeExe(uniqueBackOfficeExe);
+    setDuplicateServices(uniqueService);
+    setDuplicateCategory(uniqueCategory);
+  }, [runningProjectData]);
 
   const getRunningProject = async () => {
     let res = await axios.get(apiURL + "/getrunningdata");
@@ -41,14 +104,17 @@ function Report_RunningProjects() {
     setSearchValue("");
     setShowMessage(true);
     const filteredResults = runningProjectData.filter((item) => {
-      const itemType =
-        item.enquirydata?.[0]?.intrestedfor
-          ?.toLowerCase()
-          .includes(type.toLowerCase()) ?? true;
+      // const itemType =
+      //   item.enquirydata?.[0]?.intrestedfor
+      //     ?.toLowerCase()
+      //     .includes(category.toLowerCase()) ?? true;
 
       const itemCity =
         item.customer[0]?.city?.toLowerCase().includes(city.toLowerCase()) ??
         true;
+
+      const itemCategory =
+        item.category?.toLowerCase().includes(category.toLowerCase()) ?? true;
 
       const itemExcuitive =
         item.customer[0]?.serviceExecute
@@ -71,10 +137,20 @@ function Report_RunningProjects() {
           ?.toLowerCase()
           .includes(daysToComplete.toLowerCase()) ?? true;
 
-      const itemWorker =
-        item.dsrdata[0]?.workerName
-          ?.toLowerCase()
-          .includes(worker.toLowerCase()) ?? true;
+      // const itemWorker =
+      //   item.dsrdata[0]?.workerName
+      //     ?.toLowerCase()
+      //     .includes(backOfficeExe.toLowerCase()) ?? true;
+
+      const itemPaymentType =
+        item.paymentData[0]?.paymentType
+          .toLowerCase()
+          .includes(paymentType.toLowerCase()) ?? true;
+
+      const itemBackOffice =
+        item.BackofficeExecutive.toLowerCase().includes(
+          backOfficeExe.toLowerCase()
+        ) ?? true;
       return (
         itemProjectManager &&
         itemDaysToComplete &&
@@ -82,20 +158,23 @@ function Report_RunningProjects() {
         itemToDate &&
         itemExcuitive &&
         itemCity &&
-        itemType &&
-        itemWorker
+        // itemType &&
+        // itemWorker &&
+        itemPaymentType &&
+        itemCategory &&
+        itemBackOffice
       );
     });
     setFilteredData(filteredResults);
     setSearchValue(
-      type ||
-        city ||
+      city ||
         executive ||
         fromDate ||
         toDate ||
         projectManager ||
         daysToComplete ||
-        worker
+        backOfficeExe ||
+        category
     );
     setShowMessage(false);
   };
@@ -267,40 +346,60 @@ function Report_RunningProjects() {
                         onClick={(e) => setProjectManager(e.target.value)}
                       >
                         <option>Select</option>
-                        {runningProjectData.map((item) => (
-                          <option>{item.dsrdata[0]?.techName}</option>
+                        {[...duplicateProjectManager].map((techName) => (
+                          <option key={techName}>{techName}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4">TYPE </div>
+                    <div className="col-md-4">Category </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onChange={(e) => setType(e.target.value)}
+                        onChange={(e) => setCategory(e.target.value)}
                       >
                         <option>Select</option>
-
-                        <option>RUNNING PROJECTS</option>
+                        {[...duplicateCategory].map((category) => (
+                          <option key={category}>{category}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Interested For </div>
+                  <div className="row">
+                    <div className="col-md-4">Pending Payment *</div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
-                      <textarea
+                      <select
                         className="report-select"
-                        onChange={(e) => setType(e.target.value)}
-                      />
+                        onChange={(e) => setPendingPayment(e.target.value)}
+                      >
+                        <option value="">All</option>
+                      </select>
                     </div>
-                  </div> */}
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">Payment Type </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onChange={(e) => setPaymentType(e.target.value)}
+                      >
+                        <option value="">All</option>
+                        {[...duplicatePaymentType].map((paymentType) => (
+                          <option key={paymentType}>{paymentType} </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                   <br />
                 </div>
+                {/* next column===================================================================================== */}
                 <div className="col-md-5">
                   <br />
                   <div className="row"></div>
@@ -316,22 +415,22 @@ function Report_RunningProjects() {
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4 ">Status </div>
+                  <div className="row">
+                    <div className="col-md-4 ">Service </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setResponse(e.target.value)}
+                        onClick={(e) => setServices(e.target.value)}
                       >
                         <option>All</option>
-                        {runningProjectData.map((item) => (
-                          <option>{item.response}</option>
+                        {[...duplicateServices].map((service) => (
+                          <option key={service}>{service}</option>
                         ))}
                       </select>
                     </div>
                   </div>
-                  <br /> */}
+                  <br />
                   <div className="row">
                     <div className="col-md-4">City </div>
                     <div className="col-md-1 ms-4">:</div>
@@ -341,8 +440,8 @@ function Report_RunningProjects() {
                         onClick={(e) => setCity(e.target.value)}
                       >
                         <option>Select</option>
-                        {runningProjectData.map((item) => (
-                          <option>{item.customer[0]?.city}</option>
+                        {[...duplicateCity].map((city) => (
+                          <option key={city}>{city}</option>
                         ))}
                       </select>
                     </div>
@@ -357,21 +456,47 @@ function Report_RunningProjects() {
                         onClick={(e) => setExecutive(e.target.value)}
                       >
                         <option>Select</option>
-                        {runningProjectData.map((item) => (
-                          <option>{item.customer[0]?.serviceExecute}</option>
+                        {[...duplicateSaleExecutive].map((serviceExecute) => (
+                          <option key={serviceExecute}>
+                            {" "}
+                            {serviceExecute}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4"> Worker</div>
+                    <div className="col-md-4"> Back office Executive</div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
-                      <textarea
+                      <select
                         className="report-select"
-                        onChange={(e) => setWorker(e.target.value)}
-                      />
+                        onChange={(e) => setBackOfficeExe(e.target.value)}
+                      >
+                        <option> Select</option>{" "}
+                        {[...duplicateBackOfficeExe].map(
+                          (BackofficeExecutive) => (
+                            <option key={BackofficeExecutive}>
+                              {" "}
+                              {BackofficeExecutive}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4"> Closed Projects *</div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onChange={(e) => setClosedProjects(e.target.value)}
+                      >
+                        <option> closed projecrs</option>{" "}
+                      </select>
                     </div>
                   </div>
                   <br />

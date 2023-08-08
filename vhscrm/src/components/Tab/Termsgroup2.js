@@ -9,14 +9,13 @@ import { Modal } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-// import { CKEditor } from "@ckeditor/ckeditor5-react";
-// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 
 function Termsgroup() {
   const [serno, setserno] = useState("");
   const category = sessionStorage.getItem("category");
   const [newqtdata, setnewqtdata] = useState([]);
-  const [header, settermsgroup] = useState("");
+  const [header, setheader] = useState("");
   const [content, setcontent] = useState("");
   const apiURL = process.env.REACT_APP_API_URL;
   const [search, setsearch] = useState("");
@@ -123,7 +122,18 @@ function Termsgroup() {
     },
     {
       name: "Content",
-      selector: (row) => row.content,
+      cell: (row) => (
+        <div className="mt-2">
+          <p>
+          <div  dangerouslySetInnerHTML={{ __html: row.content }} />
+            {/* {row.content.split("\n").map((item, index) => (
+              <p className="mb-0" key={index}>
+                {item}
+              </p>
+            ))} */}
+          </p>
+        </div>
+      ),
     },
 
     {
@@ -187,6 +197,9 @@ function Termsgroup() {
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
+            <p className="p-2">
+                <b>Category</b>:{category}
+              </p>
               <Formatnav />
               <ul className="nav-tab-ul">
                 <li>
@@ -202,49 +215,38 @@ function Termsgroup() {
               </ul>
               <form className="mt-5">
                 <div className="row mt-5">
-                  {/* <div className="col-md-4">
+                <div className="col-md-4">
                     <div className="vhs-input-label">
-                      Seq No <span className="text-danger"> *</span>
+                      Section1 header <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e) => setserno(e.target.value)}
+                        onChange={(e) => setheader(e.target.value)}
                       />
                     </div>
-                  </div> */}
-
-                  {/* <div className="col-md-4">
-                      <div className="vhs-input-label">
-                        Header <span className="text-danger"> *</span>
-                      </div>
-                      <div className="group pt-1">
-                        <input
-                          type="text"
-                          className="col-md-12 vhs-input-value"
-                          onChange={(e) => settermsgroup(e.target.value)}
-                        />
-                      </div>
-                    </div> */}
+                  </div>
 
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Content <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
-                      <textarea
+                      {/* <textarea
                         type="text"
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setcontent(e.target.value)}
                         rows={5}
                         cols={40}
-                      />
-                      {/* <CKEditor
+                      /> */}
+                      <CKEditor
                         editor={ClassicEditor}
                         data={content}
                         onChange={handleEditorChange}
-                      /> */}
+                      />
+                          
+
                     </div>
                   </div>
 

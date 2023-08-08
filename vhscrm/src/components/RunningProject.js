@@ -101,6 +101,8 @@ function RunningProject() {
       console.log("filteredData", filteredData);
     }
   };
+
+
   const updatetoclose = async (id) => {
     try {
       const config = {
@@ -131,7 +133,7 @@ function RunningProject() {
 
   const redirectURL = (data) => {
     console.log(data);
-    navigate(`/painting/${data.cardNo}`);
+    navigate(`/painting/${data._id}`);
   };
 
   useEffect(() => {
@@ -362,7 +364,7 @@ function calculateTotalvendorAmount(paymentData) {
 
       <div className="row m-auto" style={{ width: "100%" }}>
         <div className="col-md-12">
-          {selected == 0 ? (
+          
             <>
               <table class="table table-hover table-bordered mt-1">
                 <thead className="">
@@ -581,7 +583,7 @@ function calculateTotalvendorAmount(paymentData) {
                     <tr className="user-tbale-body">
                       <td>{index + 1}</td>
                       <td>{item.date}</td>
-                      <td>{item.customerData[0]?.category}</td>
+                      <td>{item.category}</td>
                       <td>{item.dsrdata[0]?.techName}</td>
                       <td>{item.quotedata[0]?.salesExecutive}</td>
                       <td>{item.customerData[0]?.customerName}</td>
@@ -715,92 +717,7 @@ function calculateTotalvendorAmount(paymentData) {
                 </tbody>
               </table>{" "}
             </>
-          ) : (
-            <>
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="card" style={{ marginTop: "80px" }}>
-                    <div className="card-body p-4">
-                      <form>
-                        <div className="row">
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">By Name</div>
-                            <div className="group pt-1">
-                              <input
-                                type="text"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">Number</div>
-                            <div className="group pt-1">
-                              <input
-                                type="text"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">Date Range</div>
-                            <div className="group pt-1">
-                              <input
-                                type="date"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">PM wise</div>
-                            <div className="group pt-1">
-                              <input
-                                type="text"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">
-                              Executive wise
-                            </div>
-                            <div className="group pt-1">
-                              <input
-                                type="text"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 pt-2">
-                            <div className="vhs-input-label">
-                              Technician wise
-                            </div>
-                            <div className="group pt-1">
-                              <input
-                                type="text"
-                                className="col-md-12 vhs-input-value"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="row pt-3 justify-content-center">
-                          <div className="col-md-1">
-                            <button className="vhs-button">Save</button>
-                          </div>
-                          <div className="col-md-1">
-                            <button className="vhs-button mx-3">Cancel</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+        
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import axios from "axios";
 
 function Work() {
   const apiURL = process.env.REACT_APP_API_URL;
-  const { cardNo } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [workDetails, setWorkDetails] = useState([]);
@@ -16,20 +16,20 @@ function Work() {
   const [remark, setRemark] = useState("");
 
   const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
+    navigate(`/painting/${id}`);
   };
   const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
+    navigate(`/payment/${id}`);
   };
   const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
+    navigate(`/work/${id}`);
   };
 
   const treatmentURL = () => {
-    navigate(`/treatmentdetails/${cardNo}`);
+    navigate(`/treatmentdetails/${id}`);
   };
   const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
+    navigate(`/customeradd/${id}`);
   };
   const [data, setdata] = useState([]);
 
@@ -65,7 +65,7 @@ function Work() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
+        (i) => i._id == id
       );
       setdata(filteredData);
     }

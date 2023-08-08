@@ -66,6 +66,10 @@ const work=require("./route/work");
 const b2bfollowup=require("./route/B2Bfollowup");
 const communitPayments = require("./route/communityPayment");
 
+//user app
+const userauth = require("./route/userapp/userauth");
+
+
 
 app.use("/api", admin);
 app.use("/api", technician);
@@ -108,6 +112,9 @@ app.use("/api",work);
 app.use("/api",b2bfollowup);
 app.use("/api", communitPayments);
 app.use("/api", communitPayments);
+
+//user app
+app.use("/api/userapp",userauth)
 
 
 const PORT = process.env.PORT || 8000;

@@ -17,10 +17,49 @@ function Report_Enquiry() {
   const [excuitive, setExcuitive] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [category, setCategory] = useState("");
+  const [service, setService] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [closeWindow, setCloseWindow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+  // removing duplicate from select options
+  const [duplicateCity, setDuplicateCity] = useState(new Set());
+  const [duplicateReference, setDuplicateReference] = useState(new Set());
+  const [duplicateCategory, setDuplicateCategory] = useState(new Set());
+  const [duplicateExecutive, setDuplicateExecutive] = useState(new Set());
+  const [duplicateStatus, setDuplicateStatus] = useState(new Set());
+  const [duplicateServices, setDuplicateServices] = useState(new Set());
+
+  useEffect(() => {
+    const uniqueCity = new Set(
+      enquiryData.map((item) => item.enquirydata[0]?.city).filter(Boolean)
+    );
+    const uniqueReference = new Set(
+      enquiryData.map((item) => item.enquirydata[0]?.reference1).filter(Boolean)
+    );
+    const uniqueCategory = new Set(
+      enquiryData.map((item) => item.category).filter(Boolean)
+    );
+    const uniqueExecutive = new Set(
+      enquiryData.map((item) => item.enquirydata[0]?.executive).filter(Boolean)
+    );
+    const uniqueStatus = new Set(
+      enquiryData.map((item) => item.response).filter(Boolean)
+    );
+    const uniqueServices = new Set(
+      enquiryData
+        .map((item) => item.enquirydata[0]?.intrestedfor)
+        .filter(Boolean)
+    );
+
+    setDuplicateCity(uniqueCity);
+    setDuplicateReference(uniqueReference);
+    setDuplicateCategory(uniqueCategory);
+    setDuplicateExecutive(uniqueExecutive);
+    setDuplicateStatus(uniqueStatus);
+    setDuplicateServices(uniqueServices);
+  }, [enquiryData]);
 
   const getDsrDetails = async () => {
     try {
@@ -96,6 +135,14 @@ function Report_Enquiry() {
           .toLowerCase()
           .includes(toDate.toLowerCase()) || toDate.toLowerCase() === "all";
 
+      const itemCategory =
+        item.category.toLowerCase().includes(category.toLowerCase()) ||
+        category.toLowerCase() === "all";
+
+      const itemServices =
+        item.enquirydata[0]?.intrestedfor
+          .toLowerCase()
+          .includes(service.toLowerCase()) || service.toLowerCase() === "all";
       return (
         itemInterest &&
         itemReference1 &&
@@ -104,7 +151,9 @@ function Report_Enquiry() {
         itemCity &&
         itemExcuitive &&
         itemFromDate &&
-        itemToDate
+        itemToDate &&
+        itemCategory &&
+        itemServices
       );
     });
     setFilteredData(filteredResults);
@@ -116,11 +165,15 @@ function Report_Enquiry() {
         city ||
         excuitive ||
         fromDate ||
-        toDate
+        toDate ||
+        category ||
+        service
     );
     setShowMessage(false);
     // }
   };
+
+  console.log("fromDate, toDate", fromDate, toDate);
 
   const handleSearchClick = () => {
     // Call the search function here
@@ -260,8 +313,8 @@ function Report_Enquiry() {
                         onClick={(e) => setCity(e.target.value)}
                       >
                         <option>Select</option>
-                        {enquiryData.map((item) => (
-                          <option>{item.enquirydata[0]?.city}</option>
+                        {[...duplicateCity].map((city) => (
+                          <option key={city}>{city}</option>
                         ))}
                       </select>
                     </div>
@@ -277,14 +330,14 @@ function Report_Enquiry() {
                         onClick={(e) => setReference1(e.target.value)}
                       >
                         <option>Select</option>
-                        {enquiryData.map((item) => (
-                          <option>{item.enquirydata[0]?.reference1}</option>
+                        {[...duplicateReference].map((reference) => (
+                          <option key={reference}>{reference}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
-                  <div className="row">
+                  {/* <div className="row">
                     <div className="col-md-4"> Interested For </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
@@ -292,6 +345,22 @@ function Report_Enquiry() {
                         className="report-select"
                         onChange={(e) => setInterestFor(e.target.value)}
                       />
+                    </div>
+                  </div> */}
+                  <div className="row">
+                    <div className="col-md-4">Service </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        // style={{ width: "100%" }}
+                        onClick={(e) => setService(e.target.value)}
+                      >
+                        <option>Select</option>
+                        {[...duplicateServices].map((intrestedfor) => (
+                          <option key={intrestedfor}>{intrestedfor}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <br />
@@ -320,8 +389,8 @@ function Report_Enquiry() {
                         onClick={(e) => setResponse(e.target.value)}
                       >
                         <option>All</option>
-                        {enquiryData.map((item) => (
-                          <option>{item.response}</option>
+                        {[...duplicateStatus].map((response) => (
+                          <option>{response}</option>
                         ))}
                       </select>
                     </div>
@@ -336,14 +405,14 @@ function Report_Enquiry() {
                         onClick={(e) => setExcuitive(e.target.value)}
                       >
                         <option>Select</option>
-                        {enquiryData.map((item) => (
-                          <option>{item.enquirydata[0]?.executive}</option>
+                        {[...duplicateExecutive].map((executive) => (
+                          <option key={executive}>{executive}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
-                  <div className="row">
+                  {/* <div className="row">
                     <div className="col-md-4"> Reference 2</div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
@@ -351,6 +420,23 @@ function Report_Enquiry() {
                         className="report-select"
                         onChange={(e) => setReference2(e.target.value)}
                       />
+                    </div>
+
+                  </div> */}
+                  <div className="row">
+                    <div className="col-md-4">Category </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        // style={{ width: "100%" }}
+                        onClick={(e) => setCategory(e.target.value)}
+                      >
+                        <option>Select</option>
+                        {[...duplicateCategory].map((category) => (
+                          <option key={category}>{category}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <br />

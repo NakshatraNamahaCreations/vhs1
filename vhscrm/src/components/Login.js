@@ -7,13 +7,10 @@ import Modal from "react-bootstrap/Modal";
 
 function Login() {
   const [emailOrName, setEmailOrName] = useState("");
-  // const [createpassword, setcreatepassword] = useState("");
-  // const [confirmpassword, setconfirmpassword] = useState("");
   const [password, setpassword] = useState("");
-
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = () => setShow(true); 
   const apiURL = process.env.REACT_APP_API_URL;
 
   const Login = async (e) => {
@@ -32,16 +29,13 @@ function Login() {
           sessionStorage.setItem("admin", JSON.stringify(response.data.user));
 
           window.location.assign("/home");
-        }
-        else{
+        } else {
           // alert(data.response);
-       alert(response.data.error)
+          alert(response.data.error);
         }
       });
     } catch (error) {
-    //  alert(error.error) ;
-      // alert("Invalid email and password");
-      // alert(response.data.error)
+      alert("Invalid email and password");
     }
   };
 
@@ -50,17 +44,28 @@ function Login() {
       <div
         className="row justify-content-center"
         style={{ alignItems: "center" }}
+
       >
-        <div className="col-7" style={{ marginTop: "5%" }}>
-          <Card style={{ boxShadow: "0px 0px 5px 2px lightgray" }}>
+        <div className="row">
+        <div className="col-6">
+          <img src="./Images/loginimg.png" style={{width:"100%",height:"150px"}}/>
+        </div>
+        <div className="col-6">
+  
+        </div>
+        </div>
+       
+        <div className="col-10" style={{ marginTop: "5%" }}>
+         
             <div style={{ display: "flex" }}>
               <div className="col-6 ">
                 <img
-                  src="/images/761.jpg"
+                  src="https://www.vijayhomeservices.in/crm/login/map.png "
                   style={{ width: "100%", height: "400px" }}
                 />
               </div>
-              <div className="col-6 ">
+              <Card style={{ boxShadow: "0px 0px 5px 1px lightgray" }} className="col-6">
+              <div >
                 <div
                   style={{
                     display: "flex",
@@ -109,9 +114,9 @@ function Login() {
                   class="form-check"
                   style={{ marginLeft: "114px", display: "flex" }}
                 >
-                  <div>
+                  <div className="text-center">
                     <input
-                      class="form-check-input"
+                      className="mx-1"
                       type="checkbox"
                       value=""
                       id="flexCheckDefault"
@@ -119,20 +124,11 @@ function Login() {
                     <label class="vhs-sub-heading " for="flexCheckDefault">
                       Remember me
                     </label>
+
+                    <p><b>Never share your login details with anyone.</b></p>
                   </div>
-                  {/* <div>
-                    <p
-                      onClick={handleShow}
-                      style={{
-                        marginLeft: "25px",
-                        fontSize: "13px",
-                        marginTop: "4px",
-                      }}
-                    >
-                      <b>Sign up</b>
-                    </p>
-                  </div> */}
                 </div>
+
                 <div className="text-center pt-3">
                   <Button
                     style={{
@@ -148,45 +144,10 @@ function Login() {
                   </Button>
                 </div>
               </div>
+              </Card>
             </div>
-          </Card>
+         
         </div>
-        {/* <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Admin Sign up</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="adlogin">
-              <input
-                type="email"
-                placeholder="Email/Name"
-                onChange={(e) => setemail(e.target.value)}
-              />
-            </div>
-            <div className="adlogin">
-              <input
-                type="password"
-                placeholder="Password"
-                onChange={(e) => setcreatepassword(e.target.value)}
-              />
-            </div>
-            <div className="adlogin">
-              <input
-                type="password"
-                placeholder="CPassword"
-                onChange={(e) => setconfirmpassword(e.target.value)}
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={signup}>
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Modal> */}
       </div>
     </div>
   );

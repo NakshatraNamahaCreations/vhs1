@@ -635,7 +635,7 @@ console.log(confirmedResponses)
                           {" "}
                           <a onClick={() => deletetreatment(item._id)}>
                             <img
-                              src="/images/delete.png"
+                              src="./images/delete.png"
                               style={{ width: "30px", height: "30px" }}
                             />
                           </a>

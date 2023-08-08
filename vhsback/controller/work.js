@@ -10,6 +10,7 @@ class Work {
         workDetails,
         workRemark,
         customerId,
+        serviceId
       } = req.body;
       if (
         !workDate ||
@@ -27,6 +28,7 @@ class Work {
           workDetails,
           workRemark,
           customer: customerId,
+          serviceId
         });
         const savedWorks = await add.save();
         if (savedWorks) {

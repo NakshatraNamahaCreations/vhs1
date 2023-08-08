@@ -160,6 +160,8 @@ import Paymentfilterlist from "./components/Paymentfilterlist";
 import Quoteappconfirmed from "./components/Quoteappconfirmed";
 import Paymentfulldetails from "./components/Paymentfulldetails";
 import OneCommunityReports from "./components/OneCommunityReports";
+import Report_B2B from "./components/Report/Report_B2B";
+import Report_1Community from "./components/Report/Report_1Community";
 
 function App() {
   return (
@@ -314,6 +316,9 @@ function App() {
           <Route path="/report/enquiry" element={<ReportEnquiry />} />
           <Route path="/report/survey" element={<ReportSurvey />} />
           <Route path="/report/quotation" element={<ReportQuotation />} />
+          <Route path="/report/b2b" element={<Report_B2B />} />
+        <Route path="/report/onecommunity" element={<Report_1Community />} />
+
           <Route
             path="/report/runningprojects"
             element={<ReportRunningProjects />}
@@ -324,12 +329,12 @@ function App() {
           />
           <Route path="/treatmentdetails/:id" element={<Treatment />} />
 
-          <Route path="/painting/:cardNo" element={<Painting />} />
+          <Route path="/painting/:id" element={<Painting />} />
           <Route path="/customeredit" element={<Customeredit />} />
 
-          <Route path="/work/:cardNo" element={<Work />} />
+          <Route path="/work/:id" element={<Work />} />
           {/* <Route path="/payment" element={<Payment />} /> */}
-          <Route path="/payment/:cardNo" element={<Payment />} />
+          <Route path="/payment/:id" element={<Payment />} />
 
           <Route path="/customerservnav" element={<Customersernav />} />
       

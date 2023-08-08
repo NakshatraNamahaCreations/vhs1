@@ -19,6 +19,10 @@ const paymentSchema = new mongoose.Schema({
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'customers' // Assuming your Customer model is named 'Customer'
+  },
+  serviceId:{
+    type: mongoose.Schema.Types.ObjectId,
+
   }
 }, {
   timestamps: true,

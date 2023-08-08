@@ -14,10 +14,52 @@ function Report_Survey() {
   const [technicianName, setTechnicianName] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [category, setCategory] = useState("");
+  const [service, setService] = useState("");
+  const [backOffice, setBackOffice] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [closeWindow, setCloseWindow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+  // removing duplicate value from the select option
+  const [duplicateCity, setduplicateCity] = useState(new Set());
+  const [duplicateService, setduplicateService] = useState(new Set());
+  const [duplicateBackOffice, setduplicateBackOffice] = useState(new Set());
+  const [duplicateCategory, setduplicateCategory] = useState(new Set());
+  const [duplicateTechnicianName, setduplicateTechnicianName] = useState(
+    new Set()
+  );
+  const [duplicateStatus, setduplicateStatus] = useState(new Set());
+
+  useEffect(() => {
+    const uniqueCities = new Set(
+      surveyData?.map((item) => item.enquirydata[0]?.city).filter(Boolean)
+    );
+
+    const uniqueService = new Set(
+      surveyData
+        ?.map((item) => item.enquirydata[0]?.intrestedfor)
+        .filter(Boolean)
+    );
+    const uniqueBackoffice = new Set(
+      surveyData?.map((item) => item.staffname).filter(Boolean)
+    );
+    const uniqueCatagories = new Set(
+      surveyData?.map((item) => item.category).filter(Boolean)
+    );
+    const uniqueTechnicianName = new Set(
+      surveyData?.map((item) => item.technicianname).filter(Boolean)
+    );
+    // const uniqueStatus = new Set(
+    //   surveyData?.map((item) => item.enquirydata[0]?.city).filter(Boolean)
+    // );
+
+    setduplicateCity(uniqueCities);
+    setduplicateTechnicianName(uniqueTechnicianName);
+    setduplicateCategory(uniqueCatagories);
+    setduplicateBackOffice(uniqueBackoffice);
+    setduplicateService(uniqueService);
+  }, [surveyData]);
 
   const getSurveyDetails = async () => {
     try {
@@ -55,7 +97,7 @@ function Report_Survey() {
           .includes(city.toLowerCase()) ?? true;
 
       const itemTechnician =
-        item.enquirydata?.[0]?.technicianname
+        item.technicianname
           ?.toLowerCase()
           .includes(technicianName.toLowerCase()) ?? true;
 
@@ -69,12 +111,32 @@ function Report_Survey() {
           ?.toLowerCase()
           .includes(toDate.toLowerCase()) ?? true;
 
+      const itemCategory =
+        item.category?.toLowerCase().includes(category.toLowerCase()) ?? true;
+
+      const itemStaffName =
+        item.enquirydata[0]?.staffname
+          ?.toLowerCase()
+          .includes(backOffice.toLowerCase()) ?? true;
+
+      const itemService =
+        item.staffname?.toLowerCase().includes(service.toLowerCase()) ?? true;
+
       return (
-        itemFromDate && itemToDate && itemInterest && itemCity && itemTechnician
+        itemFromDate &&
+        itemToDate &&
+        itemInterest &&
+        itemCity &&
+        itemTechnician &&
+        itemCategory &&
+        itemStaffName &&
+        itemService
       );
     });
     setFilteredData(filteredResults);
-    setSearchValue(interestFor || city || technicianName || fromDate || toDate);
+    setSearchValue(
+      interestFor || city || technicianName || fromDate || toDate || category
+    );
     setShowMessage(false);
   };
 
@@ -142,7 +204,7 @@ function Report_Survey() {
     },
     {
       name: "Backoffice Executive",
-      selector: (row) => "-",
+      selector: (row) => (row.staffname ? row.staffname : "-"),
     },
     {
       name: "Appo. Date Time	",
@@ -155,10 +217,7 @@ function Report_Survey() {
     },
     {
       name: "Technician Name",
-      selector: (row) =>
-        row.enquirydata[0]?.technicianname
-          ? row.enquirydata[0]?.technicianname
-          : "-",
+      selector: (row) => (row.technicianname ? row?.technicianname : "-"),
       // (row.enquirydata[0]?.comment ? row.enquirydata[0]?.comment : "-"),
     },
     {
@@ -216,15 +275,15 @@ function Report_Survey() {
                         onClick={(e) => setCity(e.target.value)}
                       >
                         <option>Select</option>
-                        {surveyData.map((item) => (
-                          <option>{item.enquirydata[0]?.city}</option>
+                        {[...duplicateCity].map((city) => (
+                          <option key={city}>{city}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4">Interested For </div>
+                    <div className="col-md-4">Service </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
@@ -233,13 +292,29 @@ function Report_Survey() {
                         onChange={(e) => setInterestFor(e.target.value)}
                       >
                         <option>Select</option>
-                        {surveyData.map((item) => (
-                          <option>{item.enquirydata[0]?.intrestedfor}</option>
+                        {[...duplicateService].map((service) => (
+                          <option key={service}>{service}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
+                  <div className="row">
+                    <div className="col-md-4">Back office Executive </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        // style={{ width: "100%" }}
+                        onChange={(e) => setBackOffice(e.target.value)}
+                      >
+                        <option>Select</option>
+                        {[...duplicateBackOffice].map((staffname) => (
+                          <option key={staffname}>{staffname}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                   {/* <div className="row">
                     <div className="col-md-4"> Interested For </div>
                     <div className="col-md-1 ms-4">:</div>
@@ -270,22 +345,22 @@ function Report_Survey() {
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4 ">Status </div>
+                  <div className="row">
+                    <div className="col-md-4 ">Category </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setResponse(e.target.value)}
+                        onClick={(e) => setCategory(e.target.value)}
                       >
                         <option>All</option>
-                        {surveyData.map((item) => (
-                          <option>{item.response}</option>
+                        {[...duplicateCategory].map((category) => (
+                          <option key={category}>{category}</option>
                         ))}
                       </select>
                     </div>
                   </div>
-                  <br /> */}
+                  <br />
                   <div className="row">
                     <div className="col-md-4">Technician Name </div>
                     <div className="col-md-1 ms-4">:</div>
@@ -295,9 +370,28 @@ function Report_Survey() {
                         onClick={(e) => setTechnicianName(e.target.value)}
                       >
                         <option>Select</option>
-                        {surveyData.map((item) => (
-                          <option>{item.enquirydata[0]?.technicianname}</option>
+                        {[...duplicateTechnicianName].map((executive) => (
+                          <option key={executive}>{executive}</option>
                         ))}
+                      </select>
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">Status</div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onClick={(e) => setService(e.target.value)}
+                      >
+                        <option>Select</option>
+                        <option>Attended</option>
+                        <option>Quotation prepared</option>
+                        <option>quotation sent</option>
+                        {/* {surveyData.map((item) => (
+                          <option>{item.enquirydata[0]?.technicianname}</option>
+                        ))} */}
                       </select>
                     </div>
                   </div>

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { da } from "date-fns/locale";
-import numberToWords from 'number-to-words';
+import numberToWords from "number-to-words";
 
 function Quotationterm() {
   const [tcdata, settcdata] = useState([]);
@@ -13,14 +13,13 @@ function Quotationterm() {
   const [bankdata, setbankdata] = useState([]);
   const [treatmentdata, settreatmentdata] = useState([]);
   const location = useLocation();
-  const { data } = location.state ||null;
-  console.log(data)
+  const { data } = location.state || null;
+  console.log(data);
   const apiURL = process.env.REACT_APP_API_URL;
   const imgURL = process.env.REACT_APP_IMAGE_API_URL;
 
   const [section2data, setsection2data] = useState([]);
 
-  
   useEffect(() => {
     gettermsgroup();
   }, []);
@@ -69,30 +68,27 @@ function Quotationterm() {
     }
   };
 
- 
   return (
     <div className="row">
       <Header />
 
       <div className="row justify-content-center mt-3">
-        <div className="col-md-11">
+        <div className="col-md-12">
           <div
             className="card shadow  bg-white rounded"
             style={{ border: "none" }}
           >
             {headerimgdata.map((item) => (
               <img
-                src={
-                  imgURL+"/quotationheaderimg/" + item.headerimg
-                }
+                src={imgURL + "/quotationheaderimg/" + item.headerimg}
                 height="200px"
                 width="100%"
               />
             ))}
-            {/* <div className="q-row1">VIJAY HOME SERVICES</div> */}
+          
             <div className="q-row2">QUOTATION</div>
 
-            <div className="row  mt-2">
+            <div className="row m-auto mt-2 w-100">
               <div className="col-md-6 b-col">
                 <div className="" style={{ fontWeight: "bold" }}>
                   TO
@@ -101,17 +97,14 @@ function Quotationterm() {
                   {data[0]?.name}
                 </div>
                 <p>{data[0]?.address}</p>
-                {/* <div className="" style={{ fontWeight: "bold" }}>
-                  City :{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}>
-                    Bangalore
-                  </span>
-                </div> */}
               </div>
-              <div className="col-md-6 b-col" style={{ marginLeft: "9px" }}>
+              <div className="col-md-6 b-col" >
                 <div className="" style={{ fontWeight: "bold" }}>
                   Quote#{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}> {data[0]?.quotedata[0]?.quoteId}</span>
+                  <span style={{ color: "black", fontWeight: 400 }}>
+                    {" "}
+                    {data[0]?.quotedata[0]?.quoteId}
+                  </span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
@@ -123,18 +116,20 @@ function Quotationterm() {
 
                 <div className="" style={{ fontWeight: "bold" }}>
                   Project Type :{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}>{data[0]?.quotedata[0]?.projectType}</span>
+                  <span style={{ color: "black", fontWeight: 400 }}>
+                    {data[0]?.quotedata[0]?.projectType}
+                  </span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
-                  Salse Manager :{" "}
-                  <span style={{ color: "black", fontWeight: 400 }}>{}</span>
+                  Sales Manager :
+                  <span style={{ color: "black", fontWeight: 400 }}>{data?.quotedata?.Bookedby}</span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
                   Contact :{" "}
                   <span style={{ color: "black", fontWeight: 400 }}>
-                 {data[0]?.contact1}
+                    {data[0]?.contact1}
                   </span>
                 </div>
               </div>
@@ -183,7 +178,6 @@ function Quotationterm() {
                   </tbody>
                 </table>
                 <div className="float-end">
-                 
                   <h5>Total :{data[0]?.quotedata[0]?.netTotal}</h5>
                 </div>
 
@@ -193,65 +187,70 @@ function Quotationterm() {
                 >
                   In Words :{" "}
                   <span style={{ fontWeight: 400 }}>
-                 {numberToWords.toWords(data[0]?.quotedata[0]?.netTotal)} 
+                    {numberToWords.toWords(data[0]?.quotedata[0]?.netTotal)}
                   </span>
                 </div>
+                {tcdata.map((item) => (
+                  <div>
+                    <div
+                      className="row m-auto mt-3"
+                      style={{
+                        backgroundColor: "#a9042e",
+                        color: "white",
+                        fontWeight: "bold",
+                        justifyContent: "center",
+                        padding: "8px",
+                      }}
+                    >
+                      {item.header}
+                    </div>
+                    <table class="table table-bordered border-danger">
+                      <tbody>
+                        <tr>
+                          <td scope="row">
+                            <div class="form-check">
+                              <div className="mt-2">
+                              <div
+                            
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                          />
+                              </div>
+                            </div>
+                          </td>
+                          {/* <td className="">{item.content}</td> */}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
 
-                <div
-                  className="row m-auto mt-3"
-                  style={{
-                    backgroundColor: "#a9042e",
-                    color: "white",
-                    fontWeight: "bold",
-                    justifyContent: "center",
-                    padding: "8px",
-                  }}
-                >
-                  Terms & Condition
-                </div>
-                <table class="table table-bordered border-danger">
-                  <tbody>
-                    {tcdata.map((item) => (
-                      <tr>
-                        <td scope="row">
-                          <div class="form-check">
-                            <label
-                              class="form-check-label"
-                              for="flexCheckDefault"
-                            >
-                              {item.content}
-                            </label>
-                          </div>
-                        </td>
-                        {/* <td className="">{item.content}</td> */}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div
-                  className="row m-auto mt-3"
-                  style={{
-                    backgroundColor: "#a9042e",
-                    color: "white",
-                    fontWeight: "bold",
-                    justifyContent: "center",
-                    padding: "8px",
-                  }}
-                >
-                  Labour Compensation Insurance
-                </div>
-                <table class="table table-bordered border-danger">
-                  <tbody>
-                    {section2data.map((item) => (
-                      <tr>
-                        <td scope="row">
-                         {item.content}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {section2data.map((item) => (
+                  <div>
+                    <div
+                      className="row m-auto mt-3"
+                      style={{
+                        backgroundColor: "#a9042e",
+                        color: "white",
+                        fontWeight: "bold",
+                        justifyContent: "center",
+                        padding: "8px",
+                      }}
+                    >
+                     {item.header}
+                    </div>
+                    <table class="table table-bordered border-danger">
+                      <tbody>
+                        <div className="mt-2">
+                          <div
+                            
+                            dangerouslySetInnerHTML={{ __html: item.content }}
+                          />
+                        </div>
+                      </tbody>
+                      <hr />
+                    </table>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -330,28 +329,11 @@ function Quotationterm() {
             className="card shadow  bg-white rounded"
             style={{ border: "none" }}
           >
-            {/* <div className="q-row0 text-center">
-              Our Popular Services
-              <br />
-              <span
-                style={{ color: "white", fontWeight: "bold", fontSize: "13px" }}
-              >
-                Residential & Commercial
-              </span>
-            </div>
-            <div className="q-row1">
-              We are Government Approved Chemicals Only
-            </div> */}
-
             <div>
               {footerimgdata.map((item) => (
                 <div className="col-md-12">
                   <img
-                    src={
-                      imgURL+
-                      "/quotationfooterimg/" +
-                      item.footerimg
-                    }
+                    src={imgURL + "/quotationfooterimg/" + item.footerimg}
                     height="700px"
                     width="100%"
                   />
@@ -359,26 +341,7 @@ function Quotationterm() {
               ))}
             </div>
 
-        
-            <div className="row m-auto">
-              <div className="mt-3 text-center" style={{ color: "#a9042e" }}>
-                website : www.vijayhomeservices | mail :
-                support@vijayhomeservices.com
-              </div>
-
-              <div className="mt-2 text-center" style={{ color: "black" }}>
-                BANGALORE - HYDERABAD - CHENNAI - PUNE - MUMBAI - AHMEDABAD -
-                VADODARA - SURAT - LUCKNOW - NCR - INDIA - GURGAON - FARIDABAD -
-                GHAZIABAD - BHUVANESHWAR - KOCHI
-              </div>
-
-              <div
-                className="mt-2 text-center pb-2"
-                style={{ color: "#a9042e" }}
-              >
-                Customer Care : +91 845 374 8478
-              </div>
-            </div>
+            {/*  */}
           </div>
         </div>
       </div>

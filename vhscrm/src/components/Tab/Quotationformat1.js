@@ -12,6 +12,7 @@ import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
 
 function Quotationformat1() {
+  const cat=sessionStorage.getItem("category");
   const [user, setUser] = useState(false);
   const [data, setdata] = useState([]);
   const [category, setcategory] = useState("");
@@ -158,12 +159,11 @@ function Quotationformat1() {
       <Nav1 />
       <div className="row m-auto">
         <div className="col-md-12">
-          {/* <Link to="/quotationterm">
-            <div className="vhs-terms-button mt-3">Terms & conditions</div>
-          </Link> */}
+       
+    
           <div className="card" style={{ marginTop: "50px" }}>
             <div className="card-body p-3">
-              {/* <Quotationnav /> */}
+              <p><b>Category:</b>{cat}</p>
               <div>
                 {" "}
                 <Tab.Container id="left-tabs-example" defaultActiveKey="first">

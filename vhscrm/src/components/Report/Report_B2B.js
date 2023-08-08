@@ -5,137 +5,80 @@ import DataTable from "react-data-table-component";
 import { Card } from "react-bootstrap";
 import * as XLSX from "xlsx";
 
-function Report_Quotation() {
+function Report_B2B() {
   const apiURL = process.env.REACT_APP_API_URL;
-  const [quotationData, setQuotationData] = useState([]);
+  const [b2bData, setb2bdata] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [service, setService] = useState("");
   const [city, setCity] = useState("");
-  const [saleExecutive, setSalesExcuitive] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [category, setCategory] = useState("");
-  const [backOfExcuitive, setBackOfExcuitive] = useState("");
-  const [staus, setStatus] = useState("");
+  const [statusData, setStatus] = useState("");
+  const [sentMails, setSentMails] = useState("");
+  const [b2bType, setB2BType] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [closeWindow, setCloseWindow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
   // removing duplicate value from the select option
   const [duplicateCity, setduplicateCity] = useState(new Set());
-  const [duplicateService, setduplicateService] = useState(new Set());
-  const [duplicateBackOffice, setduplicateBackOffice] = useState(new Set());
-  const [duplicateCategory, setduplicateCategory] = useState(new Set());
-  const [duplicateSaleExecutive, setduplicateSaleExecutive] = useState(
-    new Set()
-  );
+  const [duplicateB2BType, setduplicateB2BType] = useState(new Set());
 
   useEffect(() => {
     const uniqueCities = new Set(
-      quotationData?.map((item) => item.enquirydata[0]?.city).filter(Boolean)
+      b2bData?.map((item) => item.city).filter(Boolean)
     );
-    const uniqueService = new Set(
-      quotationData
-        ?.map((item) => item.enquirydata[0]?.intrestedfor)
-        .filter(Boolean)
-    );
-    const uniqueBackoffice = new Set(
-      quotationData
-        ?.map((item) => item.enquirydata[0]?.executive) //backoffice
-        .filter(Boolean)
-    );
-    const uniqueCatagories = new Set(
-      quotationData
-        ?.map((item) => item.enquirydata[0]?.category)
-        .filter(Boolean)
-    );
-    const uniqueSalesExecutive = new Set( //sales Executive or booked by
-      quotationData?.map((item) => item.Bookedby).filter(Boolean)
-    );
-    setduplicateCity(uniqueCities);
-    setduplicateService(uniqueService);
-    setduplicateBackOffice(uniqueBackoffice);
-    setduplicateCategory(uniqueCatagories);
-    setduplicateSaleExecutive(uniqueSalesExecutive);
-  }, [quotationData]);
 
-  const getQuotationDetails = async () => {
+    const uniqueB2BType = new Set(
+      b2bData?.map((item) => item.b2btype).filter(Boolean)
+    );
+
+    setduplicateCity(uniqueCities);
+    setduplicateB2BType(uniqueB2BType);
+  }, [b2bData]);
+
+  const getb2b = async () => {
     try {
-      const res = await axios.get(apiURL + "/getallquote");
+      const res = await axios.get(apiURL + "/getB2B");
       if (res.status === 200) {
-        const data = res.data.quote;
-        console.log("QuotationData", data);
-        setQuotationData(data);
-        setFilteredData(data);
+        const data = res.data?.B2B;
+        console.log("B2b", data);
+        setb2bdata(data);
+        setFilteredData(data); // Initialize filteredData with the fetched data
       }
     } catch (error) {
-      console.error("Error fetching DSR details:", error);
+      // Handle error if necessary
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    getQuotationDetails();
+    getb2b();
   }, []);
 
   const handleSearch = () => {
-    setFilteredData(quotationData);
+    setFilteredData(b2bData);
     setSearchValue("");
     setShowMessage(true);
-    const filteredResults = quotationData.filter((item) => {
-      const itemServices =
-        item.enquirydata?.[0]?.intrestedfor
-          ?.toLowerCase()
-          .includes(service.toLowerCase()) ?? true;
-
+    const filteredResults = b2bData.filter((item) => {
       const itemCity =
-        item.enquirydata?.[0]?.city
-          ?.toLowerCase()
-          .includes(city.toLowerCase()) ?? true;
-
-      const itemExcuitive = //Sales Executive or booked by
-        item.Bookedby?.toLowerCase().includes(saleExecutive.toLowerCase()) ??
-        true;
+        item.city?.toLowerCase().includes(city.toLowerCase()) ?? true;
 
       const itemFromDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(fromDate.toLowerCase()) ?? true;
+        item.createdAt?.toLowerCase().includes(fromDate.toLowerCase()) ?? true;
 
       const itemToDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(toDate.toLowerCase()) ?? true;
+        item.createdAt?.toLowerCase().includes(toDate.toLowerCase()) ?? true;
 
-      const itemCategory =
-        item.enquirydata[0]?.category
-          ?.toLowerCase()
-          .includes(category.toLowerCase()) ?? true;
+      // const itemStatus =
+      //   item.status?.toLowerCase().includes(statusData.toLowerCase()) ?? true;
 
-      const itemBackOfficeExe = //back office excutive
-        item.enquirydata[0]?.executive
-          ?.toLowerCase()
-          .includes(backOfExcuitive.toLowerCase()) ?? true;
+      const itemB2BType =
+        item.b2btype?.toLowerCase().includes(b2bType.toLowerCase()) ?? true;
 
-      return (
-        itemFromDate &&
-        itemToDate &&
-        itemServices &&
-        itemCity &&
-        itemExcuitive &&
-        itemCategory &&
-        itemBackOfficeExe
-      );
+      return itemFromDate && itemToDate && itemCity && itemB2BType;
     });
     setFilteredData(filteredResults);
-    setSearchValue(
-      service ||
-        city ||
-        saleExecutive ||
-        fromDate ||
-        toDate ||
-        category ||
-        backOfExcuitive
-    );
+    setSearchValue(city || fromDate || toDate || b2bType);
     setShowMessage(false);
   };
 
@@ -145,85 +88,69 @@ function Report_Quotation() {
   };
 
   const exportData = () => {
-    const fileName = "dsr_data.xlsx";
+    const fileName = "b2b_details.xlsx";
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Category Data");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "B2B_details");
     XLSX.writeFile(workbook, fileName);
   };
 
   const columns = [
     {
-      name: "Sl  No",
+      name: "S.No",
       selector: (row, index) => index + 1,
     },
     {
-      name: "	En.Date",
-      selector: (row) =>
-        row.enquirydata[0]?.enquirydate ? row.enquirydata[0]?.enquirydate : "-",
-    },
-    {
-      name: "Q Dt-Tm",
-      selector: (row) => (
-        <>
-          {row.date ? row.date : "-"} <br />
-          {row.time ? row.time : "-"}
-        </>
-      ),
+      name: "Date",
+      selector: (row) => row.createdAt,
     },
     {
       name: "Name",
-      selector: (row, index) =>
-        row.enquirydata[0]?.name ? row.enquirydata[0]?.name : "-",
+      selector: (row) => row.b2bname,
     },
     {
-      name: "Contact No",
-      selector: (row) =>
-        row.enquirydata[0]?.contact1 ? row.enquirydata[0]?.contact1 : "-",
+      name: "Contact Person",
+      selector: (row) => row.contactperson,
     },
+    {
+      name: "Contact 1",
+      selector: (row) => row.maincontact,
+    },
+    {
+      name: "Contact 2",
+      selector: (row) => row.alternateno,
+    },
+    {
+      name: "Email Id",
+      selector: (row) => row.email,
+    },
+    // {
+    //   name: "Gst",
+    //   selector: (row) => row.gst,
+    // },
     {
       name: "Address",
-      selector: (row) =>
-        row.enquirydata[0]?.address ? row.enquirydata[0]?.address : "-",
+      selector: (row) => row.address,
     },
     {
-      name: "Service",
-      selector: (row) =>
-        row.enquirydata[0]?.intrestedfor
-          ? row.enquirydata[0]?.intrestedfor
-          : "-",
+      name: "B2B type",
+      selector: (row) => row.b2btype,
     },
     {
-      name: "Q Amt	",
-      selector: (row) =>
-        row.enquirydata[0]?.city ? row.enquirydata[0]?.city : "-",
+      name: "city",
+      selector: (row) => row.city,
+    },
+    // {
+    //   name: "Instructions",
+    //   selector: (row) => row.instructions,
+    // },
+    {
+      name: "Approach",
+      selector: (row) => row.approach,
     },
     {
-      name: "Sales Executive",
-      selector: (row) =>
-        row?.enquirydata[0]?.executive ? row?.enquirydata[0]?.executive : "-",
-    },
-    {
-      name: "Booked By",
-      selector: (row) => (row.Bookedby ? row.Bookedby : "-"),
-    },
-    {
-      name: "Last F/W Dt",
-      selector: (row) => (row.appoDate ? row.appoDate : "-"),
-    },
-    {
-      name: "Nxt F/W Dt",
-      selector: (row) =>
-        row.quotefollowup[0]?.nxtfoll ? row.quotefollowup[0]?.nxtfoll : "-",
-    },
-    {
-      name: "Description",
-      selector: (row) =>
-        row.enquirydata[0]?.comment ? row.enquirydata[0]?.comment : "-",
-    },
-    {
-      name: "TYPE",
-      selector: (row) => "-",
+      name: "Executive",
+      selector: (row) => row.executiveName,
     },
   ];
 
@@ -251,10 +178,12 @@ function Report_Quotation() {
                 <div className="col-md-1"></div>
                 <div className="col-md-6">
                   <p>
-                    <b>Quotation Report &gt; Filter</b>{" "}
+                    <b>Survey Report &gt; Filter</b>{" "}
                   </p>
                   <div className="row">
-                    <div className="col-md-4">From Date</div>
+                    <div className="col-md-4">
+                      Next Followup Date (From Date){" "}
+                    </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <input
@@ -282,56 +211,32 @@ function Report_Quotation() {
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4">Service </div>
+                    <div className="col-md-4">Type </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
                         // style={{ width: "100%" }}
-                        onChange={(e) => setService(e.target.value)}
+                        onChange={(e) => setB2BType(e.target.value)}
                       >
                         <option>Select</option>
-                        {[...duplicateService].map((Service) => (
-                          <option key={Service}>{Service}</option>
+                        {[...duplicateB2BType].map((typeOfB2B) => (
+                          <option key={typeOfB2B}>{typeOfB2B}</option>
                         ))}
                       </select>
                     </div>
                   </div>
-                  <br />
-                  <div className="row">
-                    <div className="col-md-4"> Back office Executive</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <select
-                        className="report-select"
-                        onClick={(e) => setBackOfExcuitive(e.target.value)}
-                      >
-                        <option>Select</option>
-                        {[...duplicateBackOffice].map((BackOffice) => (
-                          <option key={BackOffice}>{BackOffice}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <br />
-                  <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Interested For </div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setService(e.target.value)}
-                      />
-                    </div>
-                  </div> */}
                   <br />
                 </div>
+                {/* next column=========================== */}
                 <div className="col-md-5">
                   <br />
                   <div className="row"></div>
                   <div className="row mt-3">
-                    <div className="col-md-4"> To Date</div>
+                    <div className="col-md-4">
+                      {" "}
+                      Next Followup Date (To Date){" "}
+                    </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <input
@@ -343,55 +248,39 @@ function Report_Quotation() {
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4 ">Category </div>
+                    <div className="col-md-4 ">Status *</div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCategory(e.target.value)}
+                        // onClick={(e) => setStatus(e.target.value)}
                       >
                         <option>All</option>
-                        {[...duplicateCategory].map((category) => (
-                          <option key={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <br />
-                  <div className="row">
-                    <div className="col-md-4"> Sales Executive</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <select
-                        className="report-select"
-                        onClick={(e) => setSalesExcuitive(e.target.value)}
-                      >
-                        <option>Select</option>
-                        {[...duplicateSaleExecutive].map((Bookedby) => (
-                          <option key={Bookedby}>{Bookedby}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <br />
-                  <div className="row">
-                    <div className="col-md-4"> Status</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <select
-                        className="report-select"
-                        onClick={(e) => setStatus(e.target.value)}
-                      >
-                        <option>Select</option>
-                        {/* {quotationData.map((item) => (
-                          <option>{item.enquirydata[0]?.technicianname}</option>
+                        {/* {[...duplicateCategory].map((statusData) => (
+                          <option key={statusData}>{statusData}</option>
                         ))} */}
-                        <option>call later</option>
-                        <option>confirmed</option>
-                        <option>cancelled</option>
                       </select>
                     </div>
                   </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">
+                      How many mails / Messages sent *
+                    </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        // onClick={(e) => setSentMails(e.target.value)}
+                      >
+                        <option>Select</option>
+                        {/* <option>Attended</option>
+                        <option>Quotation prepared</option>
+                        <option>quotation sent</option> */}
+                      </select>
+                    </div>
+                  </div>
+                  <br />
                   {/* <div className="row">
                     <div className="col-md-4"> Reference 2</div>
                     <div className="col-md-1 ms-4">:</div>
@@ -413,10 +302,6 @@ function Report_Quotation() {
                       backgroundColor: "#a9042e",
                       borderRadius: "5px",
                     }}
-                    // onClick={() => {
-                    //   filterData();
-                    //   setButtonClicked(true);
-                    // }}
                     onClick={handleSearchClick}
                   >
                     Show
@@ -449,7 +334,7 @@ function Report_Quotation() {
                         color: "#a9042e",
                       }}
                     >
-                      Please enter a category to search!
+                      Please select option to search!
                     </div>
                   )}
                 </p>
@@ -499,9 +384,7 @@ function Report_Quotation() {
             className="ps-3 p-2"
             style={{ color: "white", backgroundColor: "#a9042e" }}
           >
-            <h5>
-              Vijay Home Services | Quotation Reports {`, ${searchValue}`}
-            </h5>
+            <h5>Vijay Home Services | B2B Reports {`, ${searchValue}`}</h5>
           </Card>
         </div>{" "}
         <br />
@@ -519,4 +402,4 @@ function Report_Quotation() {
   );
 }
 
-export default Report_Quotation;
+export default Report_B2B;

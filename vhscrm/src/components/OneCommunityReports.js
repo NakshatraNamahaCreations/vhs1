@@ -148,8 +148,7 @@ function OneCommunityReports() {
               </td>
               <td> {data?.communityData[0]?.customerData[0]?.city} </td>
               <td>{data?.communityData[0]?.category} </td>
-              {/* check the completion process */}
-              <td> </td> 
+              <td> </td>
               <td> 0.00 </td>
               <td>{data?.communityData[0]?.oneCommunity} </td>
             </tr>

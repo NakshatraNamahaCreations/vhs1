@@ -5,24 +5,24 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 function Payment() {
-  const { cardNo } = useParams();
+  const { id } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
+    navigate(`/painting/${id}`);
   };
   const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
+    navigate(`/payment/${id}`);
   };
   const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
+    navigate(`/work/${id}`);
   };
   const treatmentURL = () => {
-    navigate(`/customersearchdetails/${cardNo}`);
+    navigate(`/customersearchdetails/${id}`);
   };
   const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
+    navigate(`/customeradd/${id}`);
   };
   const [data, setdata] = useState([]);
 
@@ -63,6 +63,7 @@ function Payment() {
           amount: paymentAmount,
           Comment: paymentComments,
           customerId: data[0]?.customerData[0]._id,
+          serviceId:id
         },
       };
       await axios(config).then(function (response) {
@@ -112,7 +113,7 @@ function Payment() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
+        (i) => i._id == id
       );
       setdata(filteredData);
       console.log("filteredData", filteredData);

@@ -9,10 +9,15 @@ function Report_DSR() {
   const apiURL = process.env.REACT_APP_API_URL;
   const [dsrData, setDsrData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [classifications, setClassifications] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
+  const [fromData, setFromData] = useState("");
+  const [toData, setToData] = useState("");
   const [backOffice, setBackOffice] = useState("");
   const [technicianName, setTechnicianName] = useState("");
   const [jobComplete, setJobComplete] = useState("");
+  const [reference, setReference] = useState("");
+  const [service, setService] = useState("");
+  const [jobStatus, setJobStatus] = useState("");
   const [city, setCity] = useState("");
   const [jobCatagory, setJobCatagory] = useState("");
   const [searchInput, setSearchInput] = useState(""); // New state for search input
@@ -20,11 +25,60 @@ function Report_DSR() {
   const [buttonClicked, setButtonClicked] = useState(false);
   const [closeWindow, setCloseWindow] = useState(true);
 
+  // removing duplicate value from the select option
+  const [duplicateCity, setduplicateCity] = useState(new Set());
+  const [duplicateCategories, setduplicateCategories] = useState(new Set());
+  const [duplicatePaymentMode, setduplicatePaymentMode] = useState(new Set());
+  const [duplicateReference, setduplicateReference] = useState(new Set());
+  const [duplicateJobComplete, setduplicateJobComplete] = useState(new Set());
+  const [duplicateService, setduplicateService] = useState(new Set());
+  const [duplicateBackofficeExe, setduplicateBackofficeExe] = useState(
+    new Set()
+  );
+  const [duplicateTechnicianName, setduplicateTechnicianName] = useState(
+    new Set()
+  );
+
+  useEffect(() => {
+    const uniqueCities = new Set(
+      dsrData?.map((item) => item.customer[0]?.city).filter(Boolean)
+    );
+    const uniquePaymentMode = new Set(
+      dsrData?.map((item) => item.contractType).filter(Boolean)
+    );
+    const uniqueCatagories = new Set(
+      dsrData?.map((item) => item.category).filter(Boolean)
+    );
+    const uniqueReference = new Set(
+      dsrData?.map((item) => item.category).filter(Boolean) //check reference
+    );
+    const uniqueJobComplete = new Set(
+      dsrData?.map((item) => item.jobComplete).filter(Boolean) //check jobComplete
+    );
+    const uniqueService = new Set(
+      dsrData?.map((item) => item.backofficerExe).filter(Boolean) //check Services
+    );
+    const uniqueBackOfficeExe = new Set(
+      dsrData?.map((item) => item.customer[0]?.serviceExecute).filter(Boolean) //check BackofficeExe
+    );
+    const uniqueTechnicianName = new Set(
+      dsrData?.map((item) => item.techName).filter(Boolean) //check BackofficeExe
+    );
+    setduplicateCity(uniqueCities);
+    setduplicatePaymentMode(uniquePaymentMode);
+    setduplicateCategories(uniqueCatagories);
+    setduplicateReference(uniqueReference);
+    setduplicateJobComplete(uniqueJobComplete);
+    setduplicateService(uniqueService);
+    setduplicateBackofficeExe(uniqueBackOfficeExe);
+    setduplicateTechnicianName(uniqueTechnicianName);
+  }, [dsrData]);
+
   const getDsrDetails = async () => {
     try {
-      const res = await axios.get(apiURL + "/getaggredsrdata");
+      const res = await axios.get(apiURL + "/getrunningdata");
       if (res.status === 200) {
-        const data = res.data.addcall;
+        const data = res.data.runningdata;
         console.log("DSR", data);
         setDsrData(data);
         setFilteredData(data);
@@ -47,7 +101,7 @@ function Report_DSR() {
       const itemClassification =
         item.servicedetails?.[0]?.contractType
           ?.toLowerCase()
-          .includes(classifications.toLowerCase()) ?? true;
+          .includes(paymentMode.toLowerCase()) ?? true;
 
       const itemBackOffice =
         item.backofficerExe?.toLowerCase().includes(backOffice.toLowerCase()) ??
@@ -62,9 +116,8 @@ function Report_DSR() {
         true;
 
       const itemJobCatagory =
-        item.servicedetails?.[0]?.service
-          ?.toLowerCase()
-          .includes(jobCatagory.toLowerCase()) ?? true;
+        item.category?.toLowerCase().includes(jobCatagory.toLowerCase()) ??
+        true;
 
       const itemCity =
         item.customer?.[0]?.city?.toLowerCase().includes(city.toLowerCase()) ??
@@ -93,7 +146,7 @@ function Report_DSR() {
   // useEffect(() => {
   //   filterData();
   // }, [
-  //   classifications,
+  //   paymentMode,
   //   backOffice,
   //   technicianName,
   //   jobComplete,
@@ -120,14 +173,11 @@ function Report_DSR() {
     },
     {
       name: "Cr.Date",
-      selector: (index) => "-",
+      selector: (row) => (row.createdAt ? row.createdAt : "-"),
     },
     {
       name: "Classification",
-      selector: (row) =>
-        row.servicedetails[0]?.contractType
-          ? row.servicedetails[0]?.contractType
-          : "-",
+      selector: (row) => (row?.contractType ? row?.contractType : "-"),
     },
     {
       name: "Customer Name",
@@ -145,12 +195,12 @@ function Report_DSR() {
     },
     {
       name: "Reference",
-      selector: (row) => (row.customerName ? row.customerName : "-"),
+      selector: (row) =>
+        row.enquiryData[0]?.reference1 ? row.enquiryData[0]?.reference1 : "-",
     },
     {
       name: "Job Category",
-      selector: (row) =>
-        row.servicedetails[0]?.service ? row.servicedetails[0]?.service : "-",
+      selector: (row) => (row.service ? row.service : "-"),
     },
     {
       name: "Technician",
@@ -221,18 +271,28 @@ function Report_DSR() {
                     <b>Call Report &gt; Filter</b>{" "}
                   </p>
                   <div className="row">
-                    <div className="col-md-4">Classification </div>
+                    <div className="col-md-4"> From Date </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <input
+                        className="report-select"
+                        type="date"
+                        onClick={(e) => setFromData(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">Payment mode </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setClassifications(e.target.value)}
+                        onClick={(e) => setPaymentMode(e.target.value)}
                       >
                         <option>Select</option>
-                        {dsrData.map((item) => (
-                          <option>
-                            {item.servicedetails[0]?.contractType}
-                          </option>
+                        {[...duplicatePaymentMode].map((contractType) => (
+                          <option value={contractType}>{contractType}</option>
                         ))}
                       </select>
                     </div>
@@ -247,8 +307,8 @@ function Report_DSR() {
                         onClick={(e) => setTechnicianName(e.target.value)}
                       >
                         <option>Select</option>
-                        {dsrData.map((item) => (
-                          <option>{item.techName}</option>
+                        {[...duplicateTechnicianName].map((techName) => (
+                          <option key={techName}>{techName}</option>
                         ))}
                       </select>
                     </div>
@@ -263,6 +323,24 @@ function Report_DSR() {
                         onClick={(e) => setBackOffice(e.target.value)}
                       >
                         <option>Select</option>
+                        {[...duplicateBackofficeExe].map((serviceExecute) => (
+                          <option value={serviceExecute}>
+                            {serviceExecute}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">Service </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onClick={(e) => setService(e.target.value)}
+                      >
+                        <option>Select</option>
                         {dsrData.map((item) => (
                           <option>{item.backofficerExe}</option>
                         ))}
@@ -270,11 +348,40 @@ function Report_DSR() {
                     </div>
                   </div>
                   <br />
+                  <div className="row">
+                    <div className="col-md-4">Job Status </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onClick={(e) => setJobStatus(e.target.value)}
+                      >
+                        <option vallue="">Select</option>
+                        <option value="Open">Open</option>
+                        <option value="Close">Close</option>
+                      </select>
+                    </div>
+                  </div>{" "}
+                  <br />
                 </div>
+                {/* next Row=================================== */}
                 <div className="col-md-5">
                   <br />
                   <div className="row"></div>
                   <div className="row mt-3">
+                    <div className="col-md-4 "> To Date </div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <input
+                        className="report-select"
+                        type="date"
+                        // style={{ width: "70%" }}
+                        onClick={(e) => setToData(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
                     <div className="col-md-4 ">Job Complete </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
@@ -284,8 +391,8 @@ function Report_DSR() {
                         onClick={(e) => setJobComplete(e.target.value)}
                       >
                         <option>All</option>
-                        {dsrData.map((item) => (
-                          <option>{item.jobComplete}</option>
+                        {[...duplicateJobComplete].map((jobComplete) => (
+                          <option value={jobComplete}>{jobComplete}</option>
                         ))}
                       </select>
                     </div>
@@ -300,15 +407,15 @@ function Report_DSR() {
                         onClick={(e) => setCity(e.target.value)}
                       >
                         <option>Select</option>
-                        {dsrData.map((item) => (
-                          <option>{item.customer[0]?.city}</option>
+                        {[...duplicateCity].map((city) => (
+                          <option value={city}>{city}</option>
                         ))}
                       </select>
                     </div>
                   </div>
                   <br />
                   <div className="row">
-                    <div className="col-md-4">Job Category</div>
+                    <div className="col-md-4">Category</div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
@@ -317,8 +424,25 @@ function Report_DSR() {
                         // style={{ width: "70%" }}
                       >
                         <option>Select</option>
-                        {dsrData.map((item) => (
-                          <option>{item.servicedetails[0]?.service}</option>
+                        {[...duplicateCategories].map((category) => (
+                          <option value={category}>{category}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col-md-4">Reference</div>
+                    <div className="col-md-1 ms-4">:</div>
+                    <div className="col-md-5 ms-4">
+                      <select
+                        className="report-select"
+                        onClick={(e) => setReference(e.target.value)}
+                        // style={{ width: "70%" }}
+                      >
+                        <option>Select</option>
+                        {[...duplicateReference].map((category) => (
+                          <option value={category}>{category}</option>
                         ))}
                       </select>
                     </div>

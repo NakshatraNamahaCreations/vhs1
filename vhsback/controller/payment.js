@@ -10,8 +10,9 @@ class Payment {
         amount,
         Comment,
         customerId,
+        serviceId
       } = req.body;
-      if (!paymentDate || !paymentType || !paymentMode || !amount || !Comment) {
+      if (!paymentDate || !paymentType || !paymentMode || !amount || !Comment ||!serviceId) {
         return res.status(500).json({ error: "Field must not be empty" });
       } else {
         let add = new PaymentModal({
@@ -21,6 +22,7 @@ class Payment {
           amount,
           Comment,
           customer: customerId,
+          serviceId
         });
         const savedPayment = await add.save();
         if (savedPayment) {

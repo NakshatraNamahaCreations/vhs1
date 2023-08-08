@@ -86,6 +86,15 @@ function Reports() {
             </div>
           </Link>
         </div>
+        <div className="col-md-3  mb-4">
+          <Link to="/report/b2b">
+            <div className="card home-col">
+              <div className="card-body">
+                <div className="home-content">B2B</div>
+              </div>
+            </div>
+          </Link>
+        </div>
         <div className="col-md-3 "></div>
       </div>
       <div className="row m-auto">

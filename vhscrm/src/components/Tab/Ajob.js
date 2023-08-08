@@ -13,23 +13,26 @@ import Tab from "react-bootstrap/Tab";
 import Contentnav from "../Contentnav";
 
 function Ajob() {
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+  const cat = sessionStorage.getItem("category");
   // const [data1, setdata1] = useState([]);
   const [material, setmaterial] = useState("");
   const [desc, setdesc] = useState("");
   const [rate, setrate] = useState("");
   const [search, setsearch] = useState("");
-  const [ajobdata, setajobdata] = useState([])
+  const [ajobdata, setajobdata] = useState([]);
   const [filterdata, setfilterdata] = useState([]);
   const [data, setdata] = useState([]);
   const category = sessionStorage.getItem("category");
   const [material1, setmaterial1] = useState(data.material);
+  const [category1, setcategory1] = useState(data.category);
+
   const [desc1, setdesc1] = useState(data.desc);
   const [rate1, setrate1] = useState(data.rate);
   const [newqtdata, setnewqtdata] = useState([]);
   const [materialdata, setmaterialdata] = useState([]);
   const formdata = new FormData();
   const apiURL = process.env.REACT_APP_API_URL;
-
 
   const [show, setShow] = useState(false);
 
@@ -94,6 +97,7 @@ function Ajob() {
         baseURL: apiURL,
         headers: { "content-type": "application/json" },
         data: {
+          category:category1,
           material: material1,
           desc: desc1,
           rate: rate1,
@@ -143,7 +147,6 @@ function Ajob() {
           <a onClick={() => deleteajob(row._id)} className="hyperlink mx-1">
             Delete
           </a>
-         
         </div>
       ),
     },
@@ -186,6 +189,9 @@ function Ajob() {
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
+              <p>
+                <b>Category :</b> {cat}
+              </p>
               <Contentnav />
 
               <form className="mt-5">
@@ -272,32 +278,52 @@ function Ajob() {
           </div>
         </div>
       </div>
-      {/* <Modal
+      <Modal
         show={show}
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
       >
-        <Modal.Header closeButton>
+        {/* <Modal.Header closeButton>
           <Modal.Title>A-Job</Modal.Title>
-        </Modal.Header>
+        </Modal.Header> */}
         <Modal.Body>
+          <h4 className="text-center"> Ajob</h4>
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
               <form>
                 <div className="row">
+                <div className="col-md-4">
+                    <div className="vhs-input-label">
+                      Category 
+                    </div>
+                    <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcategory1(e.target.value)}
+                      >
+                        <option value={data.category}>{data.category}</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Material <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
-                      <select className="col-md-12 vhs-input-value" onChange={(e)=>setmaterial1(e.target.value)}>
-                      <option value={data.material}>{data.material}</option>
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setmaterial1(e.target.value)}
+                      >
+                        <option value={data.material}>{data.material}</option>
                         {materialdata.map((item) => (
                           <option value={item.material}>{item.material}</option>
                         ))}
-                       
-                       
                       </select>
                     </div>
                   </div>
@@ -311,8 +337,8 @@ function Ajob() {
                         rows={5}
                         cols={10}
                         className="col-md-12 vhs-input-value"
-                        onChange={(e)=>setdesc1(e.target.value)}
-                        placeholder={data.desc}
+                        onChange={(e) => setdesc1(e.target.value)}
+                        defaultValue={data.desc}
                       />
                     </div>
                   </div>
@@ -325,23 +351,31 @@ function Ajob() {
                       <input
                         type="text"
                         className="vhs-input-value col-md-12"
-                        onChange={(e)=>setrate1(e.target.value)}
-                        placeholder={data.rate}
+                        onChange={(e) => setrate1(e.target.value)}
+                        defaultValue={data.rate}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="row pt-3 justify-content-center">
-                  <div className="col-md-1">
-                    <button className="vhs-button" onClick={editajob}>Save</button>
+                <div className="row pt-3 justify-content-center mt-4">
+                <div className="col-md-3 ">
+                    <button className="vhs-button" onHide={handleClose}>
+                      Cancel
+                    </button>
                   </div>
+                  <div className="col-md-3 ">
+                    <button className="vhs-button" onClick={editajob}>
+                      Save
+                    </button>
+                  </div>
+                  
                 </div>
               </form>
             </div>
           </div>
         </Modal.Body>
-      </Modal> */}
+      </Modal>
     </div>
   );
 }

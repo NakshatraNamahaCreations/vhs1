@@ -153,7 +153,7 @@ function Customersearchdetails() {
     // dividedCharges.push(charge);
   }
   const communityPercentage = (serviceCharge * oneCommunity.percentage) / 100; //this line
-  const remainingAmt = serviceCharge - communityPercentage;
+  const remainingAmt = oneCommunity.percentage?(serviceCharge - communityPercentage):serviceCharge;
   console.log("newCharge", newCharge);
   const sAmtDate = moment(firstDateamt, "YYYY-MM-DD");
   const eamtDate = moment(expiryDateamt, "YYYY-MM-DD");
@@ -177,7 +177,7 @@ function Customersearchdetails() {
   }
   const addtreatmentdetails = async (e) => {
     e.preventDefault();
-    if (!contractType || !treatment || !remainingAmt) {
+    if (!contractType || !treatment ) {
 
       alert("Fill all feilds");
     } else {
@@ -209,6 +209,7 @@ function Customersearchdetails() {
             time: moment().format("LT"),
             communityId: oneCommunity._id, //this line
             oneCommunity: communityPercentage, //thi line
+            BackofficeExecutive:admin.displayname
           },
         };
         await axios(config).then(function (response) {
@@ -283,7 +284,7 @@ function Customersearchdetails() {
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <form>
-                <div
+                {/* <div
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
                   <h5>Billing Details</h5>
@@ -293,9 +294,9 @@ function Customersearchdetails() {
                   >
                     Add call
                   </h6>
-                </div>
+                </div> */}
 
-                <hr />
+                {/* <hr /> */}
                 {customerdata.map((item) => (
                   <div>
                     <div className="row">
@@ -869,7 +870,7 @@ function Customersearchdetails() {
                     ) : (
                       <td>{item.dateofService}</td>
                     )}
-                    <td>{item.dividedCharges}</td>
+                    <td>{(item.communityId) ?(item.dividedCharges):(item.serviceCharge)}</td>
 
                     <td>{item.desc}</td>
 

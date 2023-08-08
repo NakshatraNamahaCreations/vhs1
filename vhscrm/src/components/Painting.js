@@ -10,9 +10,10 @@ function Painting() {
   const [customerPayments, setCustomerPayments] = useState([]);
   const [vendorPayments, setVendorPayments] = useState([]);
   const [data, setdata] = useState([]);
-  const { cardNo } = useParams();
-  console.log(cardNo);
+  const { id } = useParams();
+  console.log(id);
   const navigate = useNavigate();
+  
   useEffect(() => {
     getservicedata();
   }, []);
@@ -21,27 +22,27 @@ function Painting() {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
       const filteredData = res.data?.runningdata.filter(
-        (i) => i.cardNo == cardNo
+        (i) => i._id == id
       );
       setdata(filteredData);
     }
   };
   console.log("CustomerDetails===", data);
   const PaintingURL = () => {
-    navigate(`/painting/${cardNo}`);
+    navigate(`/painting/${id}`);
   };
   const PaymentURL = () => {
-    navigate(`/payment/${cardNo}`);
+    navigate(`/payment/${id}`);
   };
   const WorkURL = () => {
-    navigate(`/work/${cardNo}`);
+    navigate(`/work/${id}`);
   };
 
   const treatmentURL = () => {
-    navigate(`/treatmentdetails/${cardNo}`);
+    navigate(`/treatmentdetails/${id}`);
   };
   const customerAddURL = () => {
-    navigate(`/customeradd/${cardNo}`);
+    navigate(`/customeradd/${id}`);
   };
 
   const getPaymentById = async () => {

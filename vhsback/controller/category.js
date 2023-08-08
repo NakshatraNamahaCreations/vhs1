@@ -1,6 +1,7 @@
 const categorymodel = require("../model/category");
 
 class Category {
+  
   async addcategory(req, res) {
     let { category } = req.body;
     let add = new categorymodel({

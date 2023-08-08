@@ -10,6 +10,7 @@ import Formatnav from "../components/Formatnav"
 
 
 function Termsgroup() {
+  const cat=sessionStorage.getItem("category");
   const [serno, setserno] = useState("");
   const [headerimgdata, setheaderimgdata] = useState([]);
   const [footerimgdata, setfooterimgdata] = useState([]);
@@ -141,6 +142,7 @@ function Termsgroup() {
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
+              <p><b>Category:</b> {cat}</p>
               <Formatnav />
             
             </div>

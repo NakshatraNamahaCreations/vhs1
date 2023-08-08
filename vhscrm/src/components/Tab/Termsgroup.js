@@ -3,17 +3,18 @@ import Header from "../layout/Header";
 import Nav1 from "../Nav1";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Formatnav from "../Formatnav";
-import { Modal,  } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 function Termsgroup() {
-  const [serno, setserno] = useState("");
+  const cat = sessionStorage.getItem("category");
   const category = sessionStorage.getItem("category");
   const [newqtdata, setnewqtdata] = useState([]);
-  const [header, settermsgroup] = useState("");
-  const [content, setterms] = useState("");
+  const [header, setheader] = useState("");
+  const [content, setcontent] = useState("");
   const apiURL = process.env.REACT_APP_API_URL;
   const [search, setsearch] = useState("");
   const [data, setdata] = useState([]);
@@ -30,27 +31,30 @@ function Termsgroup() {
 
   const posttermsgroup = async (e) => {
     e.preventDefault();
-
-    try {
-      const config = {
-        url: "/master/addtermgroup",
-        method: "post",
-        baseURL: apiURL,
-        data: {
-          category: category,
-          header: header,
-          content: content,
-        },
-      };
-      await axios(config).then(function (response) {
-        if (response.status === 200) {
-          alert("Successfully Added");
-          window.location.assign("/termsgroup");
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      alert("category  Not Added");
+    if (!category || !content) {
+      alert("Please enter all fields");
+    } else {
+      try {
+        const config = {
+          url: "/master/addtermgroup",
+          method: "post",
+          baseURL: apiURL,
+          data: {
+            category: category,
+            header: header,
+            content: content,
+          },
+        };
+        await axios(config).then(function (response) {
+          if (response.status === 200) {
+            alert("Successfully Added");
+            window.location.assign("/termsgroup");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        alert("category  Not Added");
+      }
     }
   };
 
@@ -115,11 +119,18 @@ function Termsgroup() {
 
     {
       name: "Header ",
-      selector: (row) => "Terms & Condition",
+      selector: (row) => row.header,
     },
     {
       name: "Content",
-      selector: (row) => row.content,
+      cell: (row) => (
+        <div className="mt-2">
+        
+          <div  dangerouslySetInnerHTML={{ __html: row.content }} />
+
+        
+        </div>
+      ),
     },
 
     {
@@ -168,6 +179,10 @@ function Termsgroup() {
       });
   };
 
+  const handleEditorChange = (event, editor) => {
+    const data1 = editor.getData();
+    setcontent(data1);
+  };
   let i = 0;
   return (
     <div className="web">
@@ -178,58 +193,53 @@ function Termsgroup() {
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "30px" }}>
             <div className="card-body p-3">
+              <p className="p-2">
+                <b>Category</b>:{cat}
+              </p>
+
               <Formatnav />
               <ul className="nav-tab-ul">
                 <li>
                   <NavLink to="/termsgroup" activeClassName="active">
-                 Section1
+                    Section1
                   </NavLink>
                 </li>
                 <li>
                   <NavLink to="/section2" activeClassName="active">
-                  Section2
+                    Section2
                   </NavLink>
                 </li>
               </ul>
               <form className="mt-5">
                 <div className="row mt-5">
-                  {/* <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
-                      Seq No <span className="text-danger"> *</span>
+                      Section1 header <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e) => setserno(e.target.value)}
+                        onChange={(e) => setheader(e.target.value)}
                       />
                     </div>
-                  </div> */}
-
-                  {/* <div className="col-md-4">
-                    <div className="vhs-input-label">
-                      Header <span className="text-danger"> *</span>
-                    </div>
-                    <div className="group pt-1">
-                      <input
-                        type="text"
-                        className="col-md-12 vhs-input-value"
-                        onChange={(e) => settermsgroup(e.target.value)}
-                      />
-                    </div>
-                  </div> */}
-
+                  </div>
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Content <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
-                      <textarea
+                      {/* <textarea
                         type="text"
                         className="col-md-12 vhs-input-value"
                         onChange={(e) => setterms(e.target.value)}
                         rows={5}
                         cols={40}
+                      /> */}
+                        <CKEditor
+                        editor={ClassicEditor}
+                        data={content}
+                        onChange={handleEditorChange}
                       />
                     </div>
                   </div>
@@ -275,7 +285,7 @@ function Termsgroup() {
             <div className="card-body p-3">
               <form>
                 <div className="row">
-                  {/* <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       Header <span className="text-danger"> *</span>
                     </div>
@@ -287,7 +297,7 @@ function Termsgroup() {
                         defaultValue={data.header}
                       />
                     </div>
-                  </div> */}
+                  </div>
 
                   <div className="col-md-4">
                     <div className="vhs-input-label">

@@ -163,45 +163,9 @@ function Paymentfilterlist() {
   ]);
 
   let i = 1;
-  // const targetDate=date;
-
-  const findAmountForDate = (searchResults, date) => {
-    const formattedTargetDate = moment(date).toISOString();
-    console.log(searchResults);
-    console.log(formattedTargetDate);
+  const targetDate=date;
 
 
-    const matchedData = (searchResults, formattedTargetDate) => {
-      try {
-        const matchedItem = searchResults.find((item) =>
-          item.dividedDates.includes(formattedTargetDate)
-        );
-
-        if (matchedItem) {
-          console.log("Match found:", matchedItem);
-          return matchedItem;
-        } else {
-          console.log("No match found for", formattedTargetDate);
-          return null; // or any other value to indicate no match
-        }
-      } catch (error) {
-        console.error("Error occurred:", error);
-        return null; // or throw an error based on your error handling strategy
-      }
-    };
-
-    const result = matchedData(searchResults, formattedTargetDate);
-    console.log(result)
-
-    console.log(matchedData);
-    if (matchedData) {
-      const targetDateIndex =
-        matchedData.dividedDates.indexOf(formattedTargetDate);
-      return matchedData.dividedamtCharges[targetDateIndex];
-    }
-
-    return "N/A";
-  };
 
   return (
     <div className="web">
@@ -374,7 +338,11 @@ function Paymentfilterlist() {
                     <td>{selectedData.service}</td>
 
                     <td>{selectedData.desc}</td>
-                    <td>{findAmountForDate(searchResults, date)}</td>
+                    <td>{selectedData.dividedamtCharges.map((charge, index) => (
+                            <div key={index}>
+                              <p>{charge[1]}</p>
+                            </div>
+                          ))}</td>
                     <td>Payment collected</td>
                     <td>
                       <button> Raise Invoice</button>
