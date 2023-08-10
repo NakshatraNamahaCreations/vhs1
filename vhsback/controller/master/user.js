@@ -77,7 +77,7 @@ class masteruser {
         displayname,
         contactno,
         loginnameOrEmail,
-        password: hashedPassword,
+        password,
       });
 
       // Save the user
@@ -110,8 +110,8 @@ class masteruser {
           .status(404)
           .json({ error: "User not found or invalid password" });
       }
-      const passwordMatch = bcrypt.compareSync(password, user.password);
-      if (!passwordMatch) {
+      // const passwordmatch=bcrypt.compareSync(password,user.password)
+      if (password !== user.password) {
         return res.status(401).json({ error: "Invalid password" });
       }
       await usermodel.findOneAndUpdate(
@@ -362,21 +362,23 @@ class masteruser {
     return res.json({ success: "Successfully" });
   }
 
-  async getsignout (req,res){
+  async getsignout(req, res) {
     let id = req.params.id;
     try {
-    const data = await  usermodel.findOneAndUpdate({ _id: id },{status:"offline"});
-    if(!data){
-      return res.status(403).json({
-        error: "Cannot able to find the user",
-      });
+      const data = await usermodel.findOneAndUpdate(
+        { _id: id },
+        { status: "offline" }
+      );
+      if (!data) {
+        return res.status(403).json({
+          error: "Cannot able to find the user",
+        });
+      } else {
+        return res.json({ success: "Sign Out Successful" });
+      }
+    } catch (err) {
+      console.log(err);
     }
-    else{
-      return res.json({success:"Sign Out Successful"});
-    }
-  } catch (err) {
-    console.log(err);
-  }
   }
 }
 

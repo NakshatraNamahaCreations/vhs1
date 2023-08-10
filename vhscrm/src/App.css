@@ -170,7 +170,7 @@ body {
   border: none;
   border-radius: 8px;
   font-size: 14px;
-  width: 80px;
+  width: 150px;
   color: #fff;
   height: 28px;
 }
@@ -677,3 +677,10 @@ background-color: #a9042e;
   .text-right{
     text-align: end;
   }
+  .allowRowEvents{
+    white-space: normal !important;
+  }
+  .hgByPU div:first-child{
+    white-space: normal !important;
+  }
+  

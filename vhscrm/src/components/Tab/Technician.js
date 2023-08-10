@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../layout/Header";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -6,7 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "../Nav1";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-
+import Multiselect from "multiselect-react-dropdown";
 
 const active = {
   backgroundColor: "rgb(169, 4, 46)",
@@ -40,13 +40,15 @@ function Technician() {
   const [experiance1, setexperiance1] = useState(data.experiance);
   const [language1, setlanguagesknow1] = useState(data.language);
   const [Type1, setType1] = useState(data.Type);
-
+  const [selectedCatagory, setSelectedCatagory] = useState(
+    data?.category || []
+  );
   const [techniciandata, settechniciandata] = useState([]);
   const [citydata, setcitydata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
   const [search, setsearch] = useState("");
   const [filterdata, setfilterdata] = useState([]);
- 
+
   const apiURL = process.env.REACT_APP_API_URL;
   const handleclick = () => {
     setIsVisible(!isVisible);
@@ -62,9 +64,17 @@ function Technician() {
   const addtechnician = async (e) => {
     e.preventDefault();
 
-    if(!city || !category ||!vhsname ||!number ||!password ||!experiance ||!language){
-      alert("Please fill all fields")
-    }else{
+    if (
+      !city ||
+      !selectedCatagory ||
+      !vhsname ||
+      !number ||
+      !password ||
+      !experiance ||
+      !language
+    ) {
+      alert("Please fill all fields");
+    } else {
       try {
         const config = {
           url: "/addtechnician",
@@ -73,8 +83,8 @@ function Technician() {
           // data: formdata,
           headers: { "content-type": "application/json" },
           data: {
-            Type:Type,
-            category: category,
+            Type: Type,
+            category: selectedCatagory,
             vhsname: vhsname,
             smsname: smsname,
             number: number,
@@ -82,7 +92,6 @@ function Technician() {
             experiance: experiance,
             languagesknow: language,
             city: city,
-          
           },
         };
         await axios(config).then(function (response) {
@@ -94,10 +103,9 @@ function Technician() {
         });
       } catch (error) {
         console.error(error); // Log the error to the browser console
-  alert("An error occurred: " + error.message); 
+        alert("An error occurred: " + error.message);
       }
     }
-   
   };
   useEffect(() => {
     gettechnician();
@@ -110,19 +118,17 @@ function Technician() {
     if ((res.status = 200)) {
       settechniciandata(res.data?.technician);
       setfilterdata(res.data?.technician);
-
     }
   };
- 
 
   const getcity = async () => {
-    let res = await axios.get(apiURL+"/master/getcity");
+    let res = await axios.get(apiURL + "/master/getcity");
     if ((res.status = 200)) {
       setcitydata(res.data?.mastercity);
     }
   };
   const getcategory = async () => {
-    let res = await axios.get(apiURL+"/getcategory");
+    let res = await axios.get(apiURL + "/getcategory");
     if ((res.status = 200)) {
       setcategorydata(res.data?.category);
     }
@@ -131,7 +137,7 @@ function Technician() {
   const deletetechnician = async (id) => {
     axios({
       method: "post",
-      url: apiURL+"/deletetechnician/" + id,
+      url: apiURL + "/deletetechnician/" + id,
     })
       .then(function (response) {
         //handle success
@@ -148,7 +154,7 @@ function Technician() {
   const columns = [
     {
       name: "Sl  No",
-      selector: (row,index) => index+1,
+      selector: (row, index) => index + 1,
     },
     {
       name: "Type",
@@ -172,7 +178,13 @@ function Technician() {
     },
     {
       name: "category",
-      selector: (row) => row.category,
+      cell: (row) => (
+        <div>
+          {row.category.map((i) => (
+            <div> {i.name},</div>
+          ))}
+        </div>
+      ),
     },
     {
       name: "Password",
@@ -193,8 +205,11 @@ function Technician() {
           <a className="hyperlink" onClick={() => edit(row)}>
             Edit |
           </a>
-        
-          <a onClick={() => deletetechnician(row._id)} className="hyperlink mx-1">
+
+          <a
+            onClick={() => deletetechnician(row._id)}
+            className="hyperlink mx-1"
+          >
             Delete
           </a>
         </div>
@@ -221,7 +236,7 @@ function Technician() {
         baseURL: apiURL,
         headers: { "content-type": "application/json" },
         data: {
-          Type:Type1,
+          Type: Type1,
           category: category1,
           vhsname: vh,
           smsname: smsname1,
@@ -244,6 +259,20 @@ function Technician() {
     }
   };
 
+  const onSelectCatagory = (selectedList, selectedItem) => {
+    // Handle select event
+    setSelectedCatagory(selectedList);
+    console.log(selectedList);
+    console.log(selectedItem);
+  };
+
+  const onRemoveCatagory = (selectedList, removedItem) => {
+    // Handle remove event
+    setSelectedCatagory(selectedList);
+    console.log(selectedList);
+    console.log(removedItem);
+  };
+
   return (
     <div>
       <Header />
@@ -262,8 +291,7 @@ function Technician() {
             <div className="card-body p-3">
               <form>
                 <div className="row pt-2">
-
-                <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       Type <span className="text-danger"> *</span>
                     </div>
@@ -276,7 +304,6 @@ function Technician() {
                         <option value="executive">Executive</option>
                         <option value="technician">Technician</option>
                         <option value="pm">Project Manager</option>
-               
                       </select>
                     </div>
                   </div>
@@ -296,31 +323,7 @@ function Technician() {
                       </select>
                     </div>
                   </div>
-
                   <div className="col-md-4">
-                    <div className="vhs-input-label">
-                     Category<span className="text-danger"> *</span>
-                    </div>
-                    <div className="group pt-1">
-                      <select
-                        className="col-md-12 vhs-input-value"
-                        onChange={(e) => setcategory(e.target.value)}
-                      >
-                        <option>--select--</option>
-                        {admin?.category.map((category, index) => (
-                          <option key={index} value={category.name}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                
-                </div>
-
-                <div className="row pt-3">
-                <div className="col-md-4">
                     <div className="vhs-input-label">
                       VHS Name <span className="text-danger"> *</span>
                     </div>
@@ -332,10 +335,11 @@ function Technician() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <div className="row pt-3">
                   <div className="col-md-4">
-                    <div className="vhs-input-label">
-                      SMS Name 
-                    </div>
+                    <div className="vhs-input-label">SMS Name</div>
                     <div className="group pt-1">
                       <input
                         type="text"
@@ -357,12 +361,7 @@ function Technician() {
                       />
                     </div>
                   </div>
-
-                
-                </div>
-
-                <div className="row pt-3">
-                <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       Password <span className="text-danger"> *</span>
                     </div>
@@ -374,6 +373,9 @@ function Technician() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <div className="row pt-3">
                   <div className="col-md-4">
                     <div className="vhs-input-label">
                       Experiance <span className="text-danger"> *</span>
@@ -399,6 +401,38 @@ function Technician() {
                       />
                     </div>
                   </div>
+                  <div className="col-md-4">
+                    <div className="vhs-input-label">
+                      Category<span className="text-danger"> *</span>
+                    </div>
+                    {/* <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcategory(e.target.value)}
+                      >
+                        <option>--select--</option>
+                        {admin?.category.map((category, index) => (
+                          <option key={index} value={category.name}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div> */}
+                    <Multiselect
+                      className="mt-3"
+                      options={admin.category.map((category) => ({
+                        name: category.name,
+                        // id: category._id,
+                      }))}
+                      placeholder="Select Catagory"
+                      selectedValues={selectedCatagory}
+                      onSelect={onSelectCatagory}
+                      onRemove={onRemoveCatagory}
+                      displayValue="name"
+                      // disablePreSelectedValues={true}
+                      showCheckbox={true}
+                    />{" "}
+                  </div>
 
                   <div className="col-md-4"></div>
                 </div>
@@ -412,34 +446,35 @@ function Technician() {
 
                 <div className="row pt-3">
                   <div className="col-md-1">
-                    <button className="vhs-button" onClick={addtechnician}>Save</button>
+                    <button className="vhs-button" onClick={addtechnician}>
+                      Save
+                    </button>
                   </div>
                 </div>
               </form>
             </div>
           </div>
 
-
           <div className="mt-5">
-                <input
-                  type="text"
-                  placeholder="Search here.."
-                  className="w-25 form-control"
-                  value={search}
-                  onChange={(e) => setsearch(e.target.value)}
-                />
-              </div>
-              <div className="mt-1 border">
-                <DataTable
-                  columns={columns}
-                  data={filterdata}
-                  pagination
-                  fixedHeader
-                  selectableRowsHighlight
-                  subHeaderAlign="left"
-                  highlightOnHover
-                />
-              </div>
+            <input
+              type="text"
+              placeholder="Search here.."
+              className="w-25 form-control"
+              value={search}
+              onChange={(e) => setsearch(e.target.value)}
+            />
+          </div>
+          <div className="mt-1 border">
+            <DataTable
+              columns={columns}
+              data={filterdata}
+              pagination
+              fixedHeader
+              selectableRowsHighlight
+              subHeaderAlign="left"
+              highlightOnHover
+            />
+          </div>
         </div>
       </div>
 
@@ -457,7 +492,7 @@ function Technician() {
             <div className="card-body p-3">
               <form>
                 <div className="row pt-2">
-                <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       Type <span className="text-danger"> *</span>
                     </div>
@@ -470,7 +505,6 @@ function Technician() {
                         <option value="exicutive">Exicutive</option>
                         <option value="technician">Technician</option>
                         <option value="pm">Project Manager</option>
-               
                       </select>
                     </div>
                   </div>
@@ -479,9 +513,12 @@ function Technician() {
                       City <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1">
-                      <select className="col-md-12 vhs-input-value" onChange={(e)=>setcity1(e.target.value)} >
-                      <option value={data.city}>{data.city}</option>
-                      {admin?.city.map((item) => (
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcity1(e.target.value)}
+                      >
+                        <option value={data.city}>{data.city}</option>
+                        {admin?.city.map((item) => (
                           <option value={item.name}>{item.name}</option>
                         ))}
                       </select>
@@ -489,27 +526,40 @@ function Technician() {
                   </div>
 
                   <div className="col-md-4">
-                    <div className="vhs-input-label">
+                    {/* <div className="vhs-input-label">
                       Category <span className="text-danger"> *</span>
-                    </div>
-                    <div className="group pt-1">
-                      <select className="col-md-12 vhs-input-value" onChange={(e)=>setcategory1(e.target.value)}>
-                    
-                      {admin?.category.map((category, index) => (
+                    </div> */}
+                    {/* <div className="group pt-1">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setcategory1(e.target.value)}
+                      >
+                        {admin?.category.map((category, index) => (
                           <option key={index} value={category.name}>
                             {category.name}
                           </option>
                         ))}
                       </select>
-                    </div>
+                    </div> */}
+                     {/* <Multiselect
+                      className="mt-3"
+                      options={data.category.map((category) => ({
+                        name: category.name,
+                        // id: category._id,
+                      }))}
+                      placeholder="Select Catagory"
+                      selectedValues={selectedCatagory}
+                      onSelect={onSelectCatagory}
+                      onRemove={onRemoveCatagory}
+                      displayValue="name"
+                      // disablePreSelectedValues={true}
+                      showCheckbox={true}
+                    />{" "} */}
                   </div>
-
-                
                 </div>
 
                 <div className="row pt-3">
-
-                <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       VHS Name <span className="text-danger"> *</span>
                     </div>
@@ -517,7 +567,7 @@ function Technician() {
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e)=>setvh(e.target.value)}
+                        onChange={(e) => setvh(e.target.value)}
                         placeholder={data.vhsname}
                       />
                     </div>
@@ -530,7 +580,7 @@ function Technician() {
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e)=>setsmsname1(e.target.value)}
+                        onChange={(e) => setsmsname1(e.target.value)}
                         placeholder={data.smsname}
                       />
                     </div>
@@ -544,17 +594,15 @@ function Technician() {
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e)=>setnumber1(e.target.value)}
+                        onChange={(e) => setnumber1(e.target.value)}
                         placeholder={data.number}
                       />
                     </div>
                   </div>
-
-                 
                 </div>
 
                 <div className="row pt-3">
-                <div className="col-md-4">
+                  <div className="col-md-4">
                     <div className="vhs-input-label">
                       Password <span className="text-danger"> *</span>
                     </div>
@@ -562,7 +610,7 @@ function Technician() {
                       <input
                         type="text"
                         className="col-md-12 vhs-input-value"
-                        onChange={(e)=>setpassword1(e.target.value)}
+                        onChange={(e) => setpassword1(e.target.value)}
                         placeholder={data.password}
                       />
                     </div>
@@ -576,7 +624,7 @@ function Technician() {
                         type="text"
                         className="col-md-12 vhs-input-value"
                         placeholder={data.experiance}
-                        onChange={(e)=>setexperiance1(e.target.value)}
+                        onChange={(e) => setexperiance1(e.target.value)}
                       />
                     </div>
                   </div>
@@ -590,7 +638,7 @@ function Technician() {
                         type="text"
                         className="col-md-12 vhs-input-value"
                         placeholder={data.languagesknow}
-                        onChange={(e)=>setlanguagesknow1(e.target.value)}
+                        onChange={(e) => setlanguagesknow1(e.target.value)}
                       />
                     </div>
                   </div>
@@ -607,7 +655,9 @@ function Technician() {
 
                 <div className="row pt-3">
                   <div className="col-md-1">
-                    <button className="vhs-button" onClick={edittechnician}>Save</button>
+                    <button className="vhs-button" onClick={edittechnician}>
+                      Save
+                    </button>
                   </div>
                 </div>
               </form>

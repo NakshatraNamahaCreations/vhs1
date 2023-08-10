@@ -2,7 +2,7 @@ const treatmentmodel = require("../model/treatment");
 
 class treatment {
   async addtreatment(req, res) {
-    let { region,material,job,qty,rate,userid ,subtotal,category,EnquiryId} = req.body;
+    let { region,material,job,qty,rate,userid ,subtotal,category,EnquiryId,note} = req.body;
     // let file = req.file.filename;
     if (!region ) {
       return res.status(500).json({ error: "Field must not be empty" });
@@ -16,7 +16,8 @@ class treatment {
         qty:qty,
         rate:rate,
         subtotal:subtotal,
-        category:category
+        category:category,
+        note:note
       });
       let save = add.save();
       if (save) {

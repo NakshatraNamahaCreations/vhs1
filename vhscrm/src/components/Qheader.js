@@ -208,6 +208,7 @@ function Termsgroup() {
                         onChange={(e) => setheaderimg(e.target.files[0])}
                       />
                     </div>
+                    <b>Note:</b>width: 1000px<b>Height:</b>200px
                   </div>
 
                   <div className="col-md-4"></div>

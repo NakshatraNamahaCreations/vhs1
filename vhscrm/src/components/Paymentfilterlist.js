@@ -22,7 +22,7 @@ function Paymentfilterlist() {
 
   const apiURL = process.env.REACT_APP_API_URL;
   const { date } = useParams();
-  console.log("selectedData", date);
+  console.log("searchResults", searchResults);
 
   useEffect(() => {
     getservicedata();
@@ -163,9 +163,7 @@ function Paymentfilterlist() {
   ]);
 
   let i = 1;
-  const targetDate=date;
-
-
+  const targetDate = date;
 
   return (
     <div className="web">
@@ -338,11 +336,13 @@ function Paymentfilterlist() {
                     <td>{selectedData.service}</td>
 
                     <td>{selectedData.desc}</td>
-                    <td>{selectedData.dividedamtCharges.map((charge, index) => (
-                            <div key={index}>
-                              <p>{charge[1]}</p>
-                            </div>
-                          ))}</td>
+                    <td>
+                      {selectedData.dividedamtCharges.length > 0 && (
+                        <div>
+                          <p>{selectedData.dividedamtCharges[0]}</p>
+                        </div>
+                      )}
+                    </td>
                     <td>Payment collected</td>
                     <td>
                       <button> Raise Invoice</button>

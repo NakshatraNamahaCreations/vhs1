@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const technicianSchema = new mongoose.Schema({
   category: {
-    type: String,
+    type: Array,
   },
   Type:{
     type:String

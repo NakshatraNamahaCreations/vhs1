@@ -150,7 +150,7 @@ function Category() {
                   <div className="row">
                     <div className="col-md-4">
                       <div className="vhs-input-label">
-                        Category <span className="text-danger"> *</span>
+                        Category  <span className="text-danger"> *</span>
                       </div>
                       <div className="group pt-1">
                         <input

@@ -25,7 +25,7 @@ function Enquirynewdetail() {
   const [desc, setdesc] = useState("");
   const [colorcode, setcolorcode] = useState("");
   const [nxtfoll, setnxtfoll] = useState("00/00/0000");
-  const [value, setvalue] = useState("");
+  const [value, setvalue] = useState("00.00");
   const [filterdata, setfilterdata] = useState([]);
   const [responsedata, setresponsedata] = useState([]);
   const [flwdata, setflwdata] = useState([]);
@@ -218,6 +218,44 @@ function Enquirynewdetail() {
             console.log("success");
             alert(" Added");
             navigate(`/convertcustomer/${EnquiryId}`);
+            // window.location.assign("/convertcustomer",{data});
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        alert(" Not Added");
+      }
+    }
+  };
+  const postcreatequote = async (e) => {
+    e.preventDefault();
+
+    if (!desc ) {
+      alert("fill all fields");
+    } else {
+      try {
+        const config = {
+          url: `/addenquiryfollowup`,
+          method: "post",
+          baseURL: apiURL,
+          // data: formdata,
+          headers: { "content-type": "application/json" },
+          data: {
+            EnquiryId: EnquiryId,
+            category: filterdata[0]?.category,
+            staffname: admin.displayname,
+            folldate: moment().format("llll"),
+            response: response,
+            desc: desc,
+            value: value,
+            nxtfoll: nxtfoll,
+          },
+        };
+        await axios(config).then(function (response) {
+          if (response.status === 200) {
+            console.log("success");
+            alert("Added");
+            navigate(`/createquote/${EnquiryId}`);
             // window.location.assign("/convertcustomer",{data});
           }
         });
@@ -496,7 +534,7 @@ function Enquirynewdetail() {
                                         Foll. Date
                                       </div>
                                       <div className="group pt-1 vhs-non-editable">
-                                        {moment().format("llll")}
+                                       <p style={{fontSize:"12px"}}>{moment().format("llll")}</p> 
                                       </div>
                                     </div>
                                     <div className="col-md-4">
@@ -568,6 +606,23 @@ function Enquirynewdetail() {
                                             onClick={addenquiryfollowup1}
                                           >
                                             Save
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                   {response == "Quote" ? (
+                                    <>
+                                      <div className="row pt-3">
+                                        <div className="col-md-4"></div>
+                                        <div className="col-md-5">
+                                          <button
+                                            className="vhs-button mx-5"
+                                            onClick={postcreatequote}
+                                          >
+                                            Create Quote
                                           </button>
                                         </div>
                                       </div>

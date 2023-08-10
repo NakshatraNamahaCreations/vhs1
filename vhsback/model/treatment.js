@@ -35,9 +35,12 @@ const treatmentSchema = new mongoose.Schema(
     category: {
       type: String,
     },
-    salesExecutive:{
+    salesExecutive: {
       type: String,
-    }
+    },
+    note: {
+      type: String,
+    },
   },
   {
     timestamps: true,

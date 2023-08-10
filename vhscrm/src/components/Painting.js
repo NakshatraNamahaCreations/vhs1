@@ -13,7 +13,7 @@ function Painting() {
   const { id } = useParams();
   console.log(id);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     getservicedata();
   }, []);
@@ -21,9 +21,7 @@ function Painting() {
   const getservicedata = async () => {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
-      const filteredData = res.data?.runningdata.filter(
-        (i) => i._id == id
-      );
+      const filteredData = res.data?.runningdata.filter((i) => i._id == id);
       setdata(filteredData);
     }
   };
@@ -112,20 +110,18 @@ function Painting() {
     0
   );
 
-
- 
-
   function GST() {
     const findGSTPresents = data[0]?.quotedata[0]?.GST;
     if (findGSTPresents) {
       const calculateGST = totalSubtotal * 0.05;
-      return calculateGST;
+      return calculateGST.toFixed(1); // Round to one decimal place
     } else {
       return "0.0";
     }
   }
-
+  
   const getGST = GST();
+  let totalRate = 0;
   return (
     <div>
       <Header />
@@ -134,7 +130,7 @@ function Painting() {
           <a
             onClick={() => customerAddURL()}
             className="hover-tabs"
-            style={{ cursor: "pointer",color:"white" }}
+            style={{ cursor: "pointer", color: "white" }}
           >
             Customeradd
           </a>
@@ -360,17 +356,22 @@ function Painting() {
               </thead>
               <tbody>
                 {data?.map((quote, index) =>
-                  quote.treatmentData.map((item, itemIndex) => (
-                    <tr key={index + "-" + itemIndex}>
-                      <td>{itemIndex + 1}</td>
-                      <td>{item.region}</td>
-                      <td>{item.material}</td>
-                      <td>{item.job}</td>
-                      <td>{item.qty}</td>
-                      <td className="text-end">{item.rate}.00</td>
-                      <td className="text-end">{item.subtotal}</td>
-                    </tr>
-                  ))
+                  quote.treatmentData.map((item, itemIndex) => {
+                    // Update the total rate amount by subtracting the current item's rate
+                    totalRate += parseFloat(item.rate);
+
+                    return (
+                      <tr key={index + "+" + itemIndex}>
+                        <td>{itemIndex + 1}</td>
+                        <td>{item.region}</td>
+                        <td>{item.material}</td>
+                        <td>{item.job}</td>
+                        <td>{item.qty}</td>
+                        <td className="text-end">{item.rate}.00</td>
+                        <td className="text-end">{item.subtotal}</td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
               <tbody>
@@ -385,7 +386,7 @@ function Painting() {
                     className="text-end"
                     style={{ backgroundColor: "#ededed" }}
                   >
-                    <b> {totalSubtotal}</b>
+                    <b> {totalRate.toFixed(2)}</b>
                   </td>
                 </tr>
               </tbody>
@@ -562,4 +563,3 @@ function Painting() {
   );
 }
 export default Painting;
-

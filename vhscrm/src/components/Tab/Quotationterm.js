@@ -11,7 +11,7 @@ function Quotationterm() {
   const [headerimgdata, setheaderimgdata] = useState([]);
   const [footerimgdata, setfooterimgdata] = useState([]);
   const [bankdata, setbankdata] = useState([]);
-  const [treatmentdata, settreatmentdata] = useState([]);
+  const [materialdata, setmaterialdata] = useState([]);
   const location = useLocation();
   const { data } = location.state || null;
   console.log(data);
@@ -43,7 +43,7 @@ function Quotationterm() {
     getheaderimg();
     getfooterimg();
     getbank();
-
+    postallmaterial();
     gettermsgroup2();
   }, []);
 
@@ -67,10 +67,23 @@ function Quotationterm() {
       setbankdata(res.data?.bankacct);
     }
   };
+  const postallmaterial = async () => {
+    let res = await axios.get(apiURL + "/master/getamaterial");
+    if ((res.status = 200)) {
+      setmaterialdata(res.data?.amaterial);
+    }
+  };
 
+  function calculatebenefit(ml) {
+    const a = materialdata.filter((i) => i.material === ml);
+    const benfite = a[0]?.benefits;
+   
+
+    return benfite;
+  }
   return (
     <div className="row">
-      <Header />
+      {/* <Header /> */}
 
       <div className="row justify-content-center mt-3">
         <div className="col-md-12">
@@ -82,14 +95,13 @@ function Quotationterm() {
               <img
                 src={imgURL + "/quotationheaderimg/" + item.headerimg}
                 height="200px"
-                width="100%"
               />
             ))}
-          
+
             <div className="q-row2">QUOTATION</div>
 
-            <div className="row m-auto mt-2 w-100">
-              <div className="col-md-6 b-col">
+            <div className="d-flex m-auto mt-2 w-100">
+              <div className=" b-col">
                 <div className="" style={{ fontWeight: "bold" }}>
                   TO
                 </div>
@@ -98,7 +110,7 @@ function Quotationterm() {
                 </div>
                 <p>{data[0]?.address}</p>
               </div>
-              <div className="col-md-6 b-col" >
+              <div className=" b-col">
                 <div className="" style={{ fontWeight: "bold" }}>
                   Quote#{" "}
                   <span style={{ color: "black", fontWeight: 400 }}>
@@ -123,7 +135,9 @@ function Quotationterm() {
 
                 <div className="" style={{ fontWeight: "bold" }}>
                   Sales Manager :
-                  <span style={{ color: "black", fontWeight: 400 }}>{data?.quotedata?.Bookedby}</span>
+                  <span style={{ color: "black", fontWeight: 400 }}>
+                    {data?.quotedata?.Bookedby}
+                  </span>
                 </div>
 
                 <div className="" style={{ fontWeight: "bold" }}>
@@ -163,13 +177,24 @@ function Quotationterm() {
 
                         <td>
                           <div className="" style={{ fontWeight: "bold" }}>
-                            {item.material}
+                            {item.region}
+                            <div >{item.job}</div>
                           </div>
-
-                          <div style={{ fontWeight: "bold" }}>{item.job}</div>
-
-                          <p>{item.region}</p>
+                          <div>
+                            <b>Note:</b>
+                            {item.note}
+                          </div>
+                          <div>
+                            <b>Benefits:</b>
+                            {calculatebenefit(item.material)
+                              ?.split("\n")
+                              .map((item, index) => (
+                                <p key={index}>{item}</p>
+                              ))}
+                          </div>
+                          
                         </td>
+                      
                         <td className="text-center">{item.qty}</td>
                         <td className="text-center">{item.rate}</td>
                         <td className="text-center"> {item.subtotal}</td>
@@ -177,8 +202,13 @@ function Quotationterm() {
                     ))}
                   </tbody>
                 </table>
-                <div className="float-end">
-                  <h5>Total :{data[0]?.quotedata[0]?.netTotal}</h5>
+                <div className="float-end mx-1">
+             
+
+                 <div > Gst:</div> <> <p>{data[0]?.quotedata[0]?.SUM -data[0]?.quotedata[0]?.netTotal}</p> </>
+                 <div > Adjustment:</div><>{data[0]?.quotedata[0]?.adjustments}</>
+
+                  <div >Total :</div><>{data[0]?.quotedata[0]?.netTotal}</>
                 </div>
 
                 <div
@@ -190,7 +220,12 @@ function Quotationterm() {
                     {numberToWords.toWords(data[0]?.quotedata[0]?.netTotal)}
                   </span>
                 </div>
-                {tcdata.map((item) => (
+               
+
+               
+              </div>
+            </div>
+            {tcdata.map((item) => (
                   <div>
                     <div
                       className="row m-auto mt-3"
@@ -210,10 +245,11 @@ function Quotationterm() {
                           <td scope="row">
                             <div class="form-check">
                               <div className="mt-2">
-                              <div
-                            
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                          />
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.content,
+                                  }}
+                                />
                               </div>
                             </div>
                           </td>
@@ -223,8 +259,8 @@ function Quotationterm() {
                     </table>
                   </div>
                 ))}
-
-                {section2data.map((item) => (
+            <div>
+{section2data.map((item) => (
                   <div>
                     <div
                       className="row m-auto mt-3"
@@ -236,13 +272,12 @@ function Quotationterm() {
                         padding: "8px",
                       }}
                     >
-                     {item.header}
+                      {item.header}
                     </div>
                     <table class="table table-bordered border-danger">
                       <tbody>
                         <div className="mt-2">
                           <div
-                            
                             dangerouslySetInnerHTML={{ __html: item.content }}
                           />
                         </div>
@@ -251,9 +286,7 @@ function Quotationterm() {
                     </table>
                   </div>
                 ))}
-              </div>
-            </div>
-
+</div>
             <div className="mx-5">
               <div>
                 <div className="" style={{ fontWeight: "bold" }}>

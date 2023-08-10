@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../components/layout/Header";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Surveynav from "../components/Surveynav";
+
 import Quotenav from "../components/Quotenav";
 import moment from "moment";
 
@@ -11,22 +11,18 @@ function Createquote() {
   const { EnquiryId } = useParams();
   console.log(EnquiryId);
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const data = location.state?.data || null;
-
-  // const [techniciandata, settechniciandata] = useState([]);
   const [materialdata, setmaterialdata] = useState([]);
   const [regiondata, setregiondata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
   const [ajobdata, setajobdata] = useState([]);
   const [ajobdatarate, setajobdatarate] = useState([]);
-  const [desc, setdesc] = useState("");
+  const [note, setnote] = useState("");
+
   const [region, setregion] = useState("");
   const [material, setmaterial] = useState("");
   const [qty, setqty] = useState("");
   const [job, setjob] = useState("");
   const [rate, setrate] = useState("");
-  // const [treatmentdata, setfilterdata] = useState([]);
   const [quoteflowdata, setquoteflowdata] = useState([]);
   const [quotenxtfoll, setquotenxtfoll] = useState("");
   const [staffname, setstaffname] = useState("");
@@ -40,19 +36,36 @@ function Createquote() {
   const [categorydata, setcategorydata] = useState([]);
   const [Gst, setGST] = useState(false);
 
-  const [adjustment, setadjustment] = useState("");
+  const [adjustments, setadjustment] = useState(quotedata[0]?.adjustments);
   const [SUM, setSUM] = useState("");
   const [quotepagedata, setquotepagedata] = useState([]);
   const [enquirydata, setenquirydata] = useState([]);
   const [projecttype, setprojecttype] = useState(
     quotepagedata[0]?.quotedata[0]?.projectType
   );
-  // console.log("data", quotepagedata);
+  const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby);
+  const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
 
-  const [netTotal, setnetTotal] = useState("");
+  const getquote = async () => {
+    let res = await axios.get(apiURL + "/getquote");
+    if ((res.status = 200)) {
+      setquotedata(res.data?.quote.filter((i) => i.EnquiryId == EnquiryId));
+    }
+  };
+  // useEffect to update netTotal when quotedata changes
+ 
 
   const nearte = parseInt(ajobdatarate.map((i) => i.rate));
 
+  useEffect(() => {
+    console.log("quotedata:", quotedata); // Add this line to check the value of quotedata
+    if (quotedata.length > 0) {
+      const initialNetTotal = quotedata[0]?.netTotal;
+      setnetTotal(
+        Number.isNaN(initialNetTotal) ? quotedata[0]?.netTotal : initialNetTotal
+      );
+    }
+  }, [quotedata]);
   useEffect(() => {
     getresponse();
     getcategory();
@@ -135,8 +148,9 @@ function Createquote() {
             material: material,
             job: job,
             qty: qty,
-            rate: nearte,
-            subtotal: qty * nearte,
+            rate: qty * rate,
+            subtotal: qty * rate,
+            note:note
           },
         };
         await axios(config).then(function (response) {
@@ -171,34 +185,37 @@ function Createquote() {
     }
   };
 
-  const getmaterial = async () => {
-    let res = await axios.get(apiURL + "/master/getamaterial");
-    if ((res.status = 200)) {
-      setmaterialdata(res.data?.amaterial);
-    }
-  };
-  const getquote = async () => {
-    let res = await axios.get(apiURL + "/getquote");
-    if ((res.status = 200)) {
-      setquotedata(res.data?.quote.filter((i) => i.EnquiryId == EnquiryId));
-    }
-  };
-
-  const getregion = async () => {
-    let res = await axios.get(apiURL + "/master/getaregion");
-    if ((res.status = 200)) {
-      console.log(res);
-      setregiondata(res.data?.aregion);
-    }
-  };
   useEffect(() => {
-    // gettechnician();
-    getmaterial();
-    getregion();
+    // getmaterial();
+    // getregion();
     getquote();
     getquotepage();
     gettreatment();
   }, []);
+
+  useEffect(() => {
+    postallajob();
+    postallmaterial();
+    postallregion();
+  }, [category]);
+
+  const postallregion = async () => {
+    let res = await axios.post(apiURL + "/master/categoryaregion", {
+      category: category,
+    });
+    if ((res.status = 200)) {
+      setregiondata(res.data?.aregion);
+    }
+  };
+
+  const postallmaterial = async () => {
+    let res = await axios.post(apiURL + "/master/categorymaterial", {
+      category: category,
+    });
+    if ((res.status = 200)) {
+      setmaterialdata(res.data?.amaterial);
+    }
+  };
 
   useEffect(() => {
     if (quotedata.length > 0) {
@@ -260,18 +277,8 @@ function Createquote() {
   }
 
   const total = calculateTotalPrice(treatmentdata);
-  const GSTAmount = total * 0.05;
-  const totalWithGST = total + GSTAmount;
 
-  console.log("total", total);
-  console.log("totalWithGST", totalWithGST);
 
-  const handleChange = (event) => {
-    // setGst(event.target.value);
-    // if (Gst) {
-    //   window.location.reload();
-    // }
-  };
   const savequote = async (e) => {
     e.preventDefault();
 
@@ -279,6 +286,8 @@ function Createquote() {
       alert("something went wrong");
     } else {
       try {
+        // Calculate adjusted total and net total
+
         const config = {
           url: "/addquote",
           method: "post",
@@ -289,11 +298,14 @@ function Createquote() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: Gst ? totalWithGST : total,
-            adjustment: adjustment,
+            qamt: netTotal,
+            adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: Gst ? totalWithGST : total,
+            netTotal: netTotal,
+            Bookedby: admin.displayname,
+            salesExecutive: admin.displayname,
+
             date: moment().format("L"),
             time: moment().format("LT"),
           },
@@ -329,13 +341,15 @@ function Createquote() {
             EnquiryId: EnquiryId,
             GST: Gst,
             projectType: projecttype,
-            qamt: Gst ? totalWithGST : total,
-            adjustment: adjustment,
+            qamt: netTotal,
+            adjustments: adjustments,
             SUM: total,
             total: total,
-            netTotal: Gst ? totalWithGST : total,
+            netTotal: netTotal,
             date: quotedata[0]?.date,
             time: quotedata[0]?.time,
+            salesExecutive: admin.displayname,
+            Bookedby: admin.displayname,
           },
         };
         await axios(config).then(function (response) {
@@ -356,7 +370,29 @@ function Createquote() {
     navigate(`/editenquiry/${EnquiryId}`);
   };
 
-  console.log("arrayLenght", quotedata.length);
+  useEffect(() => {
+    // Calculate adjusted netTotal based on Gst and adjustments
+    const total = calculateTotalPrice(treatmentdata);
+    const GSTAmount = total * 0.05;
+    const totalWithGST = Gst ? total + GSTAmount : total;
+
+    const adjustedNetTotal = Gst
+      ? totalWithGST - parseFloat(adjustments) || totalWithGST
+      : totalWithGST - parseFloat(adjustments) || totalWithGST;
+    // Update the netTotal state
+    setnetTotal(adjustedNetTotal);
+  }, [adjustments, Gst]);
+
+  const postconvertcustomer = () => {
+    navigate(`/convertcustomer/${EnquiryId}`);
+  };
+
+  console.log(quotepagedata)
+  // Assuming quotepagedata is an array of objects with quotefollowup property
+const confirmedResponses = quotepagedata[0]?.quotefollowup.filter(item => item.response === 'Confirmed');
+
+console.log(confirmedResponses)
+
   return (
     <div className="web">
       <Header />
@@ -368,7 +404,31 @@ function Createquote() {
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <form>
-                <h5>Billing Details</h5>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginRight: "100px",
+                  }}
+                >
+                  <div>
+                    <h5>Billing Details</h5>
+                  </div>
+                  {confirmedResponses?.length>0
+                   ? (
+                    <div className="col-md-1 mt-2">
+                      <button
+                        className="vhs-button mx-5"
+                        style={{ width: "150px" }}
+                        onClick={postconvertcustomer}
+                      >
+                        Convert to Customer{" "}
+                      </button>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
                 <hr />
                 <div className="row">
                   <div className="col-md-4">
@@ -438,8 +498,10 @@ function Createquote() {
                       name="region"
                     >
                       <option>--select--</option>
-                      {categorydata.map((item) => (
-                        <option value={item.category}>{item.category}</option>
+                      {admin?.category.map((category, index) => (
+                        <option key={index} value={category.name}>
+                          {category.name}
+                        </option>
                       ))}
                     </select>
                   </div>{" "}
@@ -513,9 +575,23 @@ function Createquote() {
                           name="rate"
                           className="col-md-12 vhs-input-value"
                           onChange={(e) => setrate(e.target.value)}
-                          value={item.rate}
+                          defaultValue={item.rate}
                         />
                       ))}
+                    </div>
+                  </div>{" "}
+                  <div className="col-md-4 pt-3">
+                    <div className="vhs-input-label">Note </div>
+                    <div className="group pt-1">
+                      
+                        <input
+                          type="text"
+                          name="rate"
+                          className="col-md-12 vhs-input-value"
+                          onChange={(e) => setnote(e.target.value)}
+                      
+                        />
+                      
                     </div>
                   </div>{" "}
                   <div className="col-md-4 pt-3 mt-4 justify-content-center">
@@ -575,10 +651,11 @@ function Createquote() {
                         <td style={{ textAlign: "center" }}>
                           {" "}
                           <a onClick={() => deletetreatment(item._id)}>
-                            <img
-                              src="/images/delete.png"
+                            {/* <img
+                              src="./images/delete.png"
                               style={{ width: "30px", height: "30px" }}
-                            />
+                            /> */}
+                            <i class="fa-solid fa-trash"></i>
                           </a>
                         </td>
                       </tr>
@@ -666,6 +743,7 @@ function Createquote() {
                       type="text"
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setadjustment(e.target.value)}
+                      defaultValue={quotedata[0]?.adjustments}
                     />
                   </div>
                 </div>{" "}
@@ -675,13 +753,29 @@ function Createquote() {
                     <input
                       type="text"
                       className="col-md-12 vhs-input-value"
-                      value={Gst ? totalWithGST : total}
+                      // value={netTotal}
+                      defaultValue={netTotal}
+                      // placeholder={netTotal}
+                      onChange={(e) => setnetTotal(e.target.value)}
                     />
+
+                    {/* <input
+                      type="text"
+                      className="col-md-12 vhs-input-value"
+                      // value={
+                      //   adjustedNetTotal
+                      //     ? adjustedNetTotal
+                      //     : quotedata[0]?.netTotal
+                      // }
+                      onChange={(e) => setnetTotal(e.target.value)}
+                      value={adjustedNetTotal?adjustedNetTotal:totalWithGST}
+                      // defaultValue={ netTotal? quotedata[0]?.netTotal?quotedata[0]?.netTotal: net}
+                    /> */}
                   </div>
                 </div>{" "}
               </div>
 
-              <div className="row pt-3 justify-content-center">
+              <div className="row pt-3 justify-content-center mt-3">
                 <div className="col-md-2 ">
                   {quotepagedata[0]?.quotedata.length <= 0 ? (
                     <button
@@ -707,6 +801,16 @@ function Createquote() {
                       Print Quote
                     </button>
                   </Link>
+                </div>
+                <div className="col-md-2 ">
+                  <button className="vhs-button " style={{ width: "150px" }}>
+                    Send Quote by SMS
+                  </button>
+                </div>
+                <div className="col-md-2 ">
+                  <button className="vhs-button " style={{ width: "150px" }}>
+                    Send Quote by Whatsapp
+                  </button>
                 </div>
               </div>
             </div>

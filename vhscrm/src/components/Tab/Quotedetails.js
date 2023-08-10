@@ -16,7 +16,8 @@ function Quotedetails() {
   const apiURL = process.env.REACT_APP_API_URL;
   const [ajobdata, setajobdata] = useState([]);
   const [ajobdatarate, setajobdatarate] = useState([]);
-  const [desc, setdesc] = useState("");
+  const [note, setnote] = useState("");
+
   const [region, setregion] = useState("");
   const [material, setmaterial] = useState("");
   const [qty, setqty] = useState("");
@@ -52,6 +53,10 @@ function Quotedetails() {
     }
   };
   // useEffect to update netTotal when quotedata changes
+ 
+
+  const nearte = parseInt(ajobdatarate.map((i) => i.rate));
+
   useEffect(() => {
     console.log("quotedata:", quotedata); // Add this line to check the value of quotedata
     if (quotedata.length > 0) {
@@ -61,9 +66,6 @@ function Quotedetails() {
       );
     }
   }, [quotedata]);
-
-  const nearte = parseInt(ajobdatarate.map((i) => i.rate));
-
   useEffect(() => {
     getresponse();
     getcategory();
@@ -146,8 +148,9 @@ function Quotedetails() {
             material: material,
             job: job,
             qty: qty,
-            rate: nearte,
-            subtotal: qty * nearte,
+            rate: qty * rate,
+            subtotal: qty * rate,
+            note:note
           },
         };
         await axios(config).then(function (response) {
@@ -572,9 +575,23 @@ console.log(confirmedResponses)
                           name="rate"
                           className="col-md-12 vhs-input-value"
                           onChange={(e) => setrate(e.target.value)}
-                          value={item.rate}
+                          defaultValue={item.rate}
                         />
                       ))}
+                    </div>
+                  </div>{" "}
+                  <div className="col-md-4 pt-3">
+                    <div className="vhs-input-label">Note </div>
+                    <div className="group pt-1">
+                      
+                        <input
+                          type="text"
+                          name="rate"
+                          className="col-md-12 vhs-input-value"
+                          onChange={(e) => setnote(e.target.value)}
+                      
+                        />
+                      
                     </div>
                   </div>{" "}
                   <div className="col-md-4 pt-3 mt-4 justify-content-center">
@@ -634,10 +651,11 @@ console.log(confirmedResponses)
                         <td style={{ textAlign: "center" }}>
                           {" "}
                           <a onClick={() => deletetreatment(item._id)}>
-                            <img
+                            {/* <img
                               src="./images/delete.png"
                               style={{ width: "30px", height: "30px" }}
-                            />
+                            /> */}
+                            <i class="fa-solid fa-trash"></i>
                           </a>
                         </td>
                       </tr>
