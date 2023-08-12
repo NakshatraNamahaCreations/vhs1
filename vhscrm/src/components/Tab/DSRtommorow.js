@@ -117,11 +117,11 @@ function DSRtoday() {
             </tbody>
           </table>{" "}
           <div className="row mt-3 pb-3 justify-content-center">
-            <div className="col-md-1">
+            <div className="col-md-2">
               <button className="vhs-button">Print</button>
             </div>
 
-            <div className="col-md-1">
+            <div className="col-md-2">
               <button className="vhs-button mx-5">Export</button>
             </div>
           </div>

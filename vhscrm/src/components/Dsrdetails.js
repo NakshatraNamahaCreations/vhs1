@@ -24,7 +24,7 @@ function Dsrdetails() {
   const [appoDate, setappoDate] = useState(dsrdata[0]?.appoDate);
   const [appoTime, setappoTime] = useState(dsrdata[0]?.appoTime);
   const [customerFeedback, setcustomerFeedback] = useState(
-  dsrdata[0]?.customerFeedback
+    dsrdata[0]?.customerFeedback
   );
   const [jobType, setjobType] = useState(data.jobType);
   const [techComment, settechComment] = useState(dsrdata[0]?.techComment);
@@ -40,15 +40,11 @@ function Dsrdetails() {
     dsrdata[0]?.jobComplete || "NO"
   );
   const [sendSms, setsendSms] = useState(dsrdata[0]?.sendSms);
-  const [workerAmount, setworkerAmount] = useState(
-    dsrdata[0]?.workerAmount
-  );
+  const [workerAmount, setworkerAmount] = useState(dsrdata[0]?.workerAmount);
   const [workerName, setworkerName] = useState(dsrdata[0]?.workerName);
-  const [daytoComplete, setdaytoComplete] = useState(
-    dsrdata[0]?.daytoComplete
-  );
-  console.log("type--",dsrdata[0]?.type)
-  const [type, settype] = useState( dsrdata[0]?.type || "PM");
+  const [daytoComplete, setdaytoComplete] = useState(dsrdata[0]?.daytoComplete);
+  console.log("type--", dsrdata[0]?.type);
+  const [type, settype] = useState(dsrdata[0]?.type);
 
   const [LatestCardNo, setLatestCardNo] = useState(0);
 
@@ -70,26 +66,27 @@ function Dsrdetails() {
   const gettechnician = async () => {
     let res = await axios.get(apiURL + "/getalltechnician");
     if ((res.status = 200)) {
+      const TDdata = res.data?.technician;
+      const filteredTechnicians = TDdata.filter((technician) => {
+        return technician.category.some(
+          (cat) => cat.name === data.customerData[0].category
+        );
+      });
       settechniciandata(
-        res.data?.technician.filter(
+        filteredTechnicians.filter(
           (i) =>
-            i.city === data.customerData[0]?.city &&
-            i.category === data.category &&
-            i.Type === "technician"
+            i.city === data.customerData[0]?.city && i.Type === "technician"
         )
       );
       setPMdata(
-        res.data?.technician.filter(
-          (i) =>
-            i.city === data.customerData[0]?.city &&
-            i.category === data.category &&
-            i.Type === "pm"
+        filteredTechnicians.filter(
+          (i) => i.city === data.customerData[0]?.city && i.Type === "pm"
         )
       );
     }
   };
 
-  console.log("data-----",data)
+  console.log("data-----", data);
 
   const handleChange = (event) => {
     setShowinapp(event.target.value);
@@ -112,7 +109,7 @@ function Dsrdetails() {
         // data: formdata,
         headers: { "content-type": "application/json" },
         data: {
-          serviceDate:data1,
+          serviceDate: data1,
           cardNo: data.cardNo,
           category: data.category,
           bookingDate: moment().format("DD-MM-YYYY"),
@@ -129,7 +126,7 @@ function Dsrdetails() {
           showinApp: Showinapp,
           sendSms: sendSms,
           jobType: jobType,
-          type:type,
+          type: type,
           jobComplete: jobComplete,
           amount: data.serviceCharge,
         },
@@ -160,7 +157,7 @@ function Dsrdetails() {
         headers: { "content-type": "application/json" },
         data: {
           bookingDate: bookingDate,
-      
+
           jobCategory: jobCategory,
           complaintRef: data.complaintRef,
           priorityLevel: priorityLevel,
@@ -173,7 +170,7 @@ function Dsrdetails() {
           techName: techName,
           showinApp: Showinapp,
           sendSms: sendSms,
-          type:type,
+          type: type,
           jobComplete: jobComplete,
           workerAmount: workerAmount,
           workerName: workerName,
@@ -197,8 +194,6 @@ function Dsrdetails() {
   const getaddcall = async () => {
     let res = await axios.get(apiURL + "/getalldsrlist");
     if (res.status === 200) {
-     
-
       setLatestCardNo(res.data?.addcall[0]?.complaintRef);
       // console.log("allCustomer----", res.data?.addcall[0]?.complaintRef);
     }
@@ -207,8 +202,16 @@ function Dsrdetails() {
   const getAlldata = async () => {
     let res = await axios.get(apiURL + "/getaggredsrdata");
     if (res.status === 200) {
-      setdsrdata(res.data.addcall.filter((i)=>i.serviceDate === data1 && i.cardNo == data.cardNo));
-      console.log(res.data.addcall.filter((i)=>i.serviceDate === data1 && i.cardNo == data.cardNo))
+      setdsrdata(
+        res.data.addcall.filter(
+          (i) => i.serviceDate === data1 && i.cardNo == data.cardNo
+        )
+      );
+      console.log(
+        res.data.addcall.filter(
+          (i) => i.serviceDate === data1 && i.cardNo == data.cardNo
+        )
+      );
       setcomplaintRefo(
         res.data?.addcall.filter((i) => i.cardNo === data.cardNo)
       );
@@ -419,7 +422,7 @@ function Dsrdetails() {
                         Service Date
                       </th>
                       <th className="table-head" scope="col">
-                       Payment Date
+                        Payment Date
                       </th>
                       <th className="table-head" scope="col">
                         Description
@@ -440,10 +443,10 @@ function Dsrdetails() {
                       <td>
                         {data?.dateofService}/{data?.expiryDate}
                       </td>
-                    
-                        <td>{data1}</td>
-                    
-                       {data.contractType === "AMC" ? (
+
+                      <td>{data1}</td>
+
+                      {data.contractType === "AMC" ? (
                         <td>
                           {data.dividedamtDates.map((a) => (
                             <div>
@@ -605,38 +608,39 @@ function Dsrdetails() {
                 <span className="text-danger">*</span>
               </div> */}
               <div className="col-1">:</div>
-              {
-                type === "TECH" ? <div className="group pt-1 col-7">
-                <select
-                  className="col-md-12 vhs-input-value"
-                  onChange={(e) => settechName(e.target.value)}
-                >
-                  {dsrdata[0]?.techName ? (
-                    <option>{dsrdata[0]?.techName}</option>
-                  ) : (
-                    <option>--select--</option>
-                  )}
-                  {techniciandata.map((item) => (
-                    <option>{item.vhsname}</option>
-                  ))}
-                </select>
-              </div>: <div className="group pt-1 col-7">
-                <select
-                  className="col-md-12 vhs-input-value"
-                  onChange={(e) => settechName(e.target.value)}
-                >
-                  {dsrdata[0]?.techName ? (
-                    <option>{dsrdata[0]?.techName}</option>
-                  ) : (
-                    <option>--select--</option>
-                  )}
-                  {PMdata.map((item) => (
-                    <option>{item.vhsname}</option>
-                  ))}
-                </select>
-              </div>
-              }
-             
+              {type === "TECH" ? (
+                <div className="group pt-1 col-7">
+                  <select
+                    className="col-md-12 vhs-input-value"
+                    onChange={(e) => settechName(e.target.value)}
+                  >
+                    {dsrdata[0]?.techName ? (
+                      <option>{dsrdata[0]?.techName}</option>
+                    ) : (
+                      <option>--select--</option>
+                    )}
+                    {techniciandata.map((item) => (
+                      <option>{item.vhsname}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="group pt-1 col-7">
+                  <select
+                    className="col-md-12 vhs-input-value"
+                    onChange={(e) => settechName(e.target.value)}
+                  >
+                    {dsrdata[0]?.techName ? (
+                      <option>{dsrdata[0]?.techName}</option>
+                    ) : (
+                      <option>--select--</option>
+                    )}
+                    {PMdata.map((item) => (
+                      <option>{item.vhsname}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -753,7 +757,7 @@ function Dsrdetails() {
         </div>
       </div>
       <div className="row pt-3 justify-content-center pb-5 mt-4">
-        <div className="col-md-1">
+        <div className="col-md-2">
           {!dsrdata[0] ? (
             <button className="vhs-button" onClick={newdata}>
               Save
@@ -764,21 +768,22 @@ function Dsrdetails() {
             </button>
           )}
         </div>
-        <div className="col-md-1">
+        <div className="col-md-2">
           <button className="vhs-button">Cancel</button>
         </div>
-        <div className="col-md-1">
-        {!(data?.quotedata)?  
+        <div className="col-md-2">
+          {!data?.quotedata ? (
             <button className="vhs-button">Invoice</button>
-           : <Link to="/dsrquote" state={{ data: data }}>
-            <button className="vhs-button">Invoice</button>
-          </Link>}
-         
+          ) : (
+            <Link to="/dsrquote" state={{ data: data,data1:data1 }}>
+              <button className="vhs-button">Invoice</button>
+            </Link>
+          )}
         </div>
-        <div className="col-md-1">
+        <div className="col-md-2">
           <button className="vhs-button">Bill SMS</button>
         </div>
-        <div className="col-md-1">
+        <div className="col-md-2">
           <button className="vhs-button">Bill Whatsapp</button>
         </div>
       </div>

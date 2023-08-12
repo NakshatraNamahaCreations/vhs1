@@ -4,6 +4,8 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Card } from "react-bootstrap";
 import * as XLSX from "xlsx";
+import { parse, isBefore, isAfter, isSameDay } from "date-fns";
+import moment from "moment";
 
 function Report_Quotation() {
   const apiURL = process.env.REACT_APP_API_URL;
@@ -13,7 +15,7 @@ function Report_Quotation() {
   const [city, setCity] = useState("");
   const [saleExecutive, setSalesExcuitive] = useState("");
   const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [toDate, setToDate] = useState(moment().format("YYYY-MM-DD"));
   const [category, setCategory] = useState("");
   const [backOfExcuitive, setBackOfExcuitive] = useState("");
   const [staus, setStatus] = useState("");
@@ -81,30 +83,38 @@ function Report_Quotation() {
     setFilteredData(quotationData);
     setSearchValue("");
     setShowMessage(true);
+
+
     const filteredResults = quotationData.filter((item) => {
+      const enquiryDate = parse(item.date, "MM/dd/yyyy", new Date());
+
+
+      const fromDateObj = fromDate
+        ? parse(fromDate, "yyyy-MM-dd", new Date())
+        : null;
+      const toDateObj = toDate ? parse(toDate, "yyyy-MM-dd", new Date()) : null;
+
+      const itemCity =
+        city.toLowerCase() === "all" ||
+        item.enquirydata[0]?.city.toLowerCase().includes(city.toLowerCase());
+    
+      const itemFromDate =
+        !fromDate ||
+        isAfter(enquiryDate, fromDateObj) ||
+        isSameDay(enquiryDate, fromDateObj);
+      const itemToDate =
+        !toDate ||
+        isBefore(enquiryDate, toDateObj) ||
+        isSameDay(enquiryDate, toDateObj);
+
       const itemServices =
         item.enquirydata?.[0]?.intrestedfor
           ?.toLowerCase()
           .includes(service.toLowerCase()) ?? true;
 
-      const itemCity =
-        item.enquirydata?.[0]?.city
-          ?.toLowerCase()
-          .includes(city.toLowerCase()) ?? true;
-
       const itemExcuitive = //Sales Executive or booked by
         item.Bookedby?.toLowerCase().includes(saleExecutive.toLowerCase()) ??
         true;
-
-      const itemFromDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(fromDate.toLowerCase()) ?? true;
-
-      const itemToDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(toDate.toLowerCase()) ?? true;
 
       const itemCategory =
         item.enquirydata[0]?.category
@@ -116,15 +126,18 @@ function Report_Quotation() {
           ?.toLowerCase()
           .includes(backOfExcuitive.toLowerCase()) ?? true;
 
-      return (
+      const isFiltered =
         itemFromDate &&
         itemToDate &&
         itemServices &&
         itemCity &&
         itemExcuitive &&
         itemCategory &&
-        itemBackOfficeExe
-      );
+        itemBackOfficeExe;
+
+      console.log("Final Filter Result:", isFiltered);
+
+      return isFiltered;
     });
     setFilteredData(filteredResults);
     setSearchValue(
@@ -142,6 +155,8 @@ function Report_Quotation() {
   const handleSearchClick = () => {
     handleSearch();
     setButtonClicked(true);
+    setFromDate(""); // Add this line
+    setToDate(""); // Add this line
   };
 
   const exportData = () => {
@@ -187,6 +202,11 @@ function Report_Quotation() {
         row.enquirydata[0]?.address ? row.enquirydata[0]?.address : "-",
     },
     {
+      name: "City",
+      selector: (row) =>
+        row.enquirydata[0]?.city ? row.enquirydata[0]?.city : "-",
+    },
+    {
       name: "Service",
       selector: (row) =>
         row.enquirydata[0]?.intrestedfor
@@ -226,6 +246,24 @@ function Report_Quotation() {
       selector: (row) => "-",
     },
   ];
+ 
+  
+  const handleExecutiveChange = (e) => {
+    const selectedExecutive = e.target.value;
+    console.log(selectedExecutive); // Check the selected executive value
+    setBackOfExcuitive(selectedExecutive);
+  };
+
+  const handleSalesExecutiveChange = (e) => {
+    const saleExecutive = e.target.value;
+    console.log(saleExecutive); // Check the selected reference value
+    setSalesExcuitive(saleExecutive);
+  };
+  const handleServiceChange = (e) => {
+    const selectedService = e.target.value;
+    console.log(selectedService); // Check the selected service value
+    setService(selectedService);
+  };
 
   return (
     <div style={{ backgroundColor: "#f9f6f6" }} className="web">
@@ -271,7 +309,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCity(e.target.value)}
+                        onChange={(e)=>setCity(e.target.value)}
                       >
                         <option>Select</option>
                         {[...duplicateCity].map((city) => (
@@ -288,7 +326,7 @@ function Report_Quotation() {
                       <select
                         className="report-select"
                         // style={{ width: "100%" }}
-                        onChange={(e) => setService(e.target.value)}
+                        onChange={handleServiceChange}
                       >
                         <option>Select</option>
                         {[...duplicateService].map((Service) => (
@@ -304,7 +342,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setBackOfExcuitive(e.target.value)}
+                        onClick={handleExecutiveChange}
                       >
                         <option>Select</option>
                         {[...duplicateBackOffice].map((BackOffice) => (
@@ -315,16 +353,7 @@ function Report_Quotation() {
                   </div>
                   <br />
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Interested For </div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setService(e.target.value)}
-                      />
-                    </div>
-                  </div> */}
+
                   <br />
                 </div>
                 <div className="col-md-5">
@@ -348,7 +377,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCategory(e.target.value)}
+                        onChange={(e) => setCategory(e.target.value)}
                       >
                         <option>All</option>
                         {[...duplicateCategory].map((category) => (
@@ -364,7 +393,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setSalesExcuitive(e.target.value)}
+                        onClick={handleSalesExecutiveChange}
                       >
                         <option>Select</option>
                         {[...duplicateSaleExecutive].map((Bookedby) => (
@@ -380,7 +409,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setStatus(e.target.value)}
+                        onChange={(e) => setStatus(e.target.value)}
                       >
                         <option>Select</option>
                         {/* {quotationData.map((item) => (

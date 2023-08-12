@@ -897,9 +897,12 @@ console.log(confirmedResponses)
                       onChange={(e) => setresponse1(e.target.value)}
                     >
                       <option>--select--</option>
-                      {response.map((item) => (
-                        <option>{item.response}</option>
-                      ))}
+                     
+                        <option value="Call Later">Call Later</option>
+                        <option value="Not Intrested">Not Intrested</option>
+                        <option value="Confirmed">Confirmed</option>
+
+                     
                     </select>
                   </div>
                 </div>

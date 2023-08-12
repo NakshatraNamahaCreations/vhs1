@@ -232,7 +232,7 @@ function Aregion() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <Link to="/ajob" state={{data:data,data1:data1,data2:data2,data3:data3,data4:aregion}}>
                     <button className="vhs-button" >Next</button>
 
@@ -298,7 +298,7 @@ function Aregion() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={editaregion}>Save</button>
                   </div>
                 </div>

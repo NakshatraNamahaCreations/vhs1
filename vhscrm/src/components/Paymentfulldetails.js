@@ -11,11 +11,10 @@ import {
 import axios from "axios";
 
 function Payment() {
-  const { cardNo } = useParams();
   const apiURL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
-  const { data } = location.state;
+  const { data, data1 } = location.state;
 
   const [data2, setdata2] = useState([]);
 
@@ -51,10 +50,12 @@ function Payment() {
         headers: { "content-type": "application/json" },
         data: {
           paymentDate: paymentDate,
-          paymentType: paymentType,
+          paymentType: "Customer",
           paymentMode: paymentMode,
           amount: paymentAmount,
           Comment: paymentComments,
+          serviceDate: data1,
+          serviceId: data._id,
           customerId: data2[0]?.customerData[0]._id,
         },
       };
@@ -79,6 +80,8 @@ function Payment() {
         paymentMode: editPaymentMode || editPayment.paymentMode,
         amount: editPaymentAmount || editPayment.amount,
         Comment: editPaymentComments || editPayment.Comment,
+        serviceId: data._id || editPayment.serviceId,
+        serviceDate:data1 ||editPayment.serviceDate,
         customerId: data2[0]?.customerData[0]._id,
       };
       const config = {
@@ -125,7 +128,9 @@ function Payment() {
       );
       if (res.status === 200) {
         console.log("paymentDetails", res);
-        setPaymentDetails(res.data?.payments);
+        setPaymentDetails(
+          res.data?.payments.filter((i) => i.serviceId === data._id && i.serviceDate ===data1 )
+        );
       }
     } catch (error) {
       console.log("error:", error);
@@ -154,39 +159,6 @@ function Payment() {
 
   console.log(data);
 
-  function calculateTotalPaymentAmount(paymentData) {
-    let totalAmount = 0;
-    for (const payment of paymentData) {
-      const amountString = payment.amount;
-      const cleanedAmountString = amountString.replace(/[^\d.-]/g, "");
-      const amount = parseFloat(cleanedAmountString);
-      if (!isNaN(amount)) {
-        totalAmount += amount;
-      }
-    }
-    return totalAmount.toFixed(2); // Format the total amount with two decimal places
-  }
-
-  // Function to calculate the total vendor payment amount
-  function calculateTotalvendorAmount(paymentData) {
-    let totalAmount = 0;
-
-    // Loop through the payment data and sum up the amounts where the payment type is "Vendor"
-    paymentData.forEach((payment) => {
-      if (payment.paymentType === "Vendor") {
-        totalAmount += parseFloat(payment.amount); // Assuming the amount is a string representing a number
-      }
-    });
-
-    return totalAmount.toFixed(2); // You can adjust the number of decimal places as needed
-  }
-
-  // Function to calculate the pending amount (assuming the total amount is constant)
-  function calculatePendingPaymentAmount(paymentData, serviceCharge) {
-    const totalAmount = calculateTotalPaymentAmount(paymentData);
-    const pendingAmount = totalAmount - parseFloat(serviceCharge);
-    return pendingAmount.toFixed(2); // Format the pending amount with two decimal places
-  }
   return (
     <div className="web">
       <Header />
@@ -277,7 +249,7 @@ function Payment() {
                       >
                         <option value="">--select--</option>
                         <option value="Customer">Customer</option>
-                        <option value="Vendor">Vendor</option>
+                        {/* <option value="Vendor">Vendor</option> */}
                       </select>
                     </div>
                   </div>
@@ -320,7 +292,7 @@ function Payment() {
                 </div>
               </div>
               <div className="row pt-3 justify-content-center">
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button className="vhs-button" onClick={updatePayment}>
                     UPDATE
                   </button>
@@ -371,9 +343,9 @@ function Payment() {
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setPaymentType(e.target.value)}
                     >
-                      <option value="">--select--</option>
+                      {/* <option value="">--select--</option> */}
                       <option value="Customer">Customer</option>
-                      <option value="Vendor">Vendor</option>
+                      {/* <option value="Vendor">Vendor</option> */}
                     </select>
                   </div>
                 </div>
@@ -415,7 +387,7 @@ function Payment() {
               </div>
             </div>
             <div className="row pt-3 justify-content-center">
-              <div className="col-md-1">
+              <div className="col-md-2">
                 <button className="vhs-button" onClick={addPayment}>
                   Save
                 </button>
@@ -483,105 +455,44 @@ function Payment() {
           </table>
         </div>
 
-        <div className="text-right">
-         <h4> <b>Payment Details</b></h4>
+        {/* <div className="text-right">
+          <h4>
+            {" "}
+            <b>Payment Details</b>
+          </h4>
         </div>
         <div>
-       
-            {data.paymentData.some((i) => i.paymentType === "Customer") ? (
+          {data.paymentData.some((i) => i.paymentType === "Customer") ? (
+            <div>
+              {data.paymentData
+                .filter((i) => i.paymentType === "Customer")
+                .map((i) => (
+                  <p key={i._id} className="mb-0 text-right">
+                    ({i.paymentDate}) -{i.amount}
+                  </p>
+                ))}
               <div>
-                {data.paymentData
-                  .filter((i) => i.paymentType === "Customer")
-                  .map((i) => (
-                    <p key={i._id} className="mb-0 text-right">
-                     ({i.paymentDate}) -{i.amount}
-                    </p>
-                  ))}
-                <div>
-                  <hr className="mb-0 mt-0" />
-                  <p className="mb-0 text-right">
-                    <b>
-                      Total: {calculateTotalPaymentAmount(data.paymentData)}
-                    </b>
-                  </p>
-                  <p className="text-right">
-                    <b>
-                      Pending:{" "}
-                      {calculatePendingPaymentAmount(
-                        data.paymentData.filter(
-                          (i) => i.paymentType === "Customer"
-                        ),
-                        data.serviceCharge
-                      )}
-                    </b>
-                  </p>
-                </div>
+                <hr className="mb-0 mt-0" />
+                <p className="mb-0 text-right">
+                  <b>Total: {calculateTotalPaymentAmount(data.paymentData)}</b>
+                </p>
+                <p className="text-right">
+                  <b>
+                    Pending:{" "}
+                    {calculatePendingPaymentAmount(
+                      data.paymentData.filter(
+                        (i) => i.paymentType === "Customer"
+                      ),
+                      data.serviceCharge
+                    )}
+                  </b>
+                </p>
               </div>
-            ) : (
-              <p></p>
-            )}
-         
-        </div>
-
-        <div className="mt-2 p-3">
-          <h5>Vendor Payment</h5>
-
-          <table class="table table-hover table-bordered mt-1">
-            <thead>
-              <tr className="tr clr">
-                <th scope="col">
-                  <input className="vhs-table-input" />{" "}
-                </th>
-
-                <th scope="col">
-                  {" "}
-                  <input className="vhs-table-input" />{" "}
-                </th>
-
-                <th scope="col">
-                  {" "}
-                  <input className="vhs-table-input" />{" "}
-                </th>
-                <th scope="col">
-                  {" "}
-                  <input className="vhs-table-input" />{" "}
-                </th>
-                <th scope="col">
-                  <input className="vhs-table-input" />{" "}
-                </th>
-                <th scope="col"></th>
-              </tr>
-              <tr className="tr table-secondary  clr">
-                <th>#</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Payment Mode</th>
-                <th>Comment</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vendorPayments.map((payment, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{payment?.paymentDate}</td>
-                  <td>{payment?.amount}</td>
-                  <td>{payment?.paymentMode}</td>
-                  <td>{payment?.Comment}</td>
-                  <td
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleEdit(payment)}
-                  >
-                    {" "}
-                    <b>Edit</b>{" "}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-     
+            </div>
+          ) : (
+            <p></p>
+          )}
+        </div> */}
       </div>
     </div>
   );

@@ -16,6 +16,9 @@ const paymentSchema = new mongoose.Schema({
   Comment: {
     type: String,
   },
+  serviceDate:{
+    type: String,
+  },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'customers' // Assuming your Customer model is named 'Customer'

@@ -47,6 +47,7 @@ function Work() {
           workMaterialUse: matrialUse,
           workRemark: remark,
           customerId: data[0]?.customerData[0]._id,
+          serviceId:id
         },
       };
       await axios(config).then(function (response) {
@@ -83,7 +84,7 @@ function Work() {
       let res = await axios.get(apiURL + `/getWorkByCustomerId/${customerId}`);
       if (res.status === 200) {
         console.log("workDetails", res);
-        setWorkDetails(res.data?.works);
+        setWorkDetails(res.data?.works.filter((i)=>i.serviceId ===id));
       }
     } catch (error) {
       console.log("error:", error);
@@ -244,7 +245,7 @@ function Work() {
             </div>
           </div>
           <div className="row pt-3 justify-content-center">
-            <div className="col-md-1">
+            <div className="col-md-2">
               <button className="vhs-button" onClick={addWork}>
                 Save
               </button>

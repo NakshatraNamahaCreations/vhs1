@@ -575,7 +575,7 @@ function B2Bdetails() {
                                     <>
                                       <div className="row pt-3">
                                         <div className="col-md-4"></div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addenquiryfollowup1}
@@ -593,7 +593,7 @@ function B2Bdetails() {
                                     <>
                                       <div className="row pt-3">
                                         <div className="col-md-4"></div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addenquiryfollowup1}
@@ -628,7 +628,7 @@ function B2Bdetails() {
                                             />
                                           </div>
                                         </div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addsurvey}
@@ -692,7 +692,7 @@ function B2Bdetails() {
                                           </div>
                                         </div>
 
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addcalllater}
@@ -733,7 +733,7 @@ function B2Bdetails() {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="col-md-1">
+                                    <div className="col-md-2">
                                       {/* <button
                                           className="vhs-button mx-5"
                                           onClick={addenquiryfollowup1}
@@ -804,7 +804,7 @@ function B2Bdetails() {
                               </div>
 
                               <div className="row pt-3 justify-content-center">
-                                <div className="col-md-1">
+                                <div className="col-md-2">
                                   <button className="vhs-button">
                                     Send SMS
                                   </button>

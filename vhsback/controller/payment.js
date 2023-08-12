@@ -10,7 +10,8 @@ class Payment {
         amount,
         Comment,
         customerId,
-        serviceId
+        serviceId,
+        serviceDate
       } = req.body;
       if (!paymentDate || !paymentType || !paymentMode || !amount || !Comment ||!serviceId) {
         return res.status(500).json({ error: "Field must not be empty" });
@@ -22,7 +23,8 @@ class Payment {
           amount,
           Comment,
           customer: customerId,
-          serviceId
+          serviceId,
+          serviceDate
         });
         const savedPayment = await add.save();
         if (savedPayment) {
@@ -54,7 +56,8 @@ class Payment {
   async updatePayment(req, res) {
     try {
       const paymentId = req.params.id;
-      const { paymentDate, paymentType, paymentMode, amount, Comment } =
+      const { paymentDate, paymentType, paymentMode, amount, Comment, serviceId,
+        serviceDate } =
         req.body;
 
       // Find the payment by ID and update its data
@@ -66,6 +69,8 @@ class Payment {
           paymentMode,
           amount,
           Comment,
+          serviceId,
+          serviceDate
         },
         { new: true } // Set {new: true} to return the updated document
       );

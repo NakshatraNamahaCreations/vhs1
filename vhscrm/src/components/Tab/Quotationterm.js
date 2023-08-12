@@ -344,7 +344,7 @@ function Quotationterm() {
               ))}
 
               <div className="row pt-3 pb-3 justify-content-center">
-                {/* <div className="col-md-1">
+                {/* <div className="col-md-2">
                   <button className="vhs-button">Save</button>
                 </div>
                 <div className="col-md-1 mx-1">

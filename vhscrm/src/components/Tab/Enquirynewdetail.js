@@ -582,7 +582,7 @@ function Enquirynewdetail() {
                                     <>
                                       <div className="row pt-3">
                                         <div className="col-md-4"></div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addenquiryfollowup1}
@@ -600,7 +600,7 @@ function Enquirynewdetail() {
                                     <>
                                       <div className="row pt-3">
                                         <div className="col-md-4"></div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addenquiryfollowup1}
@@ -652,7 +652,7 @@ function Enquirynewdetail() {
                                             />
                                           </div>
                                         </div>
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addsurvey}
@@ -716,7 +716,7 @@ function Enquirynewdetail() {
                                           </div>
                                         </div>
 
-                                        <div className="col-md-1">
+                                        <div className="col-md-2">
                                           <button
                                             className="vhs-button mx-5"
                                             onClick={addcalllater}
@@ -758,7 +758,7 @@ function Enquirynewdetail() {
                                         </div>
                                       </div>
                                     ) : (
-                                      <div className="col-md-1">
+                                      <div className="col-md-2">
                                         {/* <button
                                           className="vhs-button mx-5"
                                           onClick={addenquiryfollowup1}
@@ -830,7 +830,7 @@ function Enquirynewdetail() {
                               </div>
 
                               <div className="row pt-3 justify-content-center">
-                                <div className="col-md-1">
+                                <div className="col-md-2">
                                   <button className="vhs-button">
                                     Send SMS
                                   </button>

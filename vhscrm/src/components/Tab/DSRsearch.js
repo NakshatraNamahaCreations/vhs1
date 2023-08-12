@@ -66,13 +66,13 @@ function DSRsearch() {
                 </div>
 
                 <div className="row pt-4 justify-content-center">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button">Save</button>
                   </div>
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button mx-3">Cancel</button>
                   </div>
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button mx-5">Print</button>
                   </div>
                 </div>

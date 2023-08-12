@@ -4,6 +4,8 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Card } from "react-bootstrap";
 import * as XLSX from "xlsx";
+import moment from "moment";
+import { parse, isBefore, isAfter, isSameDay } from "date-fns";
 
 function Report_Survey() {
   const apiURL = process.env.REACT_APP_API_URL;
@@ -13,7 +15,7 @@ function Report_Survey() {
   const [city, setCity] = useState("");
   const [technicianName, setTechnicianName] = useState("");
   const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [toDate, setToDate] = useState(moment().format("YYYY-MM-DD"));
   const [category, setCategory] = useState("");
   const [service, setService] = useState("");
   const [backOffice, setBackOffice] = useState("");
@@ -63,7 +65,7 @@ function Report_Survey() {
 
   const getSurveyDetails = async () => {
     try {
-      const res = await axios.get(apiURL + "/getallflwdata");
+      const res = await axios.get(apiURL + "/getsurveyaggredata");
       if (res.status === 200) {
         const data = res.data.enquiryfollowup.filter(
           (item) => item.response === "Survey"
@@ -86,30 +88,32 @@ function Report_Survey() {
     setSearchValue("");
     setShowMessage(true);
     const filteredResults = surveyData.filter((item) => {
+      const enquiryDate = parse(item.nxtfoll, "yyyy-MM-dd", new Date());
+      const fromDateObj = fromDate
+        ? parse(fromDate, "yyyy-MM-dd", new Date())
+        : null;
+      const toDateObj = toDate ? parse(toDate, "yyyy-MM-dd", new Date()) : null;
+
+      const itemCity =
+        city.toLowerCase() === "all" ||
+        item.enquirydata[0]?.city.toLowerCase().includes(city.toLowerCase());
+      const itemFromDate =
+        !fromDate ||
+        isAfter(enquiryDate, fromDateObj) ||
+        isSameDay(enquiryDate, fromDateObj);
+      const itemToDate =
+        !toDate ||
+        isBefore(enquiryDate, toDateObj) ||
+        isSameDay(enquiryDate, toDateObj);
       const itemInterest =
         item.enquirydata?.[0]?.intrestedfor
           ?.toLowerCase()
           .includes(interestFor.toLowerCase()) ?? true;
 
-      const itemCity =
-        item.enquirydata?.[0]?.city
-          ?.toLowerCase()
-          .includes(city.toLowerCase()) ?? true;
-
       const itemTechnician =
         item.technicianname
           ?.toLowerCase()
           .includes(technicianName.toLowerCase()) ?? true;
-
-      const itemFromDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(fromDate.toLowerCase()) ?? true;
-
-      const itemToDate =
-        item.enquirydata?.[0]?.enquirydate
-          ?.toLowerCase()
-          .includes(toDate.toLowerCase()) ?? true;
 
       const itemCategory =
         item.category?.toLowerCase().includes(category.toLowerCase()) ?? true;
@@ -157,6 +161,11 @@ function Report_Survey() {
     {
       name: "Sl  No",
       selector: (row, index) => index + 1,
+    },
+    {
+      name: "Category",
+      selector: (row) =>
+        row.enquirydata[0]?.category ? row.enquirydata[0]?.category : "-",
     },
     {
       name: "	Enq Date Time",
@@ -208,7 +217,7 @@ function Report_Survey() {
     },
     {
       name: "Appo. Date Time	",
-      selector: (row) => (row.appoDate ? row.appoDate : "-"),
+      selector: (row) => (row.nxtfoll ? row.nxtfoll : "-"),
     },
     {
       name: "Note",
@@ -225,7 +234,21 @@ function Report_Survey() {
       selector: (row) => "-",
     },
   ];
-
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    console.log(selectedCity); // Check the selected city value
+    setCity(selectedCity);
+  };
+  const handleTechnicianChange = (e) => {
+    const selectedTechnician = e.target.value;
+    console.log(selectedTechnician); // Check the selected technician value
+    setTechnicianName(selectedTechnician);
+  };
+  const handleCategoryChange = (e) => {
+    const selectedcategory = e.target.value;
+    console.log(selectedcategory); // Check the selected technician value
+    setCategory(selectedcategory);
+  };
   return (
     <div style={{ backgroundColor: "#f9f6f6" }} className="web">
       <div>
@@ -272,7 +295,7 @@ function Report_Survey() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCity(e.target.value)}
+                        onChange={handleCityChange}
                       >
                         <option>Select</option>
                         {[...duplicateCity].map((city) => (
@@ -351,7 +374,7 @@ function Report_Survey() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCategory(e.target.value)}
+                        onChange={handleCategoryChange} 
                       >
                         <option>All</option>
                         {[...duplicateCategory].map((category) => (
@@ -367,7 +390,8 @@ function Report_Survey() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setTechnicianName(e.target.value)}
+                        value={technicianName} // Set the selected value from state
+                        onChange={handleTechnicianChange} // Call the new handler
                       >
                         <option>Select</option>
                         {[...duplicateTechnicianName].map((executive) => (
@@ -396,17 +420,7 @@ function Report_Survey() {
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Reference 2</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setReference2(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <br /> */}
+                 
                 </div>
                 <p style={{ justifyContent: "center", display: "flex" }}>
                   <button

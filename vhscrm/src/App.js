@@ -162,6 +162,7 @@ import Paymentfulldetails from "./components/Paymentfulldetails";
 import OneCommunityReports from "./components/OneCommunityReports";
 import Report_B2B from "./components/Report/Report_B2B";
 import Report_1Community from "./components/Report/Report_1Community";
+import Paymentinvoice from "./components/Paymentinvoice";
 
 function App() {
   return (
@@ -353,6 +354,8 @@ function App() {
         <Route path="/quotationterm" element={<Quotationterm />} />
         <Route path="/servicebill" element={<Servicebill />} />
         <Route path="/dsrquote" element={<Dsrquote />} />
+        <Route path="/raiseinvoice" element={<Paymentinvoice />} />
+
         <Route path="/onecommnityreport" element={<OneCommunityReports />} />
       </Routes>
     </BrowserRouter>

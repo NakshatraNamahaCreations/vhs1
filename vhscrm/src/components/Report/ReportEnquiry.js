@@ -4,7 +4,9 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Card } from "react-bootstrap";
 import * as XLSX from "xlsx";
+import { parse, isBefore, isAfter, isSameDay } from "date-fns";
 
+import moment from "moment";
 function Report_Enquiry() {
   const apiURL = process.env.REACT_APP_API_URL;
   const [enquiryData, setEnquiryData] = useState([]);
@@ -16,7 +18,7 @@ function Report_Enquiry() {
   const [city, setCity] = useState("");
   const [excuitive, setExcuitive] = useState("");
   const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [toDate, setToDate] = useState(moment().format("YYYY-MM-DD"));
   const [category, setCategory] = useState("");
   const [service, setService] = useState("");
   const [showMessage, setShowMessage] = useState(false);
@@ -31,6 +33,7 @@ function Report_Enquiry() {
   const [duplicateStatus, setDuplicateStatus] = useState(new Set());
   const [duplicateServices, setDuplicateServices] = useState(new Set());
 
+  console.log(fromDate);
   useEffect(() => {
     const uniqueCity = new Set(
       enquiryData.map((item) => item.enquirydata[0]?.city).filter(Boolean)
@@ -80,82 +83,98 @@ function Report_Enquiry() {
   }, []);
 
   const handleSearch = () => {
-    // if (
-    //   !interestFor ||
-    //   !reference2 ||
-    //   !reference1 ||
-    //   !response ||
-    //   !city ||
-    //   !excuitive ||
-    //   !fromDate ||
-    //   !toDate
-    // ) {
+  
     setFilteredData(enquiryData);
     setSearchValue("");
     setShowMessage(true);
-    // } else {
+  
+
     const filteredResults = enquiryData.filter((item) => {
-      const itemInterest =
-        item.enquirydata[0]?.intrestedfor
-          .toLowerCase()
-          .includes(interestFor.toLowerCase()) ||
-        interestFor.toLowerCase() === "all";
+     
 
-      const itemReference1 =
-        item.enquirydata[0]?.reference1
-          .toLowerCase()
-          .includes(reference1.toLowerCase()) ||
-        reference1.toLowerCase() === "all";
-
-      const itemReference2 =
-        item.enquirydata[0]?.reference2
-          .toLowerCase()
-          .includes(reference2.toLowerCase()) ||
-        reference2.toLowerCase() === "all";
-
-      const itemResponse =
-        item.response.toLowerCase().includes(response.toLowerCase()) ||
-        response.toLowerCase() === "all";
+      const enquiryDate = parse(
+        item.enquirydata[0]?.enquirydate,
+        "MM-dd-yyyy",
+        new Date()
+      );
+      const fromDateObj = fromDate
+        ? parse(fromDate, "yyyy-MM-dd", new Date())
+        : null;
+      const toDateObj = toDate ? parse(toDate, "yyyy-MM-dd", new Date()) : null;
 
       const itemCity =
-        item.enquirydata[0]?.city.toLowerCase().includes(city.toLowerCase()) ||
-        city.toLowerCase() === "all";
+        city.toLowerCase() === "all" ||
+        item.enquirydata[0]?.city.toLowerCase().includes(city.toLowerCase());
+      const itemFromDate =
+        !fromDate ||
+        isAfter(enquiryDate, fromDateObj) ||
+        isSameDay(enquiryDate, fromDateObj);
+      const itemToDate =
+        !toDate ||
+        isBefore(enquiryDate, toDateObj) ||
+        isSameDay(enquiryDate, toDateObj);
 
+      // Apply filters for status and executive
+      const itemResponse =
+        response.toLowerCase() === "all" ||
+        item.response.toLowerCase().includes(response.toLowerCase());
       const itemExcuitive =
+        excuitive.toLowerCase() === "all" ||
         item.enquirydata[0]?.executive
           .toLowerCase()
-          .includes(excuitive.toLowerCase()) ||
-        excuitive.toLowerCase() === "all";
-      const itemFromDate =
-        item.enquirydata[0]?.enquirydate
-          .toLowerCase()
-          .includes(fromDate.toLowerCase()) || fromDate.toLowerCase() === "all";
-      const itemToDate =
-        item.enquirydata[0]?.enquirydate
-          .toLowerCase()
-          .includes(toDate.toLowerCase()) || toDate.toLowerCase() === "all";
+          .includes(excuitive.toLowerCase());
 
-      const itemCategory =
-        item.category.toLowerCase().includes(category.toLowerCase()) ||
-        category.toLowerCase() === "all";
-
-      const itemServices =
+      // Apply other filters
+      const itemInterest =
+        interestFor.toLowerCase() === "all" ||
         item.enquirydata[0]?.intrestedfor
           .toLowerCase()
-          .includes(service.toLowerCase()) || service.toLowerCase() === "all";
-      return (
+          .includes(interestFor.toLowerCase());
+      const itemReference1 =
+        reference1.toLowerCase() === "all" ||
+        item.enquirydata[0]?.reference1
+          .toLowerCase()
+          .includes(reference1.toLowerCase());
+      const itemReference2 =
+        reference2.toLowerCase() === "all" ||
+        item.enquirydata[0]?.reference2
+          .toLowerCase()
+          .includes(reference2.toLowerCase());
+      const itemCategory =
+        category.toLowerCase() === "all" ||
+        item.category.toLowerCase().includes(category.toLowerCase());
+      const itemServices =
+        service.toLowerCase() === "all" ||
+        item.enquirydata[0]?.intrestedfor
+          .toLowerCase()
+          .includes(service.toLowerCase());
+
+      const statusAndExecutiveFilter =
+        (item.response.toLowerCase().includes(response.toLowerCase()) ||
+          response.toLowerCase() === "all") &&
+        (item.enquirydata[0]?.executive
+          .toLowerCase()
+          .includes(excuitive.toLowerCase()) ||
+          excuitive.toLowerCase() === "all");
+
+      console.log("Status and Executive Filter:", statusAndExecutiveFilter);
+
+      const isFiltered =
+        itemCity &&
+        itemFromDate &&
+        itemToDate &&
+        statusAndExecutiveFilter &&
         itemInterest &&
         itemReference1 &&
         itemReference2 &&
-        itemResponse &&
-        itemCity &&
-        itemExcuitive &&
-        itemFromDate &&
-        itemToDate &&
         itemCategory &&
-        itemServices
-      );
+        itemServices;
+
+      console.log("Final Filter Result:", isFiltered);
+
+      return isFiltered;
     });
+    console.log("filteredResults:", filteredResults);
     setFilteredData(filteredResults);
     setSearchValue(
       interestFor ||
@@ -177,8 +196,11 @@ function Report_Enquiry() {
 
   const handleSearchClick = () => {
     // Call the search function here
+
     handleSearch();
     setButtonClicked(true);
+    setFromDate(""); // Add this line
+    setToDate(""); // Add this line
   };
 
   const exportData = () => {
@@ -248,8 +270,7 @@ function Report_Enquiry() {
     },
     {
       name: "Followup Remark",
-      selector: (row) => "-",
-      // (row.enquirydata[0]?.comment ? row.enquirydata[0]?.comment : "-"),
+      selector: (row) => (row.desc ? row.desc : "-"),
     },
     {
       name: "Executive",
@@ -266,6 +287,27 @@ function Report_Enquiry() {
     },
   ];
 
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    console.log(selectedCity); // Check the selected city value
+    setCity(selectedCity);
+  };
+  const handleExecutiveChange = (e) => {
+    const selectedExecutive = e.target.value;
+    console.log(selectedExecutive); // Check the selected executive value
+    setExcuitive(selectedExecutive);
+  };
+
+  const handleReferenceChange = (e) => {
+    const selectedReference = e.target.value;
+    console.log(selectedReference); // Check the selected reference value
+    setReference1(selectedReference);
+  };
+  const handleServiceChange = (e) => {
+    const selectedService = e.target.value;
+    console.log(selectedService); // Check the selected service value
+    setService(selectedService);
+  };
   return (
     <div style={{ backgroundColor: "#f9f6f6" }} className="web">
       <div>
@@ -300,6 +342,7 @@ function Report_Enquiry() {
                         className="report-select"
                         onChange={(e) => setFromDate(e.target.value)}
                         type="date"
+                        value={fromDate}
                       />
                     </div>
                   </div>
@@ -310,7 +353,7 @@ function Report_Enquiry() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setCity(e.target.value)}
+                        onChange={handleCityChange}
                       >
                         <option>Select</option>
                         {[...duplicateCity].map((city) => (
@@ -326,8 +369,7 @@ function Report_Enquiry() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        // style={{ width: "100%" }}
-                        onClick={(e) => setReference1(e.target.value)}
+                        onChange={handleReferenceChange} // Use the handleReferenceChange function
                       >
                         <option>Select</option>
                         {[...duplicateReference].map((reference) => (
@@ -337,28 +379,18 @@ function Report_Enquiry() {
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Interested For </div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setInterestFor(e.target.value)}
-                      />
-                    </div>
-                  </div> */}
+
                   <div className="row">
                     <div className="col-md-4">Service </div>
                     <div className="col-md-1 ms-4">:</div>
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        // style={{ width: "100%" }}
-                        onClick={(e) => setService(e.target.value)}
+                        onChange={handleServiceChange} // Use the handleServiceChange function
                       >
                         <option>Select</option>
-                        {[...duplicateServices].map((intrestedfor) => (
-                          <option key={intrestedfor}>{intrestedfor}</option>
+                        {[...duplicateServices].map((service) => (
+                          <option key={service}>{service}</option>
                         ))}
                       </select>
                     </div>
@@ -376,6 +408,7 @@ function Report_Enquiry() {
                         className="report-select"
                         onChange={(e) => setToDate(e.target.value)}
                         type="date"
+                        value={toDate}
                       />
                     </div>
                   </div>
@@ -402,7 +435,7 @@ function Report_Enquiry() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onClick={(e) => setExcuitive(e.target.value)}
+                        onChange={handleExecutiveChange} // Use the handleExecutiveChange function
                       >
                         <option>Select</option>
                         {[...duplicateExecutive].map((executive) => (
@@ -412,17 +445,7 @@ function Report_Enquiry() {
                     </div>
                   </div>
                   <br />
-                  {/* <div className="row">
-                    <div className="col-md-4"> Reference 2</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setReference2(e.target.value)}
-                      />
-                    </div>
 
-                  </div> */}
                   <div className="row">
                     <div className="col-md-4">Category </div>
                     <div className="col-md-1 ms-4">:</div>

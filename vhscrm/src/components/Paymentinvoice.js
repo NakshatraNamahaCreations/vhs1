@@ -6,14 +6,15 @@ import moment from "moment";
 import { da } from "date-fns/locale";
 import numberToWords from "number-to-words";
 
-function Dsrquote() {
+function Paymentinvoice() {
   const [tcdata, settcdata] = useState([]);
   const [headerimgdata, setheaderimgdata] = useState([]);
   const [footerimgdata, setfooterimgdata] = useState([]);
   const [bankdata, setbankdata] = useState([]);
   const [treatmentdata, settreatmentdata] = useState([]);
+  const [charge, setcharge] = useState("");
   const location = useLocation();
-  const { data,data1 } = location.state || null;
+  const { data, data1 } = location.state || null;
 
   const apiURL = process.env.REACT_APP_API_URL;
   const imgURL = process.env.REACT_APP_IMAGE_API_URL;
@@ -69,9 +70,12 @@ function Dsrquote() {
       setbankdata(res.data?.bankacct);
     }
   };
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
-    <div className="row">
+    <div className="row mb-4">
       {/* <Header />s */}
 
       <div className="row justify-content-center mt-3">
@@ -93,13 +97,13 @@ function Dsrquote() {
                 <h2>GST INVOICE</h2>
                 <p>Original For Recipient</p>
                 <p>
-                  <b>Invoice# , Date :</b> {moment().format("L")}
+                  <b>Invoice# , Date :</b> {moment().format("DD-MM-YYYY")}
                 </p>
               </div>
             </div>
 
-            <div className="row  mt-2">
-              <div className="col-md-6 b-col">
+            <div className="d-flex  mt-2">
+              <div className=" b-col">
                 <div className="" style={{ fontWeight: "bold" }}>
                   BILLED BY
                 </div>
@@ -111,7 +115,7 @@ function Dsrquote() {
                   Road, Mahadevpura Outer Ring Road, Bangalore - 560048
                 </p>
               </div>
-              <div className="col-md-6 b-col" style={{ marginLeft: "9px" }}>
+              <div className=" b-col" style={{ marginLeft: "9px" }}>
                 <div className="" style={{ fontWeight: "bold" }}>
                   BILLED TO
                 </div>
@@ -136,19 +140,23 @@ function Dsrquote() {
                       <th className="text-center">S.No</th>
                       <th className="text-center">Description</th>
                       <th className="text-center">Contract</th>
-                      <th className="text-center">Service Date</th>
-                      <th className="text-center">Amount Paid Date</th>
+                      {/* <th className="text-center">Service Date</th> */}
+                      <th className="text-center">Payment Date</th>
 
                       <th className="text-center">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td scope="row" className="text-center">{i++}</td>
-                      <td scope="row" className="text-center">{data.desc}</td>
+                      <td scope="row" className="text-center">
+                        {i++}
+                      </td>
+                      <td scope="row" className="text-center">
+                        {data.desc}
+                      </td>
 
                       <td className="text-center">{data?.contractType}</td>
-                      {(data?.contractType ==="AMC") ? <td>
+                      {/* {(data?.contractType ==="AMC") ? <td>
                         {data.dividedDates.map((item) => (
                           <div>
                             <p className="text-center">
@@ -156,38 +164,50 @@ function Dsrquote() {
                             </p>
                           </div>
                         ))}
-                      </td>:<td>{data?.dateofService}</td>}
+                      </td>:<td>{data?.dateofService}</td>} */}
 
-                      {(data?.contractType ==="AMC") ?   <td>
-                        {data.dividedamtDates.map((item) => (
-                          <div>
-                            <p className="text-end">{new Date(item).toLocaleDateString()}</p>
-                          </div>
-                        ))}
-                      </td>:<td>{data?.dateofService}</td>}
-                    
-                     {(data?.contractType ==="AMC") ?   <td>
-                        {data.dividedamtCharges.map((item) => (
-                          <div>
-                            <p className="text-end">{item}</p>
-                          </div>
-                        ))}
-                      </td>:<td>{data?.serviceCharge}</td>}
-                    
+                      {data?.contractType === "AMC" ? (
+                        <td className="text-center">{data1}</td>
+                      ) : (
+                        <td>{data?.dateofService}</td>
+                      )}
+
+                      {data?.contractType === "AMC" ? (
+                        <td className="text-center">
+                          {data.dividedamtCharges.length > 0 && (
+                            <div>
+                              <p>{data.dividedamtCharges[0]}</p>
+                            </div>
+                          )}
+                        </td>
+                      ) : (
+                        <td>{data?.serviceCharge}</td>
+                      )}
                     </tr>
                   </tbody>
                 </table>
                 <div className="float-end px-1">
-                  <h5>Total : {data.serviceCharge}</h5>
+                  <h5>
+                    Total :{" "}
+                    {data.dividedamtCharges.length > 0 && (
+                      <>
+                        <>{data.dividedamtCharges[0]}</>
+                      </>
+                    )}
+                  </h5>
                 </div>
 
                 {/* <div className="row m-auto mt-3 hclr">Terms & Condition</div> */}
               </div>
             </div>
             <div className="text-end px-2" style={{ fontWeight: "bold" }}>
-            Amount In Words :{" "}
+              Amount In Words :{" "}
               <span style={{ fontWeight: 400 }}>
-                {numberToWords.toWords(data.serviceCharge) + " Only"}
+                {data.dividedamtCharges.length > 0 && (
+                  <>
+                    {numberToWords.toWords(data.dividedamtCharges[0]) + " Only"}
+                  </>
+                )}
               </span>
             </div>
 
@@ -281,44 +301,20 @@ function Dsrquote() {
                   </div>
                 </div>
               ))}
-
-           
             </div>
           </div>
-          {/* <div
-            className=" shadow  "
-            style={{ border: "none" }}
-          >
-           
-
-            <div className="row m-auto">
-              <div className="mt-3 text-center" style={{ color: "#a9042e" }}>
-                website : www.vijayhomeservices | mail :
-                support@vijayhomeservices.com
-              </div>
-
-              <div className="mt-2 text-center" style={{ color: "black" }}>
-                BANGALORE - HYDERABAD - CHENNAI - PUNE - MUMBAI - AHMEDABAD -
-                VADODARA - SURAT - LUCKNOW - NCR - INDIA - GURGAON - FARIDABAD -
-                GHAZIABAD - BHUVANESHWAR - KOCHI
-              </div>
-
-              <div
-                className="mt-2 text-center pb-2"
-                style={{ color: "#a9042e" }}
-              >
-                Customer Care : +91 845 374 8478
-              </div>
-            </div>
-          </div> */}
         </div>
-        
-        
       </div>
-
-  
+      <div className="row pt-3 justify-content-center">
+        <div className="col-3">
+          <button className="vhs-button">Send Invoice</button>
+        </div>
+        <div className="col-3">
+          <button className="vhs-button" onClick={handlePrint}>Print</button>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default Dsrquote;
+export default Paymentinvoice;

@@ -90,18 +90,37 @@ function RunningProject() {
     getservicedata();
   }, [category]);
 
+  // const getservicedata = async () => {
+  //   let res = await axios.get(apiURL + "/getrunningdata");
+  //   if (res.status === 200) {
+  //     const filteredData = res.data?.runningdata.filter(
+  //       (i) => i.contractType === "AMC" && !i.closeProject
+  //     );
+  //     settreatmentData(filteredData);
+  //     setSearchResults(filteredData);
+  //     console.log("filteredData", filteredData);
+  //   }
+  // };
+
   const getservicedata = async () => {
     let res = await axios.get(apiURL + "/getrunningdata");
     if (res.status === 200) {
-      const filteredData = res.data?.runningdata.filter(
-        (i) => i.contractType === "AMC" && !i.closeProject
-      );
+      const data = res.data?.runningdata;
+      console.log(data);
+
+      const filteredData = data.filter((item) => {
+        const formattedDates = item.dividedamtDates.map((date) =>
+          moment(date).format("YYYY-MM-DD")
+        );
+        return formattedDates;
+      });
+
+      console.log("mydata", filteredData);
       settreatmentData(filteredData);
       setSearchResults(filteredData);
-      console.log("filteredData", filteredData);
+      console.log(filteredData);
     }
   };
-
 
   const updatetoclose = async (id) => {
     try {
@@ -599,11 +618,11 @@ function calculateTotalvendorAmount(paymentData) {
                       <td>{item.dsrdata[0]?.workerName}</td>
                       <td>
                         {item.paymentData.some(
-                          (i) => i.paymentType === "Vendor"
+                          (i) => i.paymentType === "Vendor" && i.serviceId === item._id
                         ) ? (
                           <div>
                             {item.paymentData
-                              .filter((i) => i.paymentType === "Vendor")
+                              .filter((i) => i.paymentType === "Vendor" && i.serviceId === item._id)
                               .map((i) => (
                                 <p key={i._id}>
                                  {i.amount}
@@ -617,11 +636,11 @@ function calculateTotalvendorAmount(paymentData) {
                       </td>
                       <td>
                         {item.paymentData.some(
-                          (i) => i.paymentType === "Vendor"
+                          (i) => i.paymentType === "Vendor" && i.serviceId === item._id
                         ) ? (
                           <div>
                             {item.paymentData
-                              .filter((i) => i.paymentType === "Vendor")
+                              .filter((i) => i.paymentType === "Vendor" && i.serviceId === item._id)
                               .map((i) => (
                                 <p key={i._id} className="mb-0 text-right">
                                   ({i.paymentDate}) {i.amount}
@@ -631,18 +650,10 @@ function calculateTotalvendorAmount(paymentData) {
                               <hr className="mb-0 mt-0"/>
                               <p className="mb-0 text-right">
                                 <b> Total:{" "}
-                                {calculateTotalvendorAmount(item.paymentData)}</b>
+                                {calculateTotalvendorAmount(item.paymentData.filter((i)=>i.serviceId === item._id))}</b>
                                
                               </p>
-                              {/* <p>
-                                Pending:{" "}
-                                {calculatePendingPaymentAmount(
-                                  item.paymentData.filter(
-                                    (i) => i.paymentType === "Vendor"
-                                  ),
-                                  item.serviceCharge
-                                )}
-                              </p> */}
+                             
                             </div>
                           </div>
                         ) : (
@@ -652,11 +663,11 @@ function calculateTotalvendorAmount(paymentData) {
                       <td>{item.serviceCharge}</td>
                       <td>
                         {item.paymentData.some(
-                          (i) => i.paymentType === "Customer"
+                          (i) => i.paymentType === "Customer" && i.serviceId === item._id
                         ) ? (
                           <div>
                             {item.paymentData
-                              .filter((i) => i.paymentType === "Customer")
+                              .filter((i) => i.paymentType === "Customer" && i.serviceId === item._id)
                               .map((i) => (
                                 <p key={i._id} className="mb-0 text-right" >
                                   ({i.paymentDate}) {i.amount}
@@ -667,7 +678,7 @@ function calculateTotalvendorAmount(paymentData) {
                               <p className="mb-0 text-right">
                                 <b>
                                 Total:{" "}
-                                {calculateTotalPaymentAmount(item.paymentData)}
+                                {calculateTotalPaymentAmount(item.paymentData.filter((i)=>i.serviceId === item._id))}
                                 </b>
                               
                               </p>
@@ -676,7 +687,7 @@ function calculateTotalvendorAmount(paymentData) {
                               Pending:{" "}
                                 {calculatePendingPaymentAmount(
                                   item.paymentData.filter(
-                                    (i) => i.paymentType === "Customer"
+                                    (i) => i.paymentType === "Customer" && i.serviceId === item._id
                                   ),
                                   item.serviceCharge
                                 )}

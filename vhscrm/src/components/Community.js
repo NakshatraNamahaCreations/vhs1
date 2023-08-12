@@ -448,12 +448,12 @@ function Community() {
                   </div>
 
                   <div className="row pt-3 justify-content-center">
-                    <div className="col-md-1">
+                    <div className="col-md-2">
                       <button className="vhs-button" onClick={updateCommunity}>
                         Update
                       </button>
                     </div>
-                    <div className="col-md-1">
+                    <div className="col-md-2">
                       <button className="vhs-button mx-3">Cancel</button>
                     </div>
                   </div>
@@ -622,12 +622,12 @@ function Community() {
                     </div>
 
                     <div className="row pt-3 justify-content-center">
-                      <div className="col-md-1">
+                      <div className="col-md-2">
                         <button className="vhs-button" onClick={addcommunity}>
                           Save
                         </button>
                       </div>
-                      <div className="col-md-1">
+                      <div className="col-md-2">
                         <button className="vhs-button mx-3">Cancel</button>
                       </div>
                     </div>

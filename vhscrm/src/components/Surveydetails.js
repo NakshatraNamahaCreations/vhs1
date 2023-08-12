@@ -92,7 +92,7 @@ function Createquote() {
           <div className="card" style={{ marginTop: "20px" }}>
             <div className="card-body p-4">
               <div className="row pt-3  ">
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button
                     className="vhs-button"
                     style={{ width: "120px" }}
@@ -101,7 +101,7 @@ function Createquote() {
                     Edit Details
                   </button>
                 </div>
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button className="vhs-button mx-5" onClick={()=>quotation(data)}>
                     Quotation
                   </button>
@@ -257,12 +257,12 @@ function Createquote() {
                   </div>
                 </div>
                 <div className="row pt-3 ">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={updatedata}>
                       Save
                     </button>
                   </div>
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <Link to="/surveycategory">
                       <button className="vhs-button mx-5">Cancel</button>
                     </Link>

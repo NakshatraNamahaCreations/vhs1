@@ -52,7 +52,7 @@ function Painting() {
       );
       if (res.status === 200) {
         console.log("PaymentDetails", res);
-        setPaymentDetails(res.data?.payments);
+        setPaymentDetails(res.data?.payments.filter((i)=>i.serviceId === id));
       }
     } catch (error) {
       console.log("error:", error);
@@ -66,7 +66,7 @@ function Painting() {
       let res = await axios.get(apiURL + `/getWorkByCustomerId/${customerId}`);
       if (res.status === 200) {
         console.log("workDetails", res);
-        setWorkDetails(res.data?.works);
+        setWorkDetails(res.data?.works.filter((i)=>i.serviceId ===id));
       }
     } catch (error) {
       console.log("error:", error);
@@ -88,7 +88,7 @@ function Painting() {
     );
 
     setCustomerPayments(customerPayments);
-    setVendorPayments(vendorPayments);
+    setVendorPayments(vendorPayments.filter((i)=>i.serviceId ===id));
   }, [paymentDetails]);
 
   var i = 1;

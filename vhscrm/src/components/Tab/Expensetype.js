@@ -163,7 +163,7 @@ const [expensetype1, setexpensetype1] = useState(data.expensetype);
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={addexpensetype}>Save</button>
                   </div>
                 </div>
@@ -225,7 +225,7 @@ const [expensetype1, setexpensetype1] = useState(data.expensetype);
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={editexpensetype}>Save</button>
                   </div>
                 </div>

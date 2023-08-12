@@ -254,7 +254,7 @@ function Termsgroup() {
                 </div>
 
                 <div className="row pt-3 justify-content-center">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={posttermsgroup}>
                       Save
                     </button>
@@ -323,7 +323,7 @@ function Termsgroup() {
                 </div>
 
                 <div className="row pt-3 justify-content-center">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={edittermsgroup}>
                       Save
                     </button>

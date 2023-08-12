@@ -78,10 +78,10 @@ india support : 8453748478"
                         className="row   justify-content-center"
                         style={{ gap: "80px", marginTop: "80px" }}
                       >
-                        <div className="col-md-1">
+                        <div className="col-md-2">
                           <button className="vhs-button">Save</button>
                         </div>
-                        <div className="col-md-1">
+                        <div className="col-md-2">
                           <button className="vhs-button">Cancel</button>
                         </div>
                       </div>

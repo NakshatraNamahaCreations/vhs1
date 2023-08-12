@@ -3,6 +3,7 @@ import Header from "./layout/Header";
 import Customersernav from "./Customersernav";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 
 function Payment() {
   const { id } = useParams();
@@ -133,7 +134,7 @@ function Payment() {
       );
       if (res.status === 200) {
         console.log("paymentDetails", res);
-        setPaymentDetails(res.data?.payments);
+        setPaymentDetails(res.data?.payments.filter((i)=>i.serviceId === id));
       }
     } catch (error) {
       console.log("error:", error);
@@ -331,7 +332,7 @@ function Payment() {
                 </div>
               </div>
               <div className="row pt-3 justify-content-center">
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button className="vhs-button" onClick={updatePayment}>
                     UPDATE
                   </button>
@@ -352,6 +353,7 @@ function Payment() {
                       type="date"
                       className="col-md-12 vhs-input-value"
                       onChange={(e) => setPaymentDate(e.target.value)}
+                   
                     />
                   </div>
                 </div>
@@ -426,7 +428,7 @@ function Payment() {
               </div>
             </div>
             <div className="row pt-3 justify-content-center">
-              <div className="col-md-1">
+              <div className="col-md-2">
                 <button className="vhs-button" onClick={addPayment}>
                   Save
                 </button>

@@ -180,7 +180,7 @@ function Region() {
                 </div>
               </form>
               <div className="row pt-3 ">
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button className="vhs-button" onClick={postqf}>
                     Save
                   </button>

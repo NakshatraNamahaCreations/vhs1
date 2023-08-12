@@ -192,101 +192,42 @@ function Report_RunningProjects() {
     XLSX.writeFile(workbook, fileName);
   };
 
-  const columns = [
-    {
-      name: "Sl  No",
-      selector: (row, index) => index + 1,
-    },
-    {
-      name: "Cr.Date",
-      selector: (row) => (row.date ? row.date : "-"),
-    },
-    {
-      name: "Project Manager",
-      selector: (row) =>
-        row.dsrdata[0]?.techName ? row.dsrdata[0]?.techName : "-",
-    },
-    {
-      name: "Sales Executive",
-      selector: (row) =>
-        row.customer[0]?.serviceExecute ? row.customer[0]?.serviceExecute : "-",
-    },
-    {
-      name: "Customer",
-      selector: (row, index) =>
-        row.customer[0]?.customerName ? row.customer[0]?.customerName : "-",
-    },
-    {
-      name: "Contact",
-      selector: (row) =>
-        row.customer[0]?.mainContact ? row.customer[0]?.mainContact : "-",
-    },
-    {
-      name: "Address",
-      selector: (row) => (
-        <>
-          {row.customer[0]?.rbhf ? row.customer[0]?.rbhf : "-"},
-          {row.customer[0]?.lnf ? row.customer[0]?.lnf : "-"},
-          {row.customer[0]?.cnap ? row.customer[0]?.cnap : "-"} -
-          {row.customer[0]?.pinCode ? row.customer[0]?.pinCode : "-"}
-        </>
-      ),
-    },
-    {
-      name: "City",
-      selector: (row) => (row.customer[0]?.city ? row.customer[0]?.city : "-"),
-    },
-    {
-      name: "Quote No",
-      selector: (row) =>
-        // row.enquirydata[0]?.intrestedfor
-        //   ? row.enquirydata[0]?.intrestedfor
-        //   :
-        "-",
-    },
-    {
-      name: "Project Type",
-      selector: (row) => (row.service ? row.service : "-"),
-    },
-    {
-      name: "Day To Complete",
-      selector: (row) =>
-        row.dsrdata[0]?.daytoComplete ? row.dsrdata[0]?.daytoComplete : "-",
-    },
-    {
-      name: "Worker",
-      selector: (row) =>
-        row.dsrdata[0]?.workerName ? row.dsrdata[0]?.workerName : "-",
-    },
-    {
-      name: "Vendor Payment	",
-      selector: (row) =>
-        row.paymentData[0]?.amount ? row.paymentData[0]?.amount : "-",
-    },
-    {
-      name: "Charges",
-      selector: (row) =>
-        row.dsrdata[0]?.workerAmount ? row.dsrdata[0]?.workerAmount : "-",
-    },
 
-    {
-      name: "Quote Value",
-      selector: (row) => (row.serviceCharge ? row.serviceCharge : "-"),
-    },
-    {
-      name: "Payment",
-      selector: (row) => "0.00",
-    },
-    {
-      name: "TYPE",
-      selector: (row) => "RUNNING PROJECTS",
-    },
-    // {
-    //   name: "Deep Clean Details",
-    //   selector: (row) => "-",
-    // },
-  ];
 
+  // Function to calculate the total amount from the paymentData array
+  function calculateTotalPaymentAmount(paymentData) {
+    let totalAmount = 0;
+    for (const payment of paymentData) {
+      const amountString = payment.amount;
+      const cleanedAmountString = amountString.replace(/[^\d.-]/g, "");
+      const amount = parseFloat(cleanedAmountString);
+      if (!isNaN(amount)) {
+        totalAmount += amount;
+      }
+    }
+    return totalAmount.toFixed(2); // Format the total amount with two decimal places
+  }
+
+ // Function to calculate the total vendor payment amount
+function calculateTotalvendorAmount(paymentData) {
+  let totalAmount = 0;
+
+  // Loop through the payment data and sum up the amounts where the payment type is "Vendor"
+  paymentData.forEach((payment) => {
+    if (payment.paymentType === "Vendor") {
+      totalAmount += parseFloat(payment.amount); // Assuming the amount is a string representing a number
+    }
+  });
+
+  return totalAmount.toFixed(2); // You can adjust the number of decimal places as needed
+}
+
+  // Function to calculate the pending amount (assuming the total amount is constant)
+  function calculatePendingPaymentAmount(paymentData, serviceCharge) {
+    const totalAmount = calculateTotalPaymentAmount(paymentData);
+    const pendingAmount = totalAmount - parseFloat(serviceCharge);
+    return pendingAmount.toFixed(2); // Format the pending amount with two decimal places
+  }
   return (
     <div style={{ backgroundColor: "#f9f6f6" }} className="web">
       <div>
@@ -602,7 +543,7 @@ function Report_RunningProjects() {
           </Card>
         </div>{" "}
         <br />
-        <DataTable
+        {/* <DataTable
           columns={columns}
           data={filteredData}
           pagination
@@ -610,7 +551,184 @@ function Report_RunningProjects() {
           selectableRowsHighlight
           subHeaderAlign="left"
           highlightOnHover
-        />
+        /> */}
+          <>
+              <table class="table table-hover table-bordered mt-1">
+                <thead className="">
+                
+
+                  <tr className="table-secondary">
+                    <th className="table-head" scope="col">
+                      Sr.No
+                    </th>
+                    <th className="table-head" scope="col">
+                      Cr.Date
+                    </th>
+                    <th className="table-head" scope="col">
+                      Category
+                    </th>
+                    <th className="table-head" scope="col">
+                      Project Manager
+                    </th>
+                    <th scope="col" className="table-head">
+                      Sales Executive
+                    </th>
+                    <th scope="col" className="table-head">
+                      Customer
+                    </th>
+                    <th scope="col" className="table-head">
+                      Contact No.
+                    </th>
+                    <th scope="col" className="table-head">
+                      Address
+                    </th>
+                    <th scope="col" className="table-head">
+                      City
+                    </th>
+                    <th scope="col" className="table-head">
+                      Quote No.
+                    </th>
+                    <th scope="col" className="table-head">
+                      Project Type
+                    </th>
+                    <th scope="col" className="table-head">
+                      Day To Complete
+                    </th>
+                    <th scope="col" className="table-head">
+                      Worker
+                    </th>
+                    <th scope="col" className="table-head">
+                      Vendor Payment
+                    </th>
+                    <th scope="col" className="table-head" style={{minWidth:"160px"}}>
+                      Charges
+                    </th>
+                    <th scope="col" className="table-head">
+                      Quote Value
+                    </th>
+                    <th scope="col" className="table-head" style={{minWidth:"160px"}}>
+                      Payment
+                    </th>
+                    <th scope="col" className="table-head">
+                      TYPE
+                    </th>
+
+                  
+                  </tr>
+                </thead>
+                <tbody>
+                  {runningProjectData.map((item, index) => (
+                    <tr className="user-tbale-body">
+                      <td>{index + 1}</td>
+                      <td>{item.date}</td>
+                      <td>{item.category}</td>
+                      <td>{item.dsrdata[0]?.techName}</td>
+                      <td>{item.quotedata[0]?.salesExecutive}</td>
+                      <td>{item.customerData[0]?.customerName}</td>
+                      <td>{item.customerData[0]?.mainContact}</td>
+                      <td>
+                        {item.customerData[0]?.lnf} {item.customerData[0]?.rbhf}{" "}
+                        {item.customerData[0]?.cnap}
+                      </td>
+                      <td>{item.customerData[0]?.city}</td>
+                      <td>{item.quotedata[0]?.quoteId}</td>
+                      <td>{item.desc}</td>
+                      <td>{item.dsrdata[0]?.daytoComplete}</td>
+                      <td>{item.dsrdata[0]?.workerName}</td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Vendor" && i.serviceId === item._id
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Vendor" && i.serviceId === item._id)
+                              .map((i) => (
+                                <p key={i._id}>
+                                 {i.amount}
+                                </p>
+                              ))}
+                           
+                          </div>
+                        ) : (
+                          <p>0.0</p>
+                        )}
+                      </td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Vendor" && i.serviceId === item._id
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Vendor" && i.serviceId === item._id)
+                              .map((i) => (
+                                <p key={i._id} className="mb-0 text-right">
+                                  ({i.paymentDate}) {i.amount}
+                                </p>
+                              ))}
+                            <div >
+                              <hr className="mb-0 mt-0"/>
+                              <p className="mb-0 text-right">
+                                <b> Total:{" "}
+                                {calculateTotalvendorAmount(item.paymentData.filter((i)=>i.serviceId === item._id))}</b>
+                               
+                              </p>
+                             
+                            </div>
+                          </div>
+                        ) : (
+                          <p></p>
+                        )}
+                      </td>
+                      <td>{item.serviceCharge}</td>
+                      <td>
+                        {item.paymentData.some(
+                          (i) => i.paymentType === "Customer" && i.serviceId === item._id
+                        ) ? (
+                          <div>
+                            {item.paymentData
+                              .filter((i) => i.paymentType === "Customer" && i.serviceId === item._id)
+                              .map((i) => (
+                                <p key={i._id} className="mb-0 text-right" >
+                                  ({i.paymentDate}) {i.amount}
+                                </p>
+                              ))}
+                            <div>
+                              <hr className="mb-0 mt-0"/>
+                              <p className="mb-0 text-right">
+                                <b>
+                                Total:{" "}
+                                {calculateTotalPaymentAmount(item.paymentData.filter((i)=>i.serviceId === item._id))}
+                                </b>
+                              
+                              </p>
+                              <p className="text-right">
+                              <b>
+                              Pending:{" "}
+                                {calculatePendingPaymentAmount(
+                                  item.paymentData.filter(
+                                    (i) => i.paymentType === "Customer" && i.serviceId === item._id
+                                  ),
+                                  item.serviceCharge
+                                )}
+                                </b>  
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <p></p>
+                        )}
+                      </td>
+
+                      <td>
+                        <div>RUNNING PROJECTS</div>
+                      </td>
+
+                     
+                    </tr>
+                  ))}
+                </tbody>
+              </table>{" "}
+            </>
       </div>
     </div>
   );

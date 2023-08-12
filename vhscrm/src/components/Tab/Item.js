@@ -103,7 +103,7 @@ function Item() {
               </div>
 
               <div className="row pt-3 justify-content-center">
-                <div className="col-md-1">
+                <div className="col-md-2">
                   <button className="vhs-button">Save</button>
                 </div>
               </div>

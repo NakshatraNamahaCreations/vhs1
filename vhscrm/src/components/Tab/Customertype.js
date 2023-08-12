@@ -167,7 +167,7 @@ function Customertype() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={addcustomertype}>
                       Save
                     </button>
@@ -239,7 +239,7 @@ function Customertype() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={editcustomertype}>Save</button>
                   </div>
                 </div>

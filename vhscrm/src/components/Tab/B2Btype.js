@@ -133,7 +133,7 @@ function B2Btype() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button" onClick={addb2btype}>Save</button>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ function B2Btype() {
                 </div>
 
                 <div className="row pt-3">
-                  <div className="col-md-1">
+                  <div className="col-md-2">
                     <button className="vhs-button">Save</button>
                   </div>
                 </div>

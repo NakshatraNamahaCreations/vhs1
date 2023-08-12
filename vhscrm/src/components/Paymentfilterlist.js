@@ -19,6 +19,7 @@ function Paymentfilterlist() {
   const [searchTechName, setSearchTechName] = useState("");
   const [searchJobType, setSearchJobType] = useState("");
   const [searchDesc, setSearchDesc] = useState("");
+  const [pendingamt, setpendingamt] = useState("");
 
   const apiURL = process.env.REACT_APP_API_URL;
   const { date } = useParams();
@@ -117,14 +118,15 @@ function Paymentfilterlist() {
         );
       }
       if (searchContact) {
-        results = results.filter((item) =>
-          item.customer[0]?.mainContact &&
-          typeof item.customer[0]?.mainContact === "string"
-            ? item.mainContact
-                .toLowerCase()
-                .includes(searchContact.toLowerCase())
-            : ""
-        );
+       
+        results = results.filter((item) => {
+          const mainContact = item.customerData[0]?.mainContact;
+          if (typeof mainContact === "number") {
+            // Convert contactNo to a string before comparing (assuming it's a number)
+            return mainContact.toString().includes(searchContact);
+          }
+          return false;
+        });
       }
       if (searchTechName) {
         results = results.filter(
@@ -165,6 +167,29 @@ function Paymentfilterlist() {
   let i = 1;
   const targetDate = date;
 
+  // Function to calculate the total amount from the paymentData array
+  function calculateTotalPaymentAmount(paymentData) {
+    let totalAmount = 0;
+    for (const payment of paymentData) {
+      const amountString = payment.amount;
+      const cleanedAmountString = amountString.replace(/[^\d.-]/g, "");
+      const amount = parseFloat(cleanedAmountString);
+      if (!isNaN(amount)) {
+        totalAmount += amount;
+      }
+    }
+    return totalAmount.toFixed(2); // Format the total amount with two decimal places
+  }
+
+  // Function to calculate the pending amount (assuming the total amount is constant)
+  function calculatePendingPaymentAmount(paymentData, serviceCharge) {
+    console.log("paymentData", serviceCharge);
+    const totalAmount = calculateTotalPaymentAmount(paymentData);
+    const pendingAmount = totalAmount - parseFloat(serviceCharge);
+    console.log(pendingAmount);
+    // setpendingamt(pendingAmount.toFixed(2));
+    return pendingAmount.toFixed(2); // Format the pending amount with two decimal places
+  }
   return (
     <div className="web">
       <Header />
@@ -200,11 +225,7 @@ function Paymentfilterlist() {
                   scope="col"
                 ></th>
                 <th scope="col" className="table-head">
-                  <input
-                    className="vhs-table-input"
-                    value={searchJobCatagory}
-                    onChange={(e) => setSearchJobCatagory(e.target.value)}
-                  />{" "}
+                 
                 </th>
 
                 <th scope="col" className="table-head">
@@ -260,6 +281,9 @@ function Paymentfilterlist() {
                     onChange={(e) => setSearchDesc(e.target.value)}
                   />{" "}
                 </th>
+                <th className="table-head" scope="col">
+               
+                </th>
                 <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
                 <th className="table-head" scope="col"></th>
@@ -302,9 +326,21 @@ function Paymentfilterlist() {
                 <th scope="col" className="table-head">
                   Amount
                 </th>
-                <th scope="col" className="table-head">
+                <th
+                  scope="col"
+                  className="table-head"
+                  style={{ minWidth: "160px" }}
+                >
                   Status
                 </th>
+                <th
+                  scope="col"
+                  className="table-head"
+                  style={{ minWidth: "160px" }}
+                >
+                  Payment details
+                </th>
+
                 <th scope="col" className="table-head">
                   Action
                 </th>
@@ -313,41 +349,139 @@ function Paymentfilterlist() {
             <tbody>
               {searchResults.map((selectedData) => (
                 <tr className="user-tbale-body">
-                  <Link
-                    to="/paymentfulldetails"
-                    className="tbl"
-                    state={{ data: selectedData, data1: date }}
-                  >
-                    <td>{i++}</td>
-                    <td>{selectedData.category}</td>
-                    <td>{date}</td>
+                  <td>{i++}</td>
+                  <td>{selectedData.category}</td>
+                  <td>{date}</td>
 
-                    <td>{selectedData.customer[0]?.customerName}</td>
-                    <td>{selectedData.customer[0]?.city}</td>
-                    <td>
-                      {selectedData.customer[0]?.rbhf},
-                      {selectedData.customer[0]?.cnap},
-                      {selectedData.customer[0]?.lnf}
-                    </td>
-                    <td>{selectedData.customer[0]?.mainContact}</td>
-                    {/* <td>{dsrdata[0]?.techName}</td>
+                  <td>{selectedData.customer[0]?.customerName}</td>
+                  <td>{selectedData.customer[0]?.city}</td>
+                  <td>
+                    {selectedData.customer[0]?.rbhf},
+                    {selectedData.customer[0]?.cnap},
+                    {selectedData.customer[0]?.lnf}
+                  </td>
+                  <td>{selectedData.customer[0]?.mainContact}</td>
+                  {/* <td>{dsrdata[0]?.techName}</td>
 
                     <td>{dsrdata[0]?.workerName}</td> */}
-                    <td>{selectedData.service}</td>
+                  <td>{selectedData.service}</td>
 
-                    <td>{selectedData.desc}</td>
-                    <td>
-                      {selectedData.dividedamtCharges.length > 0 && (
-                        <div>
-                          <p>{selectedData.dividedamtCharges[0]}</p>
-                        </div>
+                  <td>{selectedData.desc}</td>
+                  <td>
+                    {selectedData.dividedamtCharges.length > 0 && (
+                      <div>
+                        <p>{selectedData.dividedamtCharges[0]}</p>
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    
+                  <b>
+                      {calculatePendingPaymentAmount(
+                        selectedData.paymentData.filter(
+                          (i) =>
+                            i.paymentType === "Customer" &&
+                            i.serviceId === selectedData._id &&i.serviceDate ===date
+                        ),
+                        selectedData.dividedamtCharges
+                      ) == 0 ? (
+                        <p style={{ color: "green" }}>PAYMENT COLLECTED</p>
+
+
+                      ) : (
+                        <div>{new Date(date) < new Date() ?<p style={{background:"red",color:"white",width:"80px",textAlign:"center"}}>Delayed</p>:"Pending"}</div>  
+
                       )}
+                    </b>
+                    
                     </td>
-                    <td>Payment collected</td>
-                    <td>
-                      <button> Raise Invoice</button>
-                    </td>
-                  </Link>
+                  <td>
+                    {selectedData.paymentData.some(
+                      (i) =>
+                        i.paymentType === "Customer" &&
+                        i.serviceId === selectedData._id &&
+                        i.serviceDate === date
+                    ) ? (
+                      <div>
+                        {selectedData.paymentData
+                          .filter(
+                            (i) =>
+                              i.paymentType === "Customer" &&
+                              i.serviceId === selectedData._id && i.serviceDate === date
+                          ) 
+                          .map((i) => (
+                            <p key={i._id} className="mb-0 text-right">
+                              ({i.paymentDate}) {i.amount}
+                            </p>
+                          ))}
+                        <div>
+                          <hr className="mb-0 mt-0" />
+                          <p className="mb-0 text-right">
+                            <b>
+                              Total:{" "}
+                              {calculateTotalPaymentAmount(
+                                selectedData.paymentData.filter(
+                                  
+                                  (i) => i.serviceId === selectedData._id&&
+                                  i.paymentType === "Customer" 
+                                  && i.serviceDate === date
+                                )
+                              )}
+                            </b>
+                          </p>
+                          <p className="text-right">
+                            <b>
+                              Pending:{" "}
+                              {calculatePendingPaymentAmount(
+                                selectedData.paymentData.filter(
+                                  (i) =>
+                                    i.paymentType === "Customer" &&
+                                    i.serviceId === selectedData._id 
+                                    && i.serviceDate === date
+                                ),
+                                selectedData.dividedamtCharges
+                              )}
+                            </b>
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p></p>
+                    )}
+                   
+                  </td>
+                  <td>
+                    <Link
+                      to="/paymentfulldetails"
+                      className="tbl"
+                      state={{ data: selectedData, data1: date }}
+                    >
+                      {" "}
+                      <p style={{ color: "green" }}>Payment collect</p>
+                    </Link>
+
+                    <Link
+                      to="/raiseinvoice"
+                      state={{ data: selectedData, data1: date }}
+                    >
+                      <p style={{ color: "red" }}> Raise Invoice</p>
+                    </Link>
+                    <b>
+                      {calculatePendingPaymentAmount(
+                        selectedData.paymentData.filter(
+                          (i) =>
+                            i.paymentType === "Customer" &&
+                            i.serviceId === selectedData._id &&i.serviceDate ===date
+                        ),
+                        selectedData.dividedamtCharges
+                      ) !== 0 ? (
+                        ""
+                      ) : (
+                        <p style={{ color: "orange" }}>Close</p>
+                     
+                      )}
+                    </b>
+                  </td>
                 </tr>
               ))}
             </tbody>

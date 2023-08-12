@@ -15,9 +15,9 @@ class Work {
       if (
         !workDate ||
         !workMileStone ||
-        !workMaterialUse ||
-        !workDetails ||
-        !workRemark
+        !workMaterialUse
+        
+       
       ) {
         return res.status(500).json({ error: "Field must not be empty" });
       } else {
