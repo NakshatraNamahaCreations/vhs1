@@ -33,6 +33,9 @@ const quotefollowSchema = new mongoose.Schema({
   staffName: {
     type: String,
   },
+  colorcode:{
+    type:String
+  }
 }, {
   timestamps: true,
 });

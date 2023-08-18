@@ -4,8 +4,11 @@ class Category {
   
   async addcategory(req, res) {
     let { category } = req.body;
+    let file = req.file?.filename;
+
     let add = new categorymodel({
       category: category,
+      categoryImg:file
     });
     let save = add.save();
     if (save) {
@@ -16,11 +19,11 @@ class Category {
   //edit category
   async editcategory(req,res){
     let id=req.params.id;
-    let{category}=req.body;
+    let {category}=req.body;
     
     let data=await categorymodel.findOneAndUpdate(
         {_id:id},
-        {category}
+        {category,categoryImg}
     );
     if (data) {
         return res.json({ success: "Updated" });

@@ -6,8 +6,10 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 const defaultstate = 1;
-function Enquiryadd() { 
-   const navigate = useNavigate();
+
+function Enquiryadd() {
+  const [response, setResponse] = useState(null);
+  const navigate = useNavigate();
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const [citydata, setcitydata] = useState([]);
   const [categorydata, setcategorydata] = useState([]);
@@ -34,17 +36,7 @@ function Enquiryadd() {
   const [referecetypedata, setreferecetypedata] = useState([]);
   const [enquirydata, setenquirydata] = useState([]);
 
-  useEffect(() => {
-    getsubcategory();
-  }, []);
-
-  const getsubcategory = async () => {
-    let res = await axios.get(apiURL + "/getsubcategory");
-    if (res.status == 200) {
-      setsubcategorydata(res.data?.subcategory);
-    }
-  };
-
+ 
   useEffect(() => {
     getenquiry();
   }, []);
@@ -61,7 +53,7 @@ function Enquiryadd() {
   if (enquirydata.length > 0) {
     var firstElement = enquirydata[0];
     var count = firstElement.count;
-    console.log(count);
+    // console.log(count);
   } else {
     console.log("The enquirydata array is empty.");
   }
@@ -103,15 +95,21 @@ function Enquiryadd() {
             reference3: reference3,
             comment: comment,
             intrestedfor: intrestedfor,
-
           },
         };
         await axios(config).then(function (response) {
           if (response.status === 200) {
             console.log("success");
+            // const data =  response.json();
 
-            alert(" Added");
-            navigate(`/enquirydetail/${latestEnquiryId ? latestEnquiryId + 1 : 1}`);
+            // Assuming the structure matches your previous example
+            const enquiryId = response.data.EnquiryId;
+
+            const responce = response.data;
+            console.log(response.data);
+            console.log(JSON.stringify(responce.data));
+            makeApiCall(JSON.stringify(responce.data.contact1));
+            // navigate(`/enquirydetail/${latestEnquiryId ? latestEnquiryId + 1 : 1}`);
           }
         });
       } catch (error) {
@@ -120,6 +118,56 @@ function Enquiryadd() {
       }
     }
   };
+  useEffect(() => {
+    getsubcategory();
+  }, []);
+
+  const getsubcategory = async () => {
+    let res = await axios.get(apiURL + "/getsubcategory");
+    if (res.status == 200) {
+      setsubcategorydata(res.data?.subcategory);
+    }
+  };
+
+
+  const makeApiCall = async (number) => {
+    const apiURL =
+      "https://wa.chatmybot.in/gateway/waunofficial/v1/api/v2/message";
+    const accessToken = "c7475f11-97cb-4d52-9500-f458c1a377f4";
+
+    console.log("91" + number);
+
+    const requestData = [
+      {
+        dst: "91" + number,
+        messageType: "0",
+        textMessage: {
+          content: "Happy independence day your enquiry added",
+        },
+      },
+    ];
+
+    try {
+      const response = await axios.post(apiURL, requestData, {
+        headers: {
+          "access-token": accessToken,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        setResponse(response.data);
+        alert("enquiry added");
+        // navigate(`/enquirydetail/${latestEnquiryId ? latestEnquiryId + 1 : 1}`);
+      } else {
+        console.error("API call unsuccessful. Status code:", response.status);
+      }
+    } catch (error) {
+      console.error("Error making API call:", error);
+    }
+  };
+
+ 
 
   useEffect(() => {
     getcity();
@@ -152,7 +200,7 @@ function Enquiryadd() {
     <div className="web">
       <Header />
       <Enquirynav />
-
+      {/* <button onClick={makeApiCall}>send</button> */}
       <div className="row m-auto">
         <div className="col-md-12">
           <div className="card" style={{ marginTop: "20px" }}>
@@ -178,7 +226,7 @@ function Enquiryadd() {
                       <span className="text-danger"> *</span>
                     </div>
                     <div className="group pt-1 vhs-non-editable">
-                   { admin?.displayname}
+                      {admin?.displayname}
                     </div>
                   </div>
                 </div>
@@ -259,7 +307,6 @@ function Enquiryadd() {
                         {admin?.city.map((item) => (
                           <option value={item.name}>{item.name}</option>
                         ))}
-                      
                       </select>
                     </div>
                   </div>

@@ -36,7 +36,7 @@ function Ecalllater() {
 
   let i = 0;
   const getenquiry = async () => {
-    let res = await axios.get(apiURL + "/getcalllateraggredata");
+    let res = await axios.get(apiURL + "/getcallquotedata");
     if ((res.status = 200)) {
       setfilterdata(
         res.data?.enquiryfollowup);

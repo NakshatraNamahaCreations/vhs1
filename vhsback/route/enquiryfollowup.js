@@ -9,6 +9,7 @@ router.get("/getsurveyaggredata", enquiryfollowupcontroller.getallagreedata);
 router.get("/getcalllateraggredata", enquiryfollowupcontroller.getcalllaterdata);
 router.get("/getallflwdata", enquiryfollowupcontroller.getflwdata);
 router.get("/getnewflwdata", enquiryfollowupcontroller.getnewdata);
+router.get("/getcallquotedata", enquiryfollowupcontroller.getcalllaterandquotedata);
 
 router.post("/addenquiryfollowup", enquiryfollowupcontroller.Addenquiryfollowup);
 router.post("/postsurveycat", enquiryfollowupcontroller.postsurveycat);

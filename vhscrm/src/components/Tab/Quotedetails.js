@@ -6,7 +6,14 @@ import Surveynav from "../Surveynav";
 import Quotenav from "../Quotenav";
 import moment from "moment";
 
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+
 function Quotedetails() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const admin = JSON.parse(sessionStorage.getItem("admin"));
   const { EnquiryId } = useParams();
   console.log(EnquiryId);
@@ -24,7 +31,7 @@ function Quotedetails() {
   const [job, setjob] = useState("");
   const [rate, setrate] = useState("");
   const [quoteflowdata, setquoteflowdata] = useState([]);
-  const [quotenxtfoll, setquotenxtfoll] = useState("");
+  const [quotenxtfoll, setquotenxtfoll] = useState("00-00-0000");
   const [staffname, setstaffname] = useState("");
   const [folldate, setfolldate] = useState("");
   const [response, setresponse] = useState([]);
@@ -45,7 +52,14 @@ function Quotedetails() {
   );
   const [Bookedby, setBookedby] = useState(quotedata[0]?.Bookedby);
   const [netTotal, setnetTotal] = useState(quotedata[0]?.netTotal);
-
+  const [paymentDetails, setPaymentDetails] = useState([]);
+  const [paymentDate, setPaymentDate] = useState(moment().format("MM-DD-YYYY"));
+  const [paymentType, setPaymentType] = useState("");
+  const [paymentComments, setPaymentComments] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [colorcode, setcolorcode] = useState("");
+  const [advpaymentdata, setadvpaymentdata] = useState([]);
   const getquote = async () => {
     let res = await axios.get(apiURL + "/getquote");
     if ((res.status = 200)) {
@@ -53,7 +67,6 @@ function Quotedetails() {
     }
   };
   // useEffect to update netTotal when quotedata changes
- 
 
   const nearte = parseInt(ajobdatarate.map((i) => i.rate));
 
@@ -113,6 +126,7 @@ function Quotedetails() {
           response: response1,
           nxtfoll: quotenxtfoll,
           desc: descrption,
+          colorcode: colorcode,
         },
       };
       await axios(config).then(function (response) {
@@ -150,7 +164,7 @@ function Quotedetails() {
             qty: qty,
             rate: qty * rate,
             subtotal: qty * rate,
-            note:note
+            note: note,
           },
         };
         await axios(config).then(function (response) {
@@ -278,7 +292,6 @@ function Quotedetails() {
 
   const total = calculateTotalPrice(treatmentdata);
 
-
   const savequote = async (e) => {
     e.preventDefault();
 
@@ -387,11 +400,66 @@ function Quotedetails() {
     navigate(`/convertcustomer/${EnquiryId}`);
   };
 
-  console.log(quotepagedata)
+  console.log(quotepagedata);
   // Assuming quotepagedata is an array of objects with quotefollowup property
-const confirmedResponses = quotepagedata[0]?.quotefollowup.filter(item => item.response === 'Confirmed');
+  const confirmedResponses = quotepagedata[0]?.quotefollowup.filter(
+    (item) => item.response === "Confirmed"
+  );
 
-console.log(confirmedResponses)
+  console.log(confirmedResponses);
+  const addPayment = async () => {
+    try {
+      const config = {
+        url: "/AdvPayment",
+        method: "post",
+        baseURL: apiURL,
+        headers: { "content-type": "application/json" },
+        data: {
+          paymentDate: paymentDate,
+
+          paymentMode: paymentMode,
+          amount: paymentAmount,
+          Comment: paymentComments,
+          EnquiryId: enquirydata[0]?.EnquiryId,
+          userID: enquirydata[0]?._id,
+        },
+      };
+      await axios(config).then(function (response) {
+        if (response.status === 200) {
+          alert("Payment Added");
+          window.location.reload("");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      alert(error.response.data.error);
+    }
+  };
+
+  // useEffect(() => {
+  //   getadvpayment();
+  // }, [enquirydata]);
+
+  // const getadvpayment = async () => {
+  //   let res = await axios.get(
+  //     apiURL + `/getAdvPaymentByCustomerId/${enquirydata[0]?._id}`
+  //   );
+  //   if ((res.status = 200)) {
+  //     setadvpaymentdata(res.data?.payments);
+  //   }
+  // };
+
+  function getColor(colorcode) {
+    if (colorcode === "easy") {
+      return "#ffb9798f";
+    } else if (colorcode === "medium") {
+      return "#0080002e";
+    } else if (colorcode === "different") {
+      return '#ffb9798f"';
+    } else {
+      return "transparent";
+    }
+  }
 
   return (
     <div className="web">
@@ -414,9 +482,21 @@ console.log(confirmedResponses)
                   <div>
                     <h5>Billing Details</h5>
                   </div>
-                  {confirmedResponses?.length>0
-                   ? (
+                  {confirmedResponses?.length > 0 ? (
                     <div className="col-md-1 mt-2">
+                      <Button
+                        style={{
+                          fontSize: "12px",
+                          padding: "5px",
+                          marginLeft: "50px",
+                          backgroundColor: "rgb(169, 4, 46)",
+                          border: "none",
+                          width: "145px",
+                        }}
+                        onClick={handleShow}
+                      >
+                        Pay advance
+                      </Button>
                       <button
                         className="vhs-button mx-5"
                         style={{ width: "150px" }}
@@ -429,6 +509,21 @@ console.log(confirmedResponses)
                     ""
                   )}
                 </div>
+                <p>
+                  <b>
+                    Advance Payment :
+                    {advpaymentdata[0]?.amount ? advpaymentdata[0]?.amount : ""}
+                  </b>
+                </p>
+                <p>
+                  <b>
+                    Adv Payment Date :
+                    {advpaymentdata[0]?.paymentDate
+                      ? advpaymentdata[0]?.paymentDate
+                      : ""}
+                  </b>
+                </p>
+
                 <hr />
                 <div className="row">
                   <div className="col-md-4">
@@ -583,15 +678,12 @@ console.log(confirmedResponses)
                   <div className="col-md-4 pt-3">
                     <div className="vhs-input-label">Note </div>
                     <div className="group pt-1">
-                      
-                        <input
-                          type="text"
-                          name="rate"
-                          className="col-md-12 vhs-input-value"
-                          onChange={(e) => setnote(e.target.value)}
-                      
-                        />
-                      
+                      <input
+                        type="text"
+                        name="rate"
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setnote(e.target.value)}
+                      />
                     </div>
                   </div>{" "}
                   <div className="col-md-4 pt-3 mt-4 justify-content-center">
@@ -845,7 +937,14 @@ console.log(confirmedResponses)
                 {quotepagedata[0]?.quotefollowup.map((item, index) => (
                   <div className="tbl">
                     <div className="tbl">
-                      <tr className="user-tbale-body tbl1">
+                      <tr
+                        className="user-tbale-body tbl1"
+                        key={item.id}
+                        style={{
+                          backgroundColor: getColor(item.colorcode),
+                          color: "black",
+                        }}
+                      >
                         <td>{index + 1}</td>
                         <td>{item.folldate}</td>
                         <td>{item.staffname}</td>
@@ -897,12 +996,10 @@ console.log(confirmedResponses)
                       onChange={(e) => setresponse1(e.target.value)}
                     >
                       <option>--select--</option>
-                     
-                        <option value="Call Later">Call Later</option>
-                        <option value="Not Intrested">Not Intrested</option>
-                        <option value="Confirmed">Confirmed</option>
 
-                     
+                      <option value="Call Later">Call Later</option>
+                      <option value="Not Intrested">Not Intrested</option>
+                      <option value="Confirmed">Confirmed</option>
                     </select>
                   </div>
                 </div>
@@ -929,6 +1026,34 @@ console.log(confirmedResponses)
                     />
                   </div>
                 </div>{" "}
+                <div className="col-md-4 pt-3">
+                  {response1 == "Call Later" ? (
+                    <>
+                      {" "}
+                      <div className="row ">
+                        <div className="">
+                          <div className="vhs-input-label">
+                            color code
+                            <span className="text-danger">*</span>
+                          </div>
+                          <div className="group pt-1">
+                            <select
+                              className="col-md-12 vhs-input-value"
+                              onChange={(e) => setcolorcode(e.target.value)}
+                            >
+                              <option>--select--</option>
+                              <option value="easy">Easy</option>
+                              <option value="medium">Medium</option>
+                              <option value="different">Different</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </div>
               </div>
 
               <div className="row pt-3 justify-content-center">
@@ -942,6 +1067,102 @@ console.log(confirmedResponses)
           </div>
         </div>
       </div>
+      <>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Advance Payment</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="card p-2">
+              <div className="card-body p-4">
+                <div className="row  ">
+                  <div className="col-6 d-flex ">
+                    <div className="col-4">
+                      Payment Date <span className="text-danger"> *</span>
+                    </div>
+                    <div className="group pt-1 col-5 ml-3">
+                      <input
+                        type="date"
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setPaymentDate(e.target.value)}
+                        value={moment().format("DD-MM-YYY")}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-6 d-flex">
+                    <div className="col-4">
+                      {" "}
+                      Amount <span className="text-danger"> *</span>
+                    </div>
+
+                    <div className="group pt-1 col-5">
+                      <input
+                        type="text"
+                        placeholder="amounts"
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row  mt-2">
+                  <div className="col-6 d-flex">
+                    <div className="col-4"> Comment</div>
+
+                    <div className="group pt-1 col-5">
+                      <textarea
+                        type="text"
+                        className="col-md-12 vhs-input-value"
+                        placeholder="Comments"
+                        style={{ height: "100px" }}
+                        onChange={(e) => setPaymentComments(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row  mt-2">
+                  <div className="col-6 d-flex ">
+                    <div className="col-4">
+                      Payment Mode <span className="text-danger"> *</span>
+                    </div>
+                    <div className="group pt-1 col-5 ml-3">
+                      <select
+                        className="col-md-12 vhs-input-value"
+                        onChange={(e) => setPaymentMode(e.target.value)}
+                      >
+                        <option value="">--select--</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Paytm">Paytm</option>
+                        <option value="PhonePe">PhonePe</option>
+                        <option value="Google Pay">Google Pay</option>
+                        <option value="NEFT">NEFT</option>
+                        <option value="IMPS">IMPS</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* <div className="row pt-3 justify-content-center">
+              <div className="col-md-2">
+                <button className="vhs-button" onClick={addPayment}>
+                  Save
+                </button>
+              </div>
+            </div> */}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={addPayment}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     </div>
   );
 }

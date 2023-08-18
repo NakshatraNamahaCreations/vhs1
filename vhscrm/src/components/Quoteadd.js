@@ -186,7 +186,7 @@ function Quotelist() {
   ]);
 
   const click = (data) => {
-    navigate(`/quotedetails/${data.EnquiryId}`);
+    navigate(`/quotedetails/${data}`);
   };
 
   // Pagination logic
@@ -204,6 +204,20 @@ function Quotelist() {
   // Change page
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage);
+  };
+  const calculateBackgroundColor = (item) => {
+    const response = item?.quotefollowup[0]?.response;
+    const dateDifference = Date.now() - new Date(item?.updatedAt).getTime();
+    const isDateOld = dateDifference > 30 * 60 * 60 * 1000; // 30 hours in milliseconds
+    const daysDifference = Math.floor(dateDifference / (24 * 60 * 60 * 1000));
+
+    return response === "Confirmed" || response === ""
+      ? "#ffb9798f"
+      : isDateOld
+      ? daysDifference > 10
+        ? "pink"
+        : "red"
+      : "white";
   };
   return (
     <div className="web">
@@ -235,7 +249,24 @@ function Quotelist() {
           >
             CONFIRMED
           </div>
-         
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #pink solid",
+              backgroundColor: "lightpink",
+            }}
+          >
+            More than 10days overdue
+          </div>
+          <div
+            className="ps-1 pe-1"
+            style={{
+              borderBottom: "1px #cccccc solid",
+              backgroundColor: "red",
+            }}
+          >
+            30hr quotation creation
+          </div>
         </div>
       </div>
       <div className="row m-auto">
@@ -257,7 +288,7 @@ function Quotelist() {
             <span> of {totalPages}</span>
           </div>
 
-          <table>
+          <table className="my-table">
             <thead>
               <tr className="bg ">
                 <th scope="col" className="bor">
@@ -378,7 +409,6 @@ function Quotelist() {
                   />{" "}
                 </th>
 
-               
                 <th scope="col" className="bor">
                   <input
                     className="vhs-table-input"
@@ -394,18 +424,13 @@ function Quotelist() {
                   />{" "}
                 </th>
                 <th scope="col" className="bor">
-                <select
-                    
-                    onChange={(e) => setType(e.target.value)}
-                  >
+                  <select onChange={(e) => setType(e.target.value)}>
                     <option>Select </option>
                     <option value="NOT SHARED">NOT SHARED </option>
                     <option value="QUOTE SHARED">QUOTE SHARED </option>
                     <option value="CONFIRMED">CONFIRMED </option>
-                   
                   </select>{" "}
                 </th>
-              
               </tr>
               <tr className="bg">
                 <th className="bor">#</th>
@@ -426,16 +451,77 @@ function Quotelist() {
                 <th className="bor">Type</th>
               </tr>
             </thead>
+            {/* <tbody>
+          
+                  <div className="tbl">
+                    {currentItems.map((item, index) => {
+                      const response = item?.quotefollowup[0]?.response;
+                      const dateDifference =
+                        Date.now() - new Date(item?.updatedAt).getTime();
+                      const isDateOld = dateDifference > 30 * 60 * 60 * 1000; // 30 hours in milliseconds
+
+                      // Calculate the difference in days
+                      const daysDifference = Math.floor(
+                        dateDifference / (24 * 60 * 60 * 1000)
+                      );
+                      const isDateMoreThan10Days = daysDifference > 10;
+
+                      return (
+                   
+                          <tr
+                            key={index}
+                            className="trnew"
+                            style={{
+                              backgroundColor:
+                                response === "Confirmed" || response === ""
+                                  ? "#ffb9798f"
+                                  : isDateOld
+                                  ? isDateMoreThan10Days
+                                    ? "pink"
+                                    : "red"
+                                  : "white",
+                            }}
+                          >
+                            <a onClick={()=>click(item?.enquirydata[0]?.EnquiryId)}>
+                              <td>{item?.enquirydata[0]?.EnquiryId}</td>
+                              <td>{item?.enquirydata[0]?.category}</td>
+                              <td>{item?.quoteId}</td>
+                              <td>
+                                {item?.date}
+                                <br />
+                                {item?.time}
+                              </td>
+                              <td>{item?.enquirydata[0]?.name}</td>
+                              <td>{item?.enquirydata[0]?.contact1}</td>
+                              <td>{item?.enquirydata[0]?.address}</td>
+
+                              <td>{item?.enquirydata[0]?.city}</td>
+                              <td>{item?.enquirydata[0]?.intrestedfor}</td>
+                              <td>{item?.netTotal}</td>
+                              <td>{item?.enquirydata[0]?.executive}</td>
+                              <td>{item?.Bookedby}</td>
+                              <td>{item?.enquirydata[0]?.enquirydate}</td>
+                              <td>{item?.quotefollowup[0]?.nxtfoll}</td>
+                              <td>{item?.quotefollowup[0]?.desc}</td>
+                              {item?.quotefollowup[0]?.response ===
+                              "Confirmed" ? (
+                                <td>CONFIRMED</td>
+                              ) : (
+                                <td>NOT SHARED</td>
+                              )}
+                            </a>
+                          </tr>
+                      );
+                    })}
+                  </div>
+                </tbody> */}
             <tbody>
-              {currentItems.map((item) => (
-                <a onClick={() => click(item)} className="tbl">
-                  <tr className="trnew"  style={{
-                  backgroundColor: item.quotefollowup[0]?.response === "Confirmed"
-                    ? "#ffb9798f"
-                    : item.quotefollowup[0]?.response ===""
-                      ? "#ffb9798f"
-                      : "white",
-                }}>
+              {currentItems.map((item, index) => (
+                <a key={index} onClick={() => click(item.enquirydata[0].EnquiryId)} className="tbl">
+                  <tr
+                    className="trnew"
+                    style={{ backgroundColor: calculateBackgroundColor(item) }}
+                  >
                     <td>{i++}</td>
                     <td>{item?.enquirydata[0]?.category}</td>
                     <td>{item?.quoteId}</td>
@@ -447,7 +533,6 @@ function Quotelist() {
                     <td>{item?.enquirydata[0]?.name}</td>
                     <td>{item?.enquirydata[0]?.contact1}</td>
                     <td>{item?.enquirydata[0]?.address}</td>
-
                     <td>{item?.enquirydata[0]?.city}</td>
                     <td>{item?.enquirydata[0]?.intrestedfor}</td>
                     <td>{item?.netTotal}</td>
@@ -456,14 +541,13 @@ function Quotelist() {
                     <td>{item?.enquirydata[0]?.enquirydate}</td>
                     <td>{item?.quotefollowup[0]?.nxtfoll}</td>
                     <td>{item?.quotefollowup[0]?.desc}</td>
-                    {item?.quotefollowup[0]?.response === "Confirmed" ?
-                    <td>CONFIRMED</td>: <td>NOT SHARED</td>
-                    
-                  }
-
+                    {item?.quotefollowup[0]?.response === "Confirmed" ? (
+                      <td>CONFIRMED</td>
+                    ) : (
+                      <td>NOT SHARED</td>
+                    )}
                   </tr>
                 </a>
-                // </Link>
               ))}
             </tbody>
           </table>

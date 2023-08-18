@@ -5,7 +5,7 @@ const categorySchema=new mongoose.Schema({
         type:String,
         require:true
     },
-    categoryimg:{
+    categoryImg:{
         type:String,
     }
 }, {

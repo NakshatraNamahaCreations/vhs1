@@ -314,9 +314,9 @@ function Dsrcallist() {
                   Description
                 </th>
 
-                <th scope="col" className="table-head">
+                {/* <th scope="col" className="table-head">
                   Amount
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody>
@@ -346,7 +346,7 @@ function Dsrcallist() {
                     <td>{selectedData.service}</td>
 
                     <td>{selectedData.desc}</td>
-                    <td>{selectedData.serviceCharge}</td>
+                    {/* <td>{selectedData.serviceCharge}</td> */}
                   </Link>
                 </tr>
               ))}

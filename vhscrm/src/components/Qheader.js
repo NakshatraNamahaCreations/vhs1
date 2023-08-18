@@ -9,7 +9,7 @@ import Formatnav from "../components/Formatnav"
 
 
 
-function Termsgroup() {
+function Qheader() {
   const cat=sessionStorage.getItem("category");
   const [serno, setserno] = useState("");
   const [headerimgdata, setheaderimgdata] = useState([]);
@@ -231,4 +231,4 @@ function Termsgroup() {
   );
 }
 
-export default Termsgroup;
+export default Qheader;

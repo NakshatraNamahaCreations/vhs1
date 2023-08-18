@@ -8,6 +8,7 @@ import DataTable from "react-data-table-component";
 
 function Category() {
   const [category, setcategory] = useState("");
+  const [categoryImg, setcategoryImg] = useState("");
   const [categorydata, setcategorydata] = useState([]);
   const [subcategorydata, setsetsubcategorydata] = useState([]);
   const apiURL = process.env.REACT_APP_API_URL;
@@ -25,7 +26,7 @@ function Category() {
   const postcategory = async (e) => {
     e.preventDefault();
     formdata.append("category", category);
-    // formdata.append("categoryimage", categoryimage);
+    formdata.append("categoryImg", categoryImg);
     try {
       const config = {
         url: "/addcategory",
@@ -89,6 +90,17 @@ function Category() {
     {
       name: "Category",
       selector: (row) => row.category,
+    },
+    {
+      name: "Category Icon",
+      cell:(row)=>(
+        <div>
+          {row.categoryImg?
+          <img src={`http://localhost:8080/category/${row.categoryImg}`} width="50px" height="50px"/>
+          
+          :<p className="text-center">-</p>}
+        </div>
+      )
     },
     {
       name: "Action",
@@ -161,7 +173,18 @@ function Category() {
                       </div>
                     </div>
 
-                    <div className="col-md-4"></div>
+                    <div className="col-md-4">
+                      <div className="vhs-input-label">
+                        Category Icon 
+                      </div>
+                      <div className="group pt-1">
+                        <input
+                          type="file"
+                          className="col-md-12 vhs-input-value"
+                          onChange={(e) => setcategoryImg(e.target.files[0])}
+                        />
+                      </div>
+                    </div>
 
                     <div className="col-md-4"></div>
                   </div>

@@ -165,13 +165,35 @@ class addenquiry {
         },
       
       ]);
-      const data1=data.filter((i)=>i.response === "Call Later")
+      const data1=data.filter((i)=>i.response === "Call Later" )
       if (data1) {
         return res.json({ enquiryfollowup: data1 });
       }
     } catch (error) {
       return res.status(500).json({ error: "Something went wrong" });
     }
+}
+
+async getcalllaterandquotedata(req, res) {
+  try {
+    let data = await enquiryfollowupModel.aggregate([
+      {
+        $lookup: {
+          from: "enquiryadds",
+          localField: "EnquiryId",
+          foreignField: "EnquiryId",
+          as: "enquirydata",
+        },
+      },
+    
+    ]);
+    const data1=data.filter((i)=>i.response === "Call Later" || i.response === "Quote")
+    if (data1) {
+      return res.json({ enquiryfollowup: data1 });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Something went wrong" });
+  }
 }
 
   //aggregate enquiry data and survey

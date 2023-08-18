@@ -443,22 +443,68 @@ function Dsrdetails() {
                       <td>
                         {data?.dateofService}/{data?.expiryDate}
                       </td>
-
                       <td>{data1}</td>
-
-                      {data.contractType === "AMC" ? (
-                        <td>
-                          {data.dividedamtDates.map((a) => (
-                            <div>
-                              <p>{new Date(a).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </td>
-                      ) : (
-                        <td>{data.dateofService}</td>
-                      )}
+                      <td>
+                        {data.contractType === "AMC" ? (
+                          <ul>
+                            {data.dividedamtDates.map((a, index) => {
+                              const formattedDate = new Date(a)
+                                .toLocaleDateString()
+                                .split("/")
+                                .reverse()
+                                .join("-");
+                              return (
+                                <p key={index}>
+                                  {formattedDate === data1 ? data1 : ""}
+                                </p>
+                              );
+                            })}
+                          </ul>
+                        ) : (
+                          data.dateofService
+                        )}
+                      </td>
                       <td>{data?.desc}</td>
-                      <td>{data?.serviceCharge}</td>
+
+                      <td>
+                        {data.contractType === "AMC" ? (
+                          <ul>
+                            {data.dividedamtDates.map((a, index) => {
+                              const formattedDate = new Date(a)
+                                .toLocaleDateString()
+                                .split("/")
+                                .reverse()
+                                .join("-");
+                              return (
+                                <p key={index}>
+                                  {formattedDate === data1 ? <>
+                                    {data.dividedamtCharges.length > 0 && (
+                              <div>
+                                <p>{data.dividedamtCharges[0]}</p>
+                              </div>
+                            )}
+                                  </> : ""}
+                                </p>
+                              );
+                            })}
+                          </ul>
+                        ) : (
+                          data.dateofService
+                        )}
+                      </td>
+                      {/* <td>
+                        {data.contractType === "AMC" ? (
+                          <td>
+                            {data.dividedamtCharges.length > 0 && (
+                              <div>
+                                <p>{data.dividedamtCharges[0]}</p>
+                              </div>
+                            )}
+                          </td>
+                        ) : (
+                          <td>{data.serviceCharge}</td>
+                        )}
+                      </td> */}
                     </tr>
                     {/* ))} */}
                   </tbody>
@@ -775,7 +821,7 @@ function Dsrdetails() {
           {!data?.quotedata ? (
             <button className="vhs-button">Invoice</button>
           ) : (
-            <Link to="/dsrquote" state={{ data: data,data1:data1 }}>
+            <Link to="/dsrquote" state={{ data: data, data1: data1 }}>
               <button className="vhs-button">Invoice</button>
             </Link>
           )}

@@ -14,6 +14,7 @@ class addquoteflw {
         response,
         desc,
         nxtfoll,
+        colorcode
       } = req.body;
       const newVendor = new quotefollowupModel({
         EnquiryId,
@@ -24,6 +25,7 @@ class addquoteflw {
         response,
         desc,
         nxtfoll,
+        colorcode
       });
       newVendor.save().then((data) => {
         return res

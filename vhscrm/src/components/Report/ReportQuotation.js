@@ -84,10 +84,8 @@ function Report_Quotation() {
     setSearchValue("");
     setShowMessage(true);
 
-
     const filteredResults = quotationData.filter((item) => {
       const enquiryDate = parse(item.date, "MM/dd/yyyy", new Date());
-
 
       const fromDateObj = fromDate
         ? parse(fromDate, "yyyy-MM-dd", new Date())
@@ -97,7 +95,7 @@ function Report_Quotation() {
       const itemCity =
         city.toLowerCase() === "all" ||
         item.enquirydata[0]?.city.toLowerCase().includes(city.toLowerCase());
-    
+
       const itemFromDate =
         !fromDate ||
         isAfter(enquiryDate, fromDateObj) ||
@@ -246,8 +244,7 @@ function Report_Quotation() {
       selector: (row) => "-",
     },
   ];
- 
-  
+
   const handleExecutiveChange = (e) => {
     const selectedExecutive = e.target.value;
     console.log(selectedExecutive); // Check the selected executive value
@@ -309,7 +306,7 @@ function Report_Quotation() {
                     <div className="col-md-5 ms-4">
                       <select
                         className="report-select"
-                        onChange={(e)=>setCity(e.target.value)}
+                        onChange={(e) => setCity(e.target.value)}
                       >
                         <option>Select</option>
                         {[...duplicateCity].map((city) => (
@@ -412,26 +409,13 @@ function Report_Quotation() {
                         onChange={(e) => setStatus(e.target.value)}
                       >
                         <option>Select</option>
-                        {/* {quotationData.map((item) => (
-                          <option>{item.enquirydata[0]?.technicianname}</option>
-                        ))} */}
-                        <option>call later</option>
-                        <option>confirmed</option>
-                        <option>cancelled</option>
+
+                        <option value="Call Later">call later</option>
+                        <option value="Confirmed">confirmed</option>
+                        <option value="Cancelled">cancelled</option>
                       </select>
                     </div>
                   </div>
-                  {/* <div className="row">
-                    <div className="col-md-4"> Reference 2</div>
-                    <div className="col-md-1 ms-4">:</div>
-                    <div className="col-md-5 ms-4">
-                      <textarea
-                        className="report-select"
-                        onChange={(e) => setReference2(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <br /> */}
                 </div>
                 <p style={{ justifyContent: "center", display: "flex" }}>
                   <button
@@ -442,10 +426,6 @@ function Report_Quotation() {
                       backgroundColor: "#a9042e",
                       borderRadius: "5px",
                     }}
-                    // onClick={() => {
-                    //   filterData();
-                    //   setButtonClicked(true);
-                    // }}
                     onClick={handleSearchClick}
                   >
                     Show

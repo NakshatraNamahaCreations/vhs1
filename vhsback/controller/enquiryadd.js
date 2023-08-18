@@ -64,7 +64,7 @@ class addenquiry {
       newVendor.save().then((data) => {
         return res
           .status(200)
-          .json({ Success: "Account created. Please login" });
+          .json({ Success: "Account created. Please login",data:newVendor });
       });
     } catch (error) {
       console.error("Error enquiry add:", error);

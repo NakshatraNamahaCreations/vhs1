@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { da } from "date-fns/locale";
 import numberToWords from "number-to-words";
+import { filledInputClasses } from "@mui/material";
 
 function Quotationterm() {
   const [tcdata, settcdata] = useState([]);
@@ -77,10 +78,17 @@ function Quotationterm() {
   function calculatebenefit(ml) {
     const a = materialdata.filter((i) => i.material === ml);
     const benfite = a[0]?.benefits;
-   
 
     return benfite;
   }
+
+  // Assuming data is already defined elsewhere
+const filteredItems = data[0]?.treatmentdetails.filter((item) =>
+tcdata.some((tcItem) => tcItem.category === item.category)
+
+);
+
+console.log(filteredItems)
   return (
     <div className="row">
       {/* <Header /> */}
@@ -178,7 +186,7 @@ function Quotationterm() {
                         <td>
                           <div className="" style={{ fontWeight: "bold" }}>
                             {item.region}
-                            <div >{item.job}</div>
+                            <div>{item.job}</div>
                           </div>
                           <div>
                             <b>Note:</b>
@@ -192,9 +200,8 @@ function Quotationterm() {
                                 <p key={index}>{item}</p>
                               ))}
                           </div>
-                          
                         </td>
-                      
+
                         <td className="text-center">{item.qty}</td>
                         <td className="text-center">{item.rate}</td>
                         <td className="text-center"> {item.subtotal}</td>
@@ -203,12 +210,18 @@ function Quotationterm() {
                   </tbody>
                 </table>
                 <div className="float-end mx-1">
-             
-
-                 <div > Gst:</div> <> <p>{data[0]?.quotedata[0]?.SUM -data[0]?.quotedata[0]?.netTotal}</p> </>
-                 <div > Adjustment:</div><>{data[0]?.quotedata[0]?.adjustments}</>
-
-                  <div >Total :</div><>{data[0]?.quotedata[0]?.netTotal}</>
+                  <div> Gst:</div>{" "}
+                  <>
+                    {" "}
+                    <p>
+                      {data[0]?.quotedata[0]?.SUM -
+                        data[0]?.quotedata[0]?.netTotal}
+                    </p>{" "}
+                  </>
+                  <div> Adjustment:</div>
+                  <>{data[0]?.quotedata[0]?.adjustments}</>
+                  <div>Total :</div>
+                  <>{data[0]?.quotedata[0]?.netTotal}</>
                 </div>
 
                 <div
@@ -220,73 +233,70 @@ function Quotationterm() {
                     {numberToWords.toWords(data[0]?.quotedata[0]?.netTotal)}
                   </span>
                 </div>
-               
-
-               
               </div>
             </div>
             {tcdata.map((item) => (
-                  <div>
-                    <div
-                      className="row m-auto mt-3"
-                      style={{
-                        backgroundColor: "#a9042e",
-                        color: "white",
-                        fontWeight: "bold",
-                        justifyContent: "center",
-                        padding: "8px",
-                      }}
-                    >
-                      {item.header}
-                    </div>
-                    <table class="table table-bordered border-danger">
-                      <tbody>
-                        <tr>
-                          <td scope="row">
-                            <div class="form-check">
-                              <div className="mt-2">
-                                <div
-                                  dangerouslySetInnerHTML={{
-                                    __html: item.content,
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </td>
-                          {/* <td className="">{item.content}</td> */}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                ))}
-            <div>
-{section2data.map((item) => (
-                  <div>
-                    <div
-                      className="row m-auto mt-3"
-                      style={{
-                        backgroundColor: "#a9042e",
-                        color: "white",
-                        fontWeight: "bold",
-                        justifyContent: "center",
-                        padding: "8px",
-                      }}
-                    >
-                      {item.header}
-                    </div>
-                    <table class="table table-bordered border-danger">
-                      <tbody>
-                        <div className="mt-2">
-                          <div
-                            dangerouslySetInnerHTML={{ __html: item.content }}
-                          />
+              <div>
+                <div
+                  className="row m-auto mt-3"
+                  style={{
+                    backgroundColor: "#a9042e",
+                    color: "white",
+                    fontWeight: "bold",
+                    justifyContent: "center",
+                    padding: "8px",
+                  }}
+                >
+                  {item.header}
+                </div>
+                <table class="table table-bordered border-danger">
+                  <tbody>
+                    <tr>
+                      <td scope="row">
+                        <div class="form-check">
+                          <div className="mt-2">
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: item.content,
+                              }}
+                            />
+                          </div>
                         </div>
-                      </tbody>
-                      <hr />
-                    </table>
+                      </td>
+                      {/* <td className="">{item.content}</td> */}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ))}
+            <div>
+              {section2data.map((item) => (
+                <div>
+                  <div
+                    className="row m-auto mt-3"
+                    style={{
+                      backgroundColor: "#a9042e",
+                      color: "white",
+                      fontWeight: "bold",
+                      justifyContent: "center",
+                      padding: "8px",
+                    }}
+                  >
+                    {item.header}
                   </div>
-                ))}
-</div>
+                  <table class="table table-bordered border-danger">
+                    <tbody>
+                      <div className="mt-2">
+                        <div
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                        />
+                      </div>
+                    </tbody>
+                    <hr />
+                  </table>
+                </div>
+              ))}
+            </div>
             <div className="mx-5">
               <div>
                 <div className="" style={{ fontWeight: "bold" }}>

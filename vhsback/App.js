@@ -65,9 +65,15 @@ const payment=require("./route/payment");
 const work=require("./route/work");
 const b2bfollowup=require("./route/B2Bfollowup");
 const communitPayments = require("./route/communityPayment");
+const advPayments = require("./route/advpayment");
+
+
 
 //user app
 const userauth = require("./route/userapp/userauth");
+const ubanner = require("./route/userapp/banner");
+const uservice = require("./route/userapp/serviceManament");
+
 
 
 
@@ -112,9 +118,13 @@ app.use("/api",work);
 app.use("/api",b2bfollowup);
 app.use("/api", communitPayments);
 app.use("/api", communitPayments);
+app.use("/api",advPayments)
 
 //user app
-app.use("/api/userapp",userauth)
+app.use("/api/userapp",userauth);
+app.use("/api/userapp",ubanner);
+app.use("/api/userapp",uservice);
+
 
 
 const PORT = process.env.PORT || 8000;

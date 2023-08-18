@@ -42,6 +42,8 @@ class subcategory {
 
   async postsubcategory(req, res) {
     let { category} = req.body;
+    console.log(category);
+    
     let subcategory = await subcategoryModel
       .find({ category })
       .sort({ _id: -1 });

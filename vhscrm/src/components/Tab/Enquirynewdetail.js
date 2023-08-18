@@ -375,10 +375,10 @@ function Enquirynewdetail() {
                                   <span onClick={() => editdetails(EnquiryId)}>
                                     Modify
                                   </span>
-                                  |<Link onClick={deleteenquiry}>Delete |</Link>
-                                  <span onClick={() => createQuote(EnquiryId)}>
+                                  |<Link onClick={deleteenquiry}>Delete </Link>
+                                  {/* <span onClick={() => createQuote(EnquiryId)}>
                                     Create Quote
-                                  </span>
+                                  </span> */}
                                 </div>
                               </div>
                               <table class="table table-hover table-bordered">
@@ -774,7 +774,7 @@ function Enquirynewdetail() {
                           </div>
                         </div>
 
-                        <div className="vhs-sub-heading pb-2 mt-3">
+                        {/* <div className="vhs-sub-heading pb-2 mt-3">
                           Send SMS
                         </div>
                         <div className="card mb-5" style={{}}>
@@ -838,7 +838,7 @@ function Enquirynewdetail() {
                               </div>
                             </form>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </Tab.Pane>
